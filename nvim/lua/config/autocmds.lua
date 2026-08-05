@@ -30,16 +30,22 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
-vim.api.nvim_create_autocmd("VimResized", {
-  group = augroup("equalize_splits"),
-  command = "tabdo wincmd =",
-})
-
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("text_layout"),
   pattern = { "gitcommit", "markdown", "text" },
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("python_indent"),
+  pattern = "python",
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.tabstop = 4
   end,
 })

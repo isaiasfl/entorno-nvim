@@ -25,8 +25,46 @@ El script acepta los mismos argumentos que Neovim:
 | Modo | Atajo | Acción |
 | --- | --- | --- |
 | Insertar | `jk` | Salir al modo normal, equivalente a `Esc` |
+| Normal | `<leader>h` | Limpiar el resaltado de la última búsqueda |
+| Normal | `<leader>ul` | Alternar caracteres invisibles en la ventana actual |
 
 `Esc` conserva su funcionamiento normal y `kj` no está mapeado.
+
+### Líneas reales y líneas visuales
+
+`j` y `k` se mantienen sin remapear: avanzan por líneas reales del archivo. Si
+una línea larga ocupa varias filas de pantalla porque `wrap` está activo, `j`
+salta a la siguiente línea real y puede recorrer varias filas visuales de una
+vez.
+
+`gj` y `gk` avanzan por filas visuales. Son útiles en Markdown y texto envuelto,
+pero se invocan expresamente para aprender y conservar la diferencia entre los
+dos tipos de movimiento.
+
+### Salir del modo insertar
+
+Tanto `jk` como `Esc` salen del modo insertar. `Esc` es la tecla nativa y no se
+ha remapeado. `jk` es una alternativa cómoda que depende de `timeoutlen`: tras
+escribir `j`, Neovim espera brevemente para saber si la siguiente tecla es `k`.
+
+### Búsquedas y caracteres invisibles
+
+Después de buscar con `/` o `?`, `<leader>h` oculta el resaltado sin borrar el
+patrón de búsqueda. `n` y `N` pueden seguir recorriendo sus coincidencias.
+
+Los tabs y espacios finales están ocultos por defecto. `<leader>ul` alterna su
+visualización en la ventana actual mediante símbolos ASCII definidos en
+`listchars`; no requiere Nerd Font.
+
+## Política de sangría
+
+La configuración general usa espacios y una anchura de dos columnas para Tab,
+sangría automática y los operadores `>>` y `<<`. Los buffers Python usan
+localmente cuatro espacios.
+
+Estas reglas son valores de partida. Cuando un proyecto contenga
+`.editorconfig` o establezca opciones locales mediante su configuración, las
+reglas del proyecto deben prevalecer para mantener el estilo del código fuente.
 
 ## Comprobación automática
 
@@ -40,9 +78,12 @@ La comprobación:
 2. confirma que `stdpath("config")` apunta a `nvim/` en este repositorio;
 3. confirma que `config.options`, `config.keymaps` y `config.autocmds` se
    cargaron;
-4. valida el mapeo `jk`, su descripción y que `Esc` y `kj` no se remapearon;
-5. ejecuta `checkhealth` y falla si el informe contiene errores;
-6. guarda el informe en `.xdg/checkhealth.txt`.
+4. valida los atajos conservados, añadidos y eliminados;
+5. comprueba `list`, la sangría Python y el ajuste de Markdown;
+6. verifica que `.editorconfig` puede prevalecer sobre la sangría base;
+7. comprueba que undo y swap usan rutas XDG ignoradas por Git;
+8. ejecuta `checkhealth` y falla si el informe contiene errores;
+9. guarda el informe en `.xdg/checkhealth.txt`.
 
 ## Rutas utilizadas
 

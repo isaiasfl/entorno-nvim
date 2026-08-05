@@ -34,7 +34,7 @@ opt.undofile = true
 opt.undodir = vim.fn.stdpath("state") .. "/undo//"
 opt.directory = vim.fn.stdpath("state") .. "/swap//"
 
-opt.list = true
+opt.list = false
 opt.listchars = {
   tab = "> ",
   trail = "-",

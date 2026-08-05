@@ -4,18 +4,17 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
 HEALTH_REPORT="$PROJECT_ROOT/.xdg/checkhealth.txt"
+TEST_FILE="$PROJECT_ROOT/tests/comprobar_nucleo.lua"
 
 export ENTORNO_NVIM_HEALTH_REPORT="$HEALTH_REPORT"
+export ENTORNO_NVIM_TEST_FILE="$TEST_FILE"
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
-  "+lua assert(vim.fn.stdpath('config') == vim.env.ENTORNO_NVIM_ROOT .. '/nvim', 'configuracion XDG incorrecta')" \
-  "+lua assert(package.loaded['config.options'], 'config.options no se cargo')" \
-  "+lua assert(package.loaded['config.keymaps'], 'config.keymaps no se cargo')" \
-  "+lua assert(package.loaded['config.autocmds'], 'config.autocmds no se cargo')" \
-  "+lua local m = vim.fn.maparg('jk', 'i', false, true); assert(m.rhs == '<Esc>', 'jk no equivale a Esc'); assert(m.silent == 1, 'jk no es silencioso'); assert(m.desc == 'Salir del modo insertar', 'descripcion de jk incorrecta')" \
-  "+lua assert(vim.tbl_isempty(vim.fn.maparg('kj', 'i', false, true)), 'kj no debe estar mapeado')" \
-  "+lua assert(vim.tbl_isempty(vim.fn.maparg('<Esc>', 'i', false, true)), 'Esc no debe estar remapeado en insertar')" \
+  "+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_TEST_FILE); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
   "+qa"
+
+git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/undo/prueba
+git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/swap/prueba
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
   "+checkhealth" \
