@@ -36,6 +36,19 @@ La búsqueda de archivos ejecuta explícitamente `rg --files`, incluye archivos
 ocultos y excluye `.git`. La búsqueda de texto usa ripgrep y respeta sus reglas
 normales de exclusión, incluido `.gitignore`.
 
+## Controles dentro de fzf-lua
+
+| Tecla | Acción |
+| --- | --- |
+| `Ctrl+j` o flecha abajo | Bajar una posición |
+| `Ctrl+k` o flecha arriba | Subir una posición |
+| `Enter` | Abrir el elemento seleccionado |
+| `Esc` | Cerrar fzf-lua |
+
+Estos controles se convierten en enlaces internos del proceso `fzf` y solo
+existen mientras su interfaz está abierta. Fuera de `fzf-lua`, `Ctrl+h/j/k/l`
+conservan los atajos globales para cambiar entre ventanas de Neovim.
+
 ## Aislamiento y versiones
 
 Los repositorios descargados se guardan en `.xdg/data/nvim/lazy`, nunca en la

@@ -24,10 +24,10 @@ assert(vim.o.termguicolors, "termguicolors debe estar activo")
 
 assert(mapping("n", " w").rhs:lower():find("write", 1, true), "leader+w incorrecto")
 assert(mapping("n", " q").rhs:lower():find("quit", 1, true), "leader+q incorrecto")
-assert(not vim.tbl_isempty(mapping("n", "<C-h>")), "Ctrl+h no esta mapeado")
-assert(not vim.tbl_isempty(mapping("n", "<C-j>")), "Ctrl+j no esta mapeado")
-assert(not vim.tbl_isempty(mapping("n", "<C-k>")), "Ctrl+k no esta mapeado")
-assert(not vim.tbl_isempty(mapping("n", "<C-l>")), "Ctrl+l no esta mapeado")
+assert(mapping("n", "<C-h>").rhs == "<C-w>h", "Ctrl+h no cambia a la ventana izquierda")
+assert(mapping("n", "<C-j>").rhs == "<C-w>j", "Ctrl+j no cambia a la ventana inferior")
+assert(mapping("n", "<C-k>").rhs == "<C-w>k", "Ctrl+k no cambia a la ventana superior")
+assert(mapping("n", "<C-l>").rhs == "<C-w>l", "Ctrl+l no cambia a la ventana derecha")
 assert(mapping("n", "n").rhs == "nzzzv", "n no centra resultados")
 assert(mapping("n", "N").rhs == "Nzzzv", "N no centra resultados")
 
@@ -117,7 +117,41 @@ assert(package.loaded["fzf-lua"], "fzf-lua no se pudo cargar")
 assert(type(vim.g.fzf_lua_server) == "string", "fzf-lua no inicio su servidor local")
 assert(vim.g.fzf_lua_server:find(vim.fn.stdpath("run"), 1, true) == 1, "servidor fzf-lua fuera del runtime XDG")
 
-local fzf_config = require("fzf-lua.config").setup_opts
+local config = require("fzf-lua.config")
+local fzf_config = config.setup_opts
 assert(fzf_config.files.cmd == "rg --files --hidden -g '!.git'", "comando de archivos fzf-lua incorrecto")
 assert(fzf_config.defaults.file_icons == false, "los iconos de archivo deben estar desactivados")
 assert(fzf_config.defaults.git_icons == false, "los iconos de Git deben estar desactivados")
+
+local expected_keymaps = {
+  ["ctrl-j"] = "down",
+  ["ctrl-k"] = "up",
+  ["down"] = "down",
+  ["up"] = "up",
+  ["esc"] = "abort",
+}
+local expected_binds = { "ctrl-j:down", "ctrl-k:up", "down:down", "up:up", "esc:abort" }
+local actions = require("fzf-lua.actions")
+local core = require("fzf-lua.core")
+
+assert(fzf_config.actions.files.enter == actions.file_edit_or_qf, "Enter no declara la accion de apertura")
+
+for _, provider in ipairs({ "files", "grep", "buffers" }) do
+  local opts = config.normalize_opts({}, provider)
+  for key, action in pairs(expected_keymaps) do
+    assert(opts.keymap.fzf[key] == action, provider .. ": " .. key .. " no ejecuta " .. action)
+  end
+
+  local fzf_binds = table.concat(core.create_fzf_binds(opts), ",")
+  for _, bind in ipairs(expected_binds) do
+    assert(fzf_binds:find(bind, 1, true), provider .. ": falta el enlace efectivo " .. bind)
+  end
+
+  assert(config.get_action_helpstr(opts.actions.enter) == "file-edit-or-qf", provider .. ": Enter no abre la seleccion")
+  local _, action_binds = actions.expect(opts.actions, opts)
+  assert(type(action_binds) == "table", provider .. ": no genero enlaces para sus acciones")
+  assert(table.concat(action_binds, ","):find("enter:print(enter)+accept", 1, true), provider .. ": Enter no acepta")
+end
+
+assert(vim.tbl_isempty(mapping("t", "<C-j>")), "Ctrl+j de fzf-lua no debe ser un mapa terminal global")
+assert(vim.tbl_isempty(mapping("t", "<C-k>")), "Ctrl+k de fzf-lua no debe ser un mapa terminal global")

@@ -25,14 +25,34 @@ return {
         desc = "Ver buffers abiertos",
       },
     },
-    opts = {
-      defaults = {
-        file_icons = false,
-        git_icons = false,
-      },
-      files = {
-        cmd = "rg --files --hidden -g '!.git'",
-      },
-    },
+    opts = function()
+      local actions = require("fzf-lua.actions")
+
+      return {
+        defaults = {
+          file_icons = false,
+          git_icons = false,
+        },
+        keymap = {
+          fzf = {
+            true,
+            ["ctrl-j"] = "down",
+            ["ctrl-k"] = "up",
+            ["down"] = "down",
+            ["up"] = "up",
+            ["esc"] = "abort",
+          },
+        },
+        actions = {
+          files = {
+            true,
+            ["enter"] = actions.file_edit_or_qf,
+          },
+        },
+        files = {
+          cmd = "rg --files --hidden -g '!.git'",
+        },
+      }
+    end,
   },
 }
