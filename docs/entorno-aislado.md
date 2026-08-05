@@ -20,6 +20,14 @@ El script acepta los mismos argumentos que Neovim:
 ./scripts/arrancar.sh +checkhealth
 ```
 
+## Atajos
+
+| Modo | Atajo | Acción |
+| --- | --- | --- |
+| Insertar | `jk` | Salir al modo normal, equivalente a `Esc` |
+
+`Esc` conserva su funcionamiento normal y `kj` no está mapeado.
+
 ## Comprobación automática
 
 ```sh
@@ -32,8 +40,9 @@ La comprobación:
 2. confirma que `stdpath("config")` apunta a `nvim/` en este repositorio;
 3. confirma que `config.options`, `config.keymaps` y `config.autocmds` se
    cargaron;
-4. ejecuta `checkhealth` y falla si el informe contiene errores;
-5. guarda el informe en `.xdg/checkhealth.txt`.
+4. valida el mapeo `jk`, su descripción y que `Esc` y `kj` no se remapearon;
+5. ejecuta `checkhealth` y falla si el informe contiene errores;
+6. guarda el informe en `.xdg/checkhealth.txt`.
 
 ## Rutas utilizadas
 

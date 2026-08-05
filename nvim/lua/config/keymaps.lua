@@ -1,5 +1,7 @@
 local map = vim.keymap.set
 
+map("i", "jk", "<Esc>", { desc = "Salir del modo insertar", silent = true })
+
 map("n", "<leader>w", "<cmd>write<cr>", { desc = "Guardar archivo" })
 map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Cerrar ventana" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Limpiar busqueda" })

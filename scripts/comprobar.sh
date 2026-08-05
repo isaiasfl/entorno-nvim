@@ -12,6 +12,9 @@ export ENTORNO_NVIM_HEALTH_REPORT="$HEALTH_REPORT"
   "+lua assert(package.loaded['config.options'], 'config.options no se cargo')" \
   "+lua assert(package.loaded['config.keymaps'], 'config.keymaps no se cargo')" \
   "+lua assert(package.loaded['config.autocmds'], 'config.autocmds no se cargo')" \
+  "+lua local m = vim.fn.maparg('jk', 'i', false, true); assert(m.rhs == '<Esc>', 'jk no equivale a Esc'); assert(m.silent == 1, 'jk no es silencioso'); assert(m.desc == 'Salir del modo insertar', 'descripcion de jk incorrecta')" \
+  "+lua assert(vim.tbl_isempty(vim.fn.maparg('kj', 'i', false, true)), 'kj no debe estar mapeado')" \
+  "+lua assert(vim.tbl_isempty(vim.fn.maparg('<Esc>', 'i', false, true)), 'Esc no debe estar remapeado en insertar')" \
   "+qa"
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
