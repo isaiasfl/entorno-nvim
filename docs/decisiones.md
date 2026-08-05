@@ -145,3 +145,22 @@ adornos en el arranque mínimo.
 - Mantener fuera del alcance inicial la IA y la depuración.
 - Elegir el motor de PDF después de una prueba reproducible entre HTML/CSS y
   LaTeX, priorizando coherencia visual y portabilidad.
+
+## Fase 2: núcleo aislado
+
+La fase 2 fue aprobada el 5 de agosto de 2026. Se implementó un núcleo que solo
+usa la API nativa de Neovim 0.11.4 y carga tres módulos: opciones, atajos y
+autocomandos.
+
+El aislamiento usa estas decisiones:
+
+- `XDG_CONFIG_HOME` apunta a la raíz del repositorio para cargar `nvim/init.lua`.
+- Datos, estado y caché se guardan bajo `.xdg/`, ignorado por Git.
+- `APPIMAGE_EXTRACT_AND_RUN=1` permite probar el AppImage actual cuando FUSE no
+  está disponible; otros binarios de Neovim ignoran esta variable.
+- Los scripts no consultan ni reutilizan la configuración activa.
+- No se carga ningún plugin, gestor de plugins ni ejecutable de Mason.
+
+Los atajos evitan combinaciones `Alt` por sus diferencias entre terminales y
+macOS. Tampoco se activa el portapapeles del sistema automáticamente hasta poder
+comprobar sus proveedores en cada plataforma.

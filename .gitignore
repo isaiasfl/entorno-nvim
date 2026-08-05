@@ -1,5 +1,6 @@
 # Copias locales previas a modificaciones
 .backups/
+.xdg/
 
 # Archivos generados por pruebas y editores
 *.log

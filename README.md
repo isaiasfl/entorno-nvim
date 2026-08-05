@@ -6,8 +6,9 @@ sin depender de una distribución prefabricada.
 
 ## Estado
 
-El proyecto está en fase de inventario y diseño. Todavía no contiene una
-configuración ejecutable y no modifica ni enlaza `~/.config/nvim`.
+El proyecto contiene un núcleo nativo de Neovim, sin plugins, que se ejecuta en
+un entorno XDG aislado dentro del repositorio. No modifica ni enlaza
+`~/.config/nvim`.
 
 El entorno principal es Debian 13 con Neovim 0.11.4. Se buscará compatibilidad
 razonable con CachyOS y macOS.
@@ -15,12 +16,31 @@ razonable con CachyOS y macOS.
 ## Documentación
 
 - [Decisiones e inventario](docs/decisiones.md)
+- [Entorno aislado](docs/entorno-aislado.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
 - [Restauración](docs/restauracion.md)
 - [Contexto original](CONTEXTO_INICIAL.md)
 
-## Próximo paso
+## Ejecución
 
-Tras aprobar la arquitectura inicial, se creará un arranque mínimo aislado en
-`nvim/`. Las pruebas usarán directorios temporales para no escribir en los datos,
-estado o caché de la configuración activa.
+Abrir Neovim con la configuración del repositorio:
+
+```sh
+./scripts/arrancar.sh
+```
+
+También se puede abrir un archivo o pasar cualquier argumento normal de
+Neovim:
+
+```sh
+./scripts/arrancar.sh README.md
+```
+
+Ejecutar las comprobaciones headless:
+
+```sh
+./scripts/comprobar.sh
+```
+
+Los detalles de las rutas utilizadas y del aislamiento están en
+[docs/entorno-aislado.md](docs/entorno-aislado.md).
