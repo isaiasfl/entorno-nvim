@@ -11,13 +11,15 @@ plugins: `lazy.nvim` gestiona dependencias y `fzf-lua` proporciona búsqueda. Se
 ejecuta en un entorno XDG aislado dentro del repositorio y no modifica ni enlaza
 `~/.config/nvim`.
 
-El entorno principal es Debian 13 con Neovim 0.11.4. Se buscará compatibilidad
-razonable con CachyOS y macOS.
+El entorno principal es Debian 13. La configuración se comprueba en paralelo
+con Neovim 0.11.4 y 0.12.4 sin cambiar el binario global. Se buscará
+compatibilidad razonable con CachyOS y macOS.
 
 ## Documentación
 
 - [Decisiones e inventario](docs/decisiones.md)
 - [Entorno aislado](docs/entorno-aislado.md)
+- [Neovim 0.12.4 en paralelo](docs/neovim-0.12.md)
 - [Plugins y búsqueda](docs/plugins.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
 - [Restauración](docs/restauracion.md)

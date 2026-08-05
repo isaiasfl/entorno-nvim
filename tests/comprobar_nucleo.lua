@@ -1,11 +1,20 @@
 local root = vim.env.ENTORNO_NVIM_ROOT
+local xdg_root = vim.env.ENTORNO_NVIM_XDG_ROOT
+
+assert(type(xdg_root) == "string" and xdg_root ~= "", "falta la raiz XDG de prueba")
+
+if vim.env.ENTORNO_NVIM_EXPECTED_VERSION and vim.env.ENTORNO_NVIM_EXPECTED_VERSION ~= "" then
+  local version = vim.version()
+  local actual = string.format("%d.%d.%d", version.major, version.minor, version.patch)
+  assert(actual == vim.env.ENTORNO_NVIM_EXPECTED_VERSION, "version inesperada de Neovim: " .. actual)
+end
 
 local function mapping(mode, lhs)
   return vim.fn.maparg(lhs, mode, false, true)
 end
 
 assert(vim.fn.stdpath("config") == root .. "/nvim", "configuracion XDG incorrecta")
-assert(vim.fn.stdpath("run") == root .. "/.xdg/runtime", "runtime XDG incorrecto")
+assert(vim.fn.stdpath("run") == xdg_root .. "/runtime", "runtime XDG incorrecto")
 assert(vim.fn.getfperm(vim.fn.stdpath("run")) == "rwx------", "runtime XDG requiere permisos 0700")
 assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
@@ -63,7 +72,9 @@ assert(listchars.extends == ">", "listchars.extends incorrecto")
 assert(listchars.precedes == "<", "listchars.precedes incorrecto")
 assert(listchars.nbsp == "+", "listchars.nbsp incorrecto")
 
-local state_root = root .. "/.xdg/state/nvim"
+local state_root = xdg_root .. "/state/nvim"
+assert(vim.o.undofile, "undo persistente debe estar activo")
+assert(vim.o.swapfile, "swap debe estar activo")
 assert(vim.o.undodir:find(state_root .. "/undo", 1, true) == 1, "undodir no esta aislado")
 assert(vim.o.directory:find(state_root .. "/swap", 1, true) == 1, "swap no esta aislado")
 
@@ -85,6 +96,12 @@ vim.cmd("enew")
 vim.cmd("setfiletype markdown")
 assert(vim.wo.wrap, "Markdown debe activar wrap")
 assert(vim.wo.linebreak, "Markdown debe activar linebreak")
+local markdown_buffer = vim.api.nvim_get_current_buf()
+local parser_ok, markdown_parser = pcall(vim.treesitter.get_parser, markdown_buffer, "markdown")
+assert(parser_ok and markdown_parser, "parser Markdown integrado no disponible")
+if vim.fn.has("nvim-0.12") == 1 then
+  assert(vim.treesitter.highlighter.active[markdown_buffer], "Neovim 0.12 debe activar Treesitter para Markdown")
+end
 
 for _, filetype in ipairs({ "gitcommit", "text" }) do
   vim.cmd("enew")

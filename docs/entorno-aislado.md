@@ -13,6 +13,17 @@ Desde la raíz del repositorio:
 ./scripts/arrancar.sh
 ```
 
+El binario y la raíz XDG se pueden seleccionar de forma explícita:
+
+```sh
+NVIM_BIN="$HOME/.local/opt/nvim-0.12.4/bin/nvim" \
+NVIM_XDG_ROOT="$PWD/.xdg/0.12.4" \
+./scripts/arrancar.sh
+```
+
+`NVIM_BIN` debe contener únicamente el nombre o la ruta del ejecutable, sin
+argumentos. Una ruta XDG relativa se interpreta desde la raíz del repositorio.
+
 El script acepta los mismos argumentos que Neovim:
 
 ```sh
@@ -75,9 +86,9 @@ reglas del proyecto deben prevalecer para mantener el estilo del código fuente.
 ./scripts/comprobar.sh
 ```
 
-La comprobación:
+La comprobación, para el binario seleccionado:
 
-1. arranca Neovim 0.11.4 en modo headless;
+1. arranca Neovim en modo headless y puede validar su versión exacta;
 2. confirma que `stdpath("config")` apunta a `nvim/` en este repositorio;
 3. confirma que `config.options`, `config.keymaps` y `config.autocmds` se
    cargaron;
@@ -88,7 +99,11 @@ La comprobación:
 8. ejecuta `checkhealth` y falla si el informe contiene errores;
 9. comprueba que Lazy y `fzf-lua` están registrados y pueden cargarse;
 10. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
-11. guarda el informe en `.xdg/checkhealth.txt`.
+11. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
+
+`NVIM_TEST_FILE` permite sustituir temporalmente la prueba Lua para comprobar el
+propio runner. Se verificó que un archivo que ejecuta `error()` produce estado
+de salida no cero con las dos versiones.
 
 ## Rutas utilizadas
 
@@ -105,6 +120,20 @@ La comprobación:
 `.xdg/` es temporal, reproducible y está ignorado por Git. Puede retirarse sin
 afectar a la configuración activa; los scripts lo recrean cuando es necesario.
 El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
+
+Para comparar versiones sin compartir caché, estado, sockets ni plugins:
+
+```sh
+NVIM_BIN=/usr/local/bin/nvim \
+NVIM_XDG_ROOT="$PWD/.xdg/0.11.4" \
+NVIM_EXPECTED_VERSION=0.11.4 \
+./scripts/comprobar.sh
+
+NVIM_BIN="$HOME/.local/opt/nvim-0.12.4/bin/nvim" \
+NVIM_XDG_ROOT="$PWD/.xdg/0.12.4" \
+NVIM_EXPECTED_VERSION=0.12.4 \
+./scripts/comprobar.sh
+```
 
 ## AppImage actual
 

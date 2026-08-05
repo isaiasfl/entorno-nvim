@@ -31,3 +31,16 @@ Antes de una futura activación se documentarán y probarán estos pasos:
 Todavía no existe ni se ejecutará un script de restauración. Su implementación
 deberá validar rutas exactas, evitar sobrescrituras silenciosas y ofrecer una
 simulación antes de copiar datos.
+
+## Binario paralelo
+
+Neovim 0.12.4 se instala sin reemplazar `/usr/local/bin/nvim`. Para volver a
+0.11.4 basta con omitir `NVIM_BIN` o indicar expresamente:
+
+```sh
+NVIM_BIN=/usr/local/bin/nvim ./scripts/arrancar.sh
+```
+
+El directorio `~/.local/opt/nvim-0.12.4` solo debe eliminarse cuando ninguna
+sesión lo esté usando y después de una aprobación explícita. No hay enlaces ni
+cambios de `PATH` que revertir.

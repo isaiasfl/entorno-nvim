@@ -3,11 +3,19 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
-HEALTH_REPORT="$PROJECT_ROOT/.xdg/checkhealth.txt"
-TEST_FILE="$PROJECT_ROOT/tests/comprobar_nucleo.lua"
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg"}
+TEST_FILE=${NVIM_TEST_FILE:-"$PROJECT_ROOT/tests/comprobar_nucleo.lua"}
+
+case "$XDG_ROOT" in
+  /*) ;;
+  *) XDG_ROOT="$PROJECT_ROOT/$XDG_ROOT" ;;
+esac
+
+HEALTH_REPORT="$XDG_ROOT/checkhealth.txt"
 
 export ENTORNO_NVIM_HEALTH_REPORT="$HEALTH_REPORT"
 export ENTORNO_NVIM_TEST_FILE="$TEST_FILE"
+export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
   "+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_TEST_FILE); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
@@ -16,10 +24,10 @@ export ENTORNO_NVIM_TEST_FILE="$TEST_FILE"
   "+lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), vim.env.ENTORNO_NVIM_HEALTH_REPORT)" \
   "+qa"
 
-git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/undo/prueba
-git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/swap/prueba
-git -C "$PROJECT_ROOT" check-ignore -q .xdg/data/nvim/lazy/lazy.nvim
-git -C "$PROJECT_ROOT" check-ignore -q .xdg/data/nvim/lazy/fzf-lua
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
 
 if [ ! -f "$PROJECT_ROOT/nvim/lazy-lock.json" ]; then
   printf '%s\n' "Error: falta nvim/lazy-lock.json." >&2
