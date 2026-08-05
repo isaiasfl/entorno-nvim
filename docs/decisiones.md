@@ -140,7 +140,6 @@ adornos en el arranque mínimo.
 
 ## Decisiones pendientes de aprobación
 
-- Adoptar `lazy.nvim` directamente como gestor.
 - Empezar con capacidades nativas y añadir plugins solo ante carencias medidas.
 - Mantener fuera del alcance inicial la IA y la depuración.
 - Elegir el motor de PDF después de una prueba reproducible entre HTML/CSS y
@@ -164,3 +163,22 @@ El aislamiento usa estas decisiones:
 Los atajos evitan combinaciones `Alt` por sus diferencias entre terminales y
 macOS. Tampoco se activa el portapapeles del sistema automáticamente hasta poder
 comprobar sus proveedores en cada plataforma.
+
+## Fase 3: plugins mínimos
+
+La fase 3 incorpora `lazy.nvim` directamente, sin LazyVim, y un único plugin
+funcional: `fzf-lua`. Ambos quedan fijados por commit en `nvim/lazy-lock.json` y
+se descargan bajo el directorio XDG aislado del repositorio.
+
+`fzf-lua` fue elegido porque cubre archivos, texto y buffers sin dependencias
+Lua transitivas obligatorias. Usa los ejecutables `fzf` y `rg` ya instalados.
+Los iconos se desactivan y no se añaden Nerd Fonts, `bat`, extensiones nativas ni
+otros plugins opcionales.
+
+Telescope se descartó en esta fase porque su versión actual requiere Neovim
+0.11.7 y `plenary.nvim`, mientras el entorno usa Neovim 0.11.4. También suele
+recomendar un sorter nativo adicional, aumentando el alcance y las dependencias.
+
+Lazy tiene deshabilitados LuaRocks, las especificaciones locales de proyecto,
+la comprobación automática de actualizaciones y las fuentes de paquetes. Las
+actualizaciones deben ser explícitas y conservar el lockfile revisado.

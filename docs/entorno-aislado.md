@@ -27,6 +27,9 @@ El script acepta los mismos argumentos que Neovim:
 | Insertar | `jk` | Salir al modo normal, equivalente a `Esc` |
 | Normal | `<leader>h` | Limpiar el resaltado de la última búsqueda |
 | Normal | `<leader>ul` | Alternar caracteres invisibles en la ventana actual |
+| Normal | `<leader>ff` | Buscar archivos del proyecto |
+| Normal | `<leader>fg` | Buscar texto dentro del proyecto |
+| Normal | `<leader>fb` | Ver y abrir buffers cargados |
 
 `Esc` conserva su funcionamiento normal y `kj` no está mapeado.
 
@@ -83,7 +86,9 @@ La comprobación:
 6. verifica que `.editorconfig` puede prevalecer sobre la sangría base;
 7. comprueba que undo y swap usan rutas XDG ignoradas por Git;
 8. ejecuta `checkhealth` y falla si el informe contiene errores;
-9. guarda el informe en `.xdg/checkhealth.txt`.
+9. comprueba que Lazy y `fzf-lua` están registrados y pueden cargarse;
+10. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
+11. guarda el informe en `.xdg/checkhealth.txt`.
 
 ## Rutas utilizadas
 
@@ -93,10 +98,13 @@ La comprobación:
 | Datos | `./.xdg/data/nvim` |
 | Estado | `./.xdg/state/nvim` |
 | Caché | `./.xdg/cache/nvim` |
+| Sockets de ejecución | `./.xdg/runtime` |
+| Plugins descargados | `./.xdg/data/nvim/lazy` |
 | Informe de salud | `./.xdg/checkhealth.txt` |
 
 `.xdg/` es temporal, reproducible y está ignorado por Git. Puede retirarse sin
 afectar a la configuración activa; los scripts lo recrean cuando es necesario.
+El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
 
 ## AppImage actual
 

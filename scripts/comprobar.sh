@@ -11,15 +11,20 @@ export ENTORNO_NVIM_TEST_FILE="$TEST_FILE"
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
   "+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_TEST_FILE); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
+  "+checkhealth" \
+  "+lua require('fzf-lua._health').check()" \
+  "+lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), vim.env.ENTORNO_NVIM_HEALTH_REPORT)" \
   "+qa"
 
 git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/undo/prueba
 git -C "$PROJECT_ROOT" check-ignore -q .xdg/state/nvim/swap/prueba
+git -C "$PROJECT_ROOT" check-ignore -q .xdg/data/nvim/lazy/lazy.nvim
+git -C "$PROJECT_ROOT" check-ignore -q .xdg/data/nvim/lazy/fzf-lua
 
-"$SCRIPT_DIR/arrancar.sh" --headless \
-  "+checkhealth" \
-  "+lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), vim.env.ENTORNO_NVIM_HEALTH_REPORT)" \
-  "+qa"
+if [ ! -f "$PROJECT_ROOT/nvim/lazy-lock.json" ]; then
+  printf '%s\n' "Error: falta nvim/lazy-lock.json." >&2
+  exit 1
+fi
 
 if grep -q "ERROR" "$HEALTH_REPORT"; then
   printf '%s\n' "Error: checkhealth contiene errores. Informe: $HEALTH_REPORT" >&2

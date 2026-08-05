@@ -14,12 +14,16 @@ mkdir -p \
   "$XDG_ROOT/data/nvim" \
   "$XDG_ROOT/state/nvim/undo" \
   "$XDG_ROOT/state/nvim/swap" \
-  "$XDG_ROOT/cache/nvim"
+  "$XDG_ROOT/cache/nvim" \
+  "$XDG_ROOT/runtime"
+
+chmod 700 "$XDG_ROOT/runtime"
 
 export XDG_CONFIG_HOME="$PROJECT_ROOT"
 export XDG_DATA_HOME="$XDG_ROOT/data"
 export XDG_STATE_HOME="$XDG_ROOT/state"
 export XDG_CACHE_HOME="$XDG_ROOT/cache"
+export XDG_RUNTIME_DIR="$XDG_ROOT/runtime"
 export ENTORNO_NVIM_ROOT="$PROJECT_ROOT"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 

@@ -5,9 +5,12 @@ local function mapping(mode, lhs)
 end
 
 assert(vim.fn.stdpath("config") == root .. "/nvim", "configuracion XDG incorrecta")
+assert(vim.fn.stdpath("run") == root .. "/.xdg/runtime", "runtime XDG incorrecto")
+assert(vim.fn.getfperm(vim.fn.stdpath("run")) == "rwx------", "runtime XDG requiere permisos 0700")
 assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
+assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 
 assert(vim.wo.number and vim.wo.relativenumber, "numeracion de lineas incorrecta")
 assert(vim.wo.cursorline, "cursorline debe estar activo")
@@ -93,3 +96,28 @@ end
 for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = "VimResized" })) do
   assert(autocmd.group_name ~= "entorno_nvim_equalize_splits", "VimResized no debe igualar splits")
 end
+
+local lazy_config = require("lazy.core.config")
+assert(lazy_config.plugins["fzf-lua"], "fzf-lua no esta registrado")
+assert(vim.fn.executable("fzf") == 1, "fzf no esta disponible")
+assert(vim.fn.executable("rg") == 1, "ripgrep no esta disponible")
+
+for lhs, description in pairs({
+  [" ff"] = "Buscar archivos",
+  [" fg"] = "Buscar texto en el proyecto",
+  [" fb"] = "Ver buffers abiertos",
+}) do
+  local picker = mapping("n", lhs)
+  assert(picker.desc == description, lhs .. " no tiene la descripcion esperada")
+  assert(type(picker.callback) == "function", lhs .. " no carga fzf-lua")
+end
+
+require("lazy").load({ plugins = { "fzf-lua" } })
+assert(package.loaded["fzf-lua"], "fzf-lua no se pudo cargar")
+assert(type(vim.g.fzf_lua_server) == "string", "fzf-lua no inicio su servidor local")
+assert(vim.g.fzf_lua_server:find(vim.fn.stdpath("run"), 1, true) == 1, "servidor fzf-lua fuera del runtime XDG")
+
+local fzf_config = require("fzf-lua.config").setup_opts
+assert(fzf_config.files.cmd == "rg --files --hidden -g '!.git'", "comando de archivos fzf-lua incorrecto")
+assert(fzf_config.defaults.file_icons == false, "los iconos de archivo deben estar desactivados")
+assert(fzf_config.defaults.git_icons == false, "los iconos de Git deben estar desactivados")
