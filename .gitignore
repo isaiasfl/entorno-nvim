@@ -1,0 +1,8 @@
+# Copias locales previas a modificaciones
+.backups/
+
+# Archivos generados por pruebas y editores
+*.log
+.nvimlog
+*.swp
+*.swo

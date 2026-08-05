@@ -1,0 +1,3 @@
+config:
+  # El contexto original conserva párrafos largos aportados por el usuario.
+  MD013: false
