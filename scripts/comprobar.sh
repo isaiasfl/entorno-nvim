@@ -28,6 +28,7 @@ git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-tree.lua"
 
 if [ ! -f "$PROJECT_ROOT/nvim/lazy-lock.json" ]; then
   printf '%s\n' "Error: falta nvim/lazy-lock.json." >&2

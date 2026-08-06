@@ -20,6 +20,8 @@ assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
 assert(package.loaded["config.lazy"], "config.lazy no se cargo")
+assert(vim.g.loaded_netrw == 1, "netrw debe estar desactivado")
+assert(vim.g.loaded_netrwPlugin == 1, "el plugin de netrw debe estar desactivado")
 
 assert(vim.wo.number and vim.wo.relativenumber, "numeracion de lineas incorrecta")
 assert(vim.wo.cursorline, "cursorline debe estar activo")
@@ -116,6 +118,8 @@ end
 
 local lazy_config = require("lazy.core.config")
 assert(lazy_config.plugins["fzf-lua"], "fzf-lua no esta registrado")
+assert(lazy_config.plugins["nvim-tree.lua"], "nvim-tree.lua no esta registrado")
+assert(not lazy_config.plugins["nvim-web-devicons"], "nvim-web-devicons no debe estar registrado")
 assert(vim.fn.executable("fzf") == 1, "fzf no esta disponible")
 assert(vim.fn.executable("rg") == 1, "ripgrep no esta disponible")
 
@@ -172,3 +176,90 @@ end
 
 assert(vim.tbl_isempty(mapping("t", "<C-j>")), "Ctrl+j de fzf-lua no debe ser un mapa terminal global")
 assert(vim.tbl_isempty(mapping("t", "<C-k>")), "Ctrl+k de fzf-lua no debe ser un mapa terminal global")
+
+for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+  assert(vim.bo[bufnr].filetype ~= "NvimTree", "nvim-tree no debe abrirse automaticamente")
+end
+
+for lhs, description in pairs({
+  [" ee"] = "Abrir o cerrar el arbol de archivos",
+  [" ef"] = "Enfocar el archivo actual en el arbol",
+}) do
+  local tree_mapping = mapping("n", lhs)
+  assert(tree_mapping.desc == description, lhs .. " no tiene la descripcion esperada")
+  assert(type(tree_mapping.callback) == "function", lhs .. " no carga nvim-tree")
+end
+
+require("lazy").load({ plugins = { "nvim-tree.lua" } })
+local explorer_spec = require("plugins.explorer")[1]
+local tree_actions = {}
+for _, key in ipairs(explorer_spec.keys) do
+  tree_actions[key[1]] = key[2]
+end
+
+local revealed_file = root .. "/README.md"
+vim.cmd("edit " .. vim.fn.fnameescape(revealed_file))
+tree_actions["<leader>ef"]()
+assert(package.loaded["nvim-tree"], "nvim-tree no se pudo cargar")
+assert(vim.bo.filetype == "NvimTree", "leader+ef no enfoco el arbol")
+
+local tree_api = require("nvim-tree.api")
+local revealed_node = tree_api.tree.get_node_under_cursor()
+assert(revealed_node and revealed_node.absolute_path == revealed_file, "leader+ef no revelo el archivo actual")
+tree_api.tree.close()
+
+local tree_config = require("nvim-tree.config").g
+assert(tree_config.disable_netrw, "nvim-tree debe desactivar netrw")
+assert(not tree_config.hijack_directories.enable, "nvim-tree no debe capturar directorios al abrirlos")
+assert(not tree_config.hijack_directories.auto_open, "nvim-tree no debe abrirse con directorios")
+assert(not tree_config.update_focused_file.enable, "nvim-tree no debe seguir el buffer enfocado")
+assert(not tree_config.update_focused_file.update_root.enable, "nvim-tree no debe cambiar su raiz automaticamente")
+assert(not tree_config.git.enable, "la integracion Git de nvim-tree debe estar desactivada")
+assert(not tree_config.diagnostics.enable, "los diagnosticos de nvim-tree deben estar desactivados")
+assert(not tree_config.modified.enable, "los indicadores de modificacion deben estar desactivados")
+assert(not tree_config.filters.enable, "nvim-tree no debe aplicar filtros")
+assert(vim.tbl_isempty(tree_config.renderer.decorators), "nvim-tree no debe usar decoradores")
+for name, enabled in pairs(tree_config.renderer.icons.show) do
+  assert(not enabled, "el icono " .. name .. " debe estar desactivado")
+end
+assert(tree_config.ui.confirm.remove, "borrar debe pedir confirmacion")
+assert(tree_config.ui.confirm.trash, "enviar a la papelera debe pedir confirmacion")
+assert(not tree_config.ui.confirm.default_yes, "la confirmacion no debe aceptar por defecto")
+
+tree_actions["<leader>ee"]()
+assert(vim.bo.filetype == "NvimTree", "nvim-tree no abrio su buffer")
+
+for lhs, rhs in pairs({
+  ["<C-h>"] = "<C-w>h",
+  ["<C-j>"] = "<C-w>j",
+  ["<C-k>"] = "<C-w>k",
+  ["<C-l>"] = "<C-w>l",
+}) do
+  local tree_window_mapping = mapping("n", lhs)
+  assert(tree_window_mapping.rhs == rhs, lhs .. " no cambia de ventana dentro de nvim-tree")
+  assert(tree_window_mapping.buffer == 1, lhs .. " debe ser local al buffer de nvim-tree")
+end
+
+for lhs, description in pairs({
+  ["<CR>"] = "nvim-tree: Open",
+  ["g?"] = "nvim-tree: Help",
+  ["a"] = "nvim-tree: Create File Or Directory",
+  ["r"] = "nvim-tree: Rename",
+  ["d"] = "nvim-tree: Delete",
+}) do
+  local tree_action = mapping("n", lhs)
+  assert(type(tree_action.callback) == "function", lhs .. " no tiene una accion en nvim-tree")
+  assert(tree_action.desc == description, lhs .. " no tiene la descripcion efectiva esperada")
+  assert(tree_action.buffer == 1, lhs .. " debe ser local al buffer de nvim-tree")
+end
+
+tree_actions["<leader>ee"]()
+for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+  assert(vim.bo[bufnr].filetype ~= "NvimTree" or not vim.api.nvim_buf_is_loaded(bufnr), "leader+ee no cerro nvim-tree")
+end
+assert(mapping("n", "<C-j>").rhs == "<C-w>j", "Ctrl+j global cambio fuera de nvim-tree")
+assert(mapping("n", "<C-k>").rhs == "<C-w>k", "Ctrl+k global cambio fuera de nvim-tree")
+
+local lockfile = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim/lazy-lock.json"), "\n"))
+assert(lockfile["nvim-tree.lua"], "nvim-tree.lua no esta fijado en el lockfile")
+assert(not lockfile["nvim-web-devicons"], "nvim-web-devicons no debe aparecer en el lockfile")
