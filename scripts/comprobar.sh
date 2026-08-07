@@ -29,6 +29,7 @@ git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-tree.lua"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-lspconfig"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-treesitter"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/site/parser/javascript.so"
 

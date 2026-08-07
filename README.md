@@ -9,9 +9,10 @@ sin depender de una distribución prefabricada.
 El proyecto contiene un núcleo nativo de Neovim y una capa mínima de plugins:
 `lazy.nvim` gestiona dependencias, `fzf-lua` proporciona búsqueda y
 `nvim-tree.lua` permite recorrer el proyecto como árbol. Tree-sitter añade
-resaltado estructural para shell, Python y desarrollo web. Se ejecuta en un
-entorno XDG aislado dentro del repositorio y no modifica ni enlaza
-`~/.config/nvim`.
+resaltado estructural para shell, Python y desarrollo web. El cliente LSP y el
+completado son nativos; `nvim-lspconfig` aporta únicamente el catálogo de
+configuraciones. Todavía no hay servidores activados. Todo se ejecuta en un
+entorno XDG aislado y no modifica ni enlaza `~/.config/nvim`.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global
@@ -24,6 +25,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 - [Neovim 0.12.4 en paralelo](docs/neovim-0.12.md)
 - [Plugins, búsqueda y exploración](docs/plugins.md)
 - [Tree-sitter y parsers](docs/treesitter.md)
+- [LSP y completado nativo](docs/lsp.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
 - [Restauración](docs/restauracion.md)
 - [Contexto original](CONTEXTO_INICIAL.md)

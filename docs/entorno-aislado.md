@@ -97,7 +97,8 @@ La comprobación, para el binario seleccionado:
 6. verifica que `.editorconfig` puede prevalecer sobre la sangría base;
 7. comprueba que undo y swap usan rutas XDG ignoradas por Git;
 8. ejecuta `checkhealth` y falla si el informe contiene errores;
-9. comprueba que Lazy y `fzf-lua` están registrados y pueden cargarse;
+9. comprueba que Lazy, `fzf-lua` y el catálogo LSP están registrados y pueden
+   cargarse;
 10. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
 11. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
 

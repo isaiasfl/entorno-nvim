@@ -6,10 +6,12 @@ La configuración incorpora únicamente:
 
 - `lazy.nvim`, gestor directo de plugins;
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
-- `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos.
+- `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos;
+- `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
-No incluye LSP, Mason, Git, IA, depuración, iconos ni temas. La capa externa de
-Tree-sitter se documenta por separado en [treesitter.md](treesitter.md).
+No incluye Mason, motores externos de completado, servidores LSP, Git, IA,
+depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
+[treesitter.md](treesitter.md) y [lsp.md](lsp.md).
 
 ## Dependencias
 
@@ -22,6 +24,7 @@ Tree-sitter se documenta por separado en [treesitter.md](treesitter.md).
 | lazy.nvim | Directa | Gestiona instalación, carga y lockfile |
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
+| nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
 
 No hay dependencias Lua transitivas obligatorias. `nvim-web-devicons` es
 opcional para nvim-tree y no se declara ni se instala. Los iconos están

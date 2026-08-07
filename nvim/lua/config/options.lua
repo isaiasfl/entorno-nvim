@@ -24,7 +24,7 @@ opt.linebreak = true
 
 opt.mouse = "a"
 opt.confirm = true
-opt.completeopt = { "menu", "menuone", "noselect" }
+opt.completeopt = { "menu", "menuone", "noselect", "popup" }
 opt.termguicolors = true
 
 opt.timeoutlen = 700

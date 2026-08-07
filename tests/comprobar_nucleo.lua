@@ -20,6 +20,8 @@ assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
 assert(package.loaded["config.lazy"], "config.lazy no se cargo")
+assert(package.loaded["config.lsp"], "config.lsp no se cargo")
+assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(vim.g.loaded_netrw == 1, "netrw debe estar desactivado")
 assert(vim.g.loaded_netrwPlugin == 1, "el plugin de netrw debe estar desactivado")
 
@@ -264,4 +266,5 @@ local lockfile = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim/laz
 assert(lockfile["nvim-tree.lua"], "nvim-tree.lua no esta fijado en el lockfile")
 assert(not lockfile["nvim-web-devicons"], "nvim-web-devicons no debe aparecer en el lockfile")
 
+dofile(root .. "/tests/comprobar_lsp.lua")
 dofile(root .. "/tests/comprobar_treesitter.lua")
