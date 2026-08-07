@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@source "./";
+
+@theme {
+  --color-brand: #123456;
+}
+
+.example {
+  @apply flex bg-red-500;
+}

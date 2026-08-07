@@ -13,9 +13,11 @@ resaltado estructural para shell, Python y desarrollo web. El cliente LSP y el
 completado son nativos; `nvim-lspconfig` aporta únicamente el catálogo de
 configuraciones. Los servidores web para JavaScript, TypeScript, React/TSX,
 HTML, CSS y JSON se instalan de forma aislada y reproducible mediante Corepack
-y pnpm. `mini.pairs` aporta cierre automático de delimitadores y comillas sin
-activar otros módulos de mini.nvim. Todo se ejecuta en un entorno XDG aislado
-y no modifica ni enlaza `~/.config/nvim`.
+y pnpm. Tailwind CSS se activa solo cuando detecta una dependencia, una
+configuración clásica o una entrada CSS-first real. `mini.pairs` aporta cierre
+automático de delimitadores y comillas sin activar otros módulos de mini.nvim.
+Todo se ejecuta en un entorno XDG aislado y no modifica ni enlaza
+`~/.config/nvim`.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global

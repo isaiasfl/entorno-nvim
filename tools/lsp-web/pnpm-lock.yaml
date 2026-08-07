@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@tailwindcss/language-server':
+        specifier: 0.16.0
+        version: 0.16.0
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -19,6 +22,11 @@ importers:
         version: 4.10.0
 
 packages:
+
+  '@tailwindcss/language-server@0.16.0':
+    resolution: {integrity: sha512-ko2xr4nlFIkqwJFnnw7hfdpjbsnK0DOk+QEEI51tvKOCF97OG0RU59iGfadoaOoY6I9xkSMbTW+AAwgnGnLH3w==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
@@ -144,6 +152,8 @@ packages:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
 snapshots:
+
+  '@tailwindcss/language-server@0.16.0': {}
 
   '@vscode/l10n@0.0.18': {}
 

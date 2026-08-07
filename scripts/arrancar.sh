@@ -24,6 +24,7 @@ if [ ! -x "$TREE_SITTER_BIN" ]; then
 fi
 
 for executable in \
+  tailwindcss-language-server \
   typescript-language-server \
   vscode-html-language-server \
   vscode-css-language-server \

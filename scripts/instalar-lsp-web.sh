@@ -4,6 +4,7 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
 TOOLS_DIR="$PROJECT_ROOT/tools/lsp-web"
+TAILWIND_FIXTURE_DIR="$PROJECT_ROOT/tests/fixtures/lsp-tailwind-v4"
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 
 case "$XDG_ROOT" in
@@ -33,6 +34,7 @@ corepack pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
 corepack pnpm ignored-builds
 
 for executable in \
+  tailwindcss-language-server \
   typescript-language-server \
   vscode-html-language-server \
   vscode-css-language-server \
@@ -44,4 +46,9 @@ do
   fi
 done
 
+cd "$TAILWIND_FIXTURE_DIR"
+corepack pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+corepack pnpm ignored-builds
+
 printf '%s\n' "Servidores LSP web instalados en $TOOLS_DIR/node_modules/.bin"
+printf '%s\n' "Fixture Tailwind v4 instalado en $TAILWIND_FIXTURE_DIR/node_modules"

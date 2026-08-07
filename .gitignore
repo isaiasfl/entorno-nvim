@@ -2,6 +2,7 @@
 .backups/
 .xdg/
 tools/lsp-web/node_modules/
+tests/fixtures/lsp-tailwind-v4/node_modules/
 
 # Archivos generados por pruebas y editores
 *.log

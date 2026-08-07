@@ -18,7 +18,7 @@ assert(package.loaded["lspconfig"] == nil, "no debe cargarse la API antigua de l
 
 for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "bashls", "basedpyright" }) do
   assert(type(vim.lsp.config[name]) == "table", "falta la configuracion de catalogo " .. name)
-  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls" }, name)
+  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss" }, name)
   assert(vim.lsp.is_enabled(name) == should_be_enabled, "estado de activacion incorrecto para " .. name)
 end
 
@@ -120,8 +120,6 @@ vim.lsp.enable = original_enable
 assert(configured[1] == "servidor_prueba", "config.lsp no usa vim.lsp.config")
 assert(configured[2].cmd[1] == "false", "config.lsp no conserva los ajustes propios")
 assert(enabled == "servidor_prueba", "config.lsp no usa vim.lsp.enable")
-
-assert(not vim.lsp.is_enabled("tailwindcss"), "Tailwind debe esperar a la siguiente subfase")
 
 for _, group in ipairs({ "entorno_nvim_lsp", "entorno_nvim_completion" }) do
   local autocmds = vim.api.nvim_get_autocmds({ event = "LspAttach", group = group })
