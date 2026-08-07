@@ -27,7 +27,7 @@ opt.confirm = true
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.termguicolors = true
 
-opt.timeoutlen = 400
+opt.timeoutlen = 700
 opt.updatetime = 250
 
 opt.undofile = true
