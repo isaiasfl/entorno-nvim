@@ -208,7 +208,7 @@ verificó su procedencia publicada, integridad SHA-512 y contenido antes de
 añadirlo. `pnpm audit --audit-level low` no encontró vulnerabilidades conocidas
 en el entorno combinado el 7 de agosto de 2026.
 
-La prueba v4 usa `tailwindcss` 4.1.18 como dependencia exacta de un fixture
+La prueba v4 usa `tailwindcss` 4.3.3 como dependencia exacta de un fixture
 independiente. Ese paquete tampoco declara dependencias transitivas ni scripts
 de instalación. Su manifiesto y lockfile viven en
 `tests/fixtures/lsp-tailwind-v4`; `node_modules` permanece fuera de Git.
