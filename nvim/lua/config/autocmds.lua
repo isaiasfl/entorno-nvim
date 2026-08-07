@@ -40,6 +40,26 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("treesitter_highlight"),
+  pattern = {
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "python",
+    "sh",
+    "typescript",
+    "typescriptreact",
+  },
+  callback = function(event)
+    local language = vim.treesitter.language.get_lang(vim.bo[event.buf].filetype)
+    if language and vim.treesitter.language.add(language) then
+      vim.treesitter.start(event.buf, language)
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
   group = augroup("python_indent"),
   pattern = "python",
   callback = function()

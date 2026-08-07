@@ -1,0 +1,5 @@
+{
+  "name": "Treesitter",
+  "enabled": true,
+  "languages": 8
+}

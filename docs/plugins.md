@@ -8,7 +8,8 @@ La configuración incorpora únicamente:
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
 - `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos.
 
-No incluye LSP, Mason, Treesitter externo, Git, IA, depuración, iconos ni temas.
+No incluye LSP, Mason, Git, IA, depuración, iconos ni temas. La capa externa de
+Tree-sitter se documenta por separado en [treesitter.md](treesitter.md).
 
 ## Dependencias
 
@@ -117,14 +118,13 @@ instalación activa. Sus commits exactos quedan registrados en
 `nvim/lazy-lock.json`, que sí se versiona.
 
 `fzf-lua` crea un socket local para comunicarse con procesos headless. El script
-de arranque dirige también `XDG_RUNTIME_DIR` a `.xdg/runtime` y aplica permisos
-`0700`, manteniendo ese socket dentro del aislamiento.
+de arranque dirige también `XDG_RUNTIME_DIR` a `.xdg/0.12.4/runtime` y aplica
+permisos `0700`, manteniendo ese socket dentro del aislamiento.
 
 Lazy no comprueba ni instala actualizaciones automáticamente. Una actualización
 futura debe ejecutarse de forma explícita, revisar los cambios y volver a
 ejecutar `./scripts/comprobar.sh` antes de aceptar el lockfile nuevo.
 
-La comprobación genera un informe en `.xdg/checkhealth.txt`. Como Neovim 0.11.4
-no descubre automáticamente el módulo `_health` de este commit de `fzf-lua`, el
-script invoca ese módulo oficial de forma explícita y añade su resultado al
-informe general.
+La comprobación genera un informe en `.xdg/0.12.4/checkhealth.txt`. El script
+invoca explícitamente la salud de `fzf-lua`; `checkhealth` comprueba además
+`nvim-treesitter`, sus ocho parsers externos y el binario de Tree-sitter fijado.

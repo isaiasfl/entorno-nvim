@@ -3,7 +3,7 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
-XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg"}
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 TEST_FILE=${NVIM_TEST_FILE:-"$PROJECT_ROOT/tests/comprobar_nucleo.lua"}
 
 case "$XDG_ROOT" in
@@ -29,6 +29,8 @@ git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-tree.lua"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-treesitter"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/site/parser/javascript.so"
 
 if [ ! -f "$PROJECT_ROOT/nvim/lazy-lock.json" ]; then
   printf '%s\n' "Error: falta nvim/lazy-lock.json." >&2

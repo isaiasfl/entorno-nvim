@@ -263,3 +263,5 @@ assert(mapping("n", "<C-k>").rhs == "<C-w>k", "Ctrl+k global cambio fuera de nvi
 local lockfile = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim/lazy-lock.json"), "\n"))
 assert(lockfile["nvim-tree.lua"], "nvim-tree.lua no esta fijado en el lockfile")
 assert(not lockfile["nvim-web-devicons"], "nvim-web-devicons no debe aparecer en el lockfile")
+
+dofile(root .. "/tests/comprobar_treesitter.lua")

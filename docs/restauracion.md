@@ -34,12 +34,15 @@ simulación antes de copiar datos.
 
 ## Binario paralelo
 
-Neovim 0.12.4 se instala sin reemplazar `/usr/local/bin/nvim`. Para volver a
-0.11.4 basta con omitir `NVIM_BIN` o indicar expresamente:
+Neovim 0.12.4 se instala sin reemplazar `/usr/local/bin/nvim` y es el valor
+predeterminado del runner. El binario 0.11.4 puede seleccionarse expresamente:
 
 ```sh
 NVIM_BIN=/usr/local/bin/nvim ./scripts/arrancar.sh
 ```
+
+La configuración actual requiere 0.12.4, por lo que volver realmente a 0.11.4
+exige además restaurar una revisión compatible del repositorio.
 
 El directorio `~/.local/opt/nvim-0.12.4` solo debe eliminarse cuando ninguna
 sesión lo esté usando y después de una aprobación explícita. No hay enlaces ni

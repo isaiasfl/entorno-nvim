@@ -1,5 +1,5 @@
-if vim.fn.has("nvim-0.11") ~= 1 then
-  error("Esta configuracion requiere Neovim 0.11 o posterior")
+if vim.fn.has("nvim-0.12") ~= 1 then
+  error("Esta configuracion requiere Neovim 0.12 o posterior")
 end
 
 vim.g.mapleader = " "

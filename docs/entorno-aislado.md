@@ -102,26 +102,29 @@ La comprobación, para el binario seleccionado:
 11. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
 
 `NVIM_TEST_FILE` permite sustituir temporalmente la prueba Lua para comprobar el
-propio runner. Se verificó que un archivo que ejecuta `error()` produce estado
-de salida no cero con las dos versiones.
+propio runner. Se verificó originalmente con ambas versiones que un archivo que
+ejecuta `error()` produce estado de salida no cero. La comprobación vigente usa
+0.12.4, que es la versión mínima requerida por la configuración actual.
 
 ## Rutas utilizadas
 
 | Finalidad | Ruta durante las pruebas |
 | --- | --- |
 | Configuración | `./nvim` |
-| Datos | `./.xdg/data/nvim` |
-| Estado | `./.xdg/state/nvim` |
-| Caché | `./.xdg/cache/nvim` |
-| Sockets de ejecución | `./.xdg/runtime` |
-| Plugins descargados | `./.xdg/data/nvim/lazy` |
-| Informe de salud | `./.xdg/checkhealth.txt` |
+| Datos | `./.xdg/0.12.4/data/nvim` |
+| Estado | `./.xdg/0.12.4/state/nvim` |
+| Caché | `./.xdg/0.12.4/cache/nvim` |
+| Sockets de ejecución | `./.xdg/0.12.4/runtime` |
+| Plugins descargados | `./.xdg/0.12.4/data/nvim/lazy` |
+| Informe de salud | `./.xdg/0.12.4/checkhealth.txt` |
 
 `.xdg/` es temporal, reproducible y está ignorado por Git. Puede retirarse sin
 afectar a la configuración activa; los scripts lo recrean cuando es necesario.
 El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
 
-Para comparar versiones sin compartir caché, estado, sockets ni plugins:
+La comparación original se ejecutó sin compartir caché, estado, sockets ni
+plugins. Tras incorporar nvim-treesitter, la configuración requiere 0.12.4 y la
+orden de 0.11.4 se conserva solo como referencia histórica:
 
 ```sh
 NVIM_BIN=/usr/local/bin/nvim \
@@ -134,6 +137,9 @@ NVIM_XDG_ROOT="$PWD/.xdg/0.12.4" \
 NVIM_EXPECTED_VERSION=0.12.4 \
 ./scripts/comprobar.sh
 ```
+
+La primera orden termina ahora con el mensaje de versión mínima esperado. La
+segunda es la comprobación vigente.
 
 ## AppImage actual
 

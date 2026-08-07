@@ -57,7 +57,8 @@ relativas, no contenían componentes `..` y comenzaban por el único directorio
 `nvim-linux-x86_64/`.
 
 No se modifica `/usr/local/bin/nvim`, `PATH`, la configuración activa ni se
-crean enlaces. El binario se selecciona por ejecución:
+crean enlaces. El runner selecciona por defecto el binario paralelo. También
+puede indicarse de forma explícita:
 
 ```sh
 NVIM_BIN="$HOME/.local/opt/nvim-0.12.4/bin/nvim" \
@@ -67,20 +68,21 @@ NVIM_XDG_ROOT="$PWD/.xdg/0.12.4" \
 
 ## Comprobación
 
-La matriz mantiene raíces independientes:
+La migración inicial mantuvo raíces independientes:
 
 | Versión | Binario | Estado aislado |
 | --- | --- | --- |
 | 0.11.4 | `/usr/local/bin/nvim` | `.xdg/0.11.4` |
 | 0.12.4 | `~/.local/opt/nvim-0.12.4/bin/nvim` | `.xdg/0.12.4` |
 
-`./scripts/comprobar.sh` valida núcleo, Lazy, fzf-lua, Markdown, atajos,
-EditorConfig, undo, swap y `checkhealth`. El informe de cada versión queda en
-su propia raíz como `checkhealth.txt`.
+La fase Tree-sitter adopta 0.12.4 como versión mínima y usa por defecto
+`.xdg/0.12.4`. `./scripts/comprobar.sh` valida núcleo, plugins, parsers,
+Markdown, atajos, EditorConfig, undo, swap y `checkhealth`.
 
 ## Resultado de compatibilidad
 
-La matriz pasa con ambas versiones y los mismos commits de Lazy y `fzf-lua`.
+Antes de adoptar Tree-sitter externo, la matriz pasó con ambas versiones y los
+mismos commits de Lazy y `fzf-lua`.
 Los informes no contienen errores y comparten únicamente avisos por componentes
 opcionales que no se han instalado: iconos y previsualizadores multimedia de
 `fzf-lua`, y proveedores Node, Perl y Ruby.
@@ -88,14 +90,16 @@ opcionales que no se han instalado: iconos y previsualizadores multimedia de
 Neovim 0.12.4 añade información de versión, `vim.pack`, herramientas externas y
 consultas Treesitter al informe. Tanto 0.11.4 como 0.12.4 incluyen parsers para
 Markdown; 0.12.4 activa además su resaltado Treesitter integrado por defecto.
-Esto no añade el plugin externo `nvim-treesitter`.
+Ese resultado es histórico: la configuración actual incorpora nvim-treesitter
+y requiere 0.12.4.
 
 ## Reversión
 
-Dejar de indicar `NVIM_BIN` devuelve las ejecuciones al Neovim resuelto por
-`PATH`, que sigue siendo `/usr/local/bin/nvim` 0.11.4. La instalación paralela
-puede conservarse sin efecto o eliminarse posteriormente, con aprobación
-explícita, retirando solo `~/.local/opt/nvim-0.12.4`.
+Definir `NVIM_BIN=/usr/local/bin/nvim` sigue seleccionando el binario 0.11.4,
+pero la configuración actual lo rechazará de forma explícita. Para volver a esa
+versión también hay que restaurar una revisión del repositorio compatible. La
+instalación paralela puede eliminarse posteriormente, con aprobación expresa,
+solo cuando ya no sea la versión objetivo.
 
 Tras cerrar sus sesiones y obtener aprobación para el borrado:
 

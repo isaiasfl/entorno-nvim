@@ -3,13 +3,22 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
-NVIM_BIN=${NVIM_BIN:-nvim}
-XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg"}
+NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-0.12.4/bin/nvim"}
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
+TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-0.26.11/bin/tree-sitter"}
 
 case "$XDG_ROOT" in
   /*) ;;
   *) XDG_ROOT="$PROJECT_ROOT/$XDG_ROOT" ;;
 esac
+
+if [ ! -x "$TREE_SITTER_BIN" ]; then
+  printf '%s\n' "Error: TREE_SITTER_BIN no es un ejecutable: $TREE_SITTER_BIN" >&2
+  exit 1
+fi
+
+TREE_SITTER_DIR=$(dirname -- "$TREE_SITTER_BIN")
+PATH="$TREE_SITTER_DIR:$PATH"
 
 case "$NVIM_BIN" in
   */*)
@@ -42,6 +51,8 @@ export XDG_CACHE_HOME="$XDG_ROOT/cache"
 export XDG_RUNTIME_DIR="$XDG_ROOT/runtime"
 export ENTORNO_NVIM_ROOT="$PROJECT_ROOT"
 export ENTORNO_NVIM_XDG_ROOT="$XDG_ROOT"
+export ENTORNO_NVIM_TREE_SITTER_BIN="$TREE_SITTER_BIN"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
+export PATH
 
 exec "$NVIM_BIN" "$@"
