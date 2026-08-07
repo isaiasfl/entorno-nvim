@@ -1,7 +1,27 @@
 local M = {}
 
+local function typescript_root(bufnr, on_dir)
+  local lockfiles = { "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb", "bun.lock" }
+  local project_root = vim.fs.root(bufnr, { lockfiles, { "package.json" }, { ".git" } })
+  local deno_root = vim.fs.root(bufnr, { "deno.json", "deno.jsonc" })
+  local deno_lock_root = vim.fs.root(bufnr, { "deno.lock" })
+
+  if deno_lock_root and (not project_root or #deno_lock_root > #project_root) then
+    return
+  end
+  if deno_root and (not project_root or #deno_root >= #project_root) then
+    return
+  end
+
+  on_dir(project_root or vim.fn.getcwd())
+end
+
 M.web_servers = {
-  ts_ls = { executable = "typescript-language-server", args = { "--stdio" } },
+  ts_ls = {
+    executable = "typescript-language-server",
+    args = { "--stdio" },
+    config = { root_dir = typescript_root },
+  },
   html = {
     executable = "vscode-html-language-server",
     args = { "--stdio" },
@@ -52,6 +72,8 @@ local function enable_web_servers()
 end
 
 function M.setup()
+  vim.diagnostic.config({ update_in_insert = true })
+
   local group = vim.api.nvim_create_augroup("entorno_nvim_lsp", { clear = true })
 
   vim.api.nvim_create_autocmd("LspAttach", {

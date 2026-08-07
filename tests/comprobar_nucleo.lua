@@ -269,3 +269,4 @@ assert(not lockfile["nvim-web-devicons"], "nvim-web-devicons no debe aparecer en
 dofile(root .. "/tests/comprobar_lsp.lua")
 dofile(root .. "/tests/comprobar_treesitter.lua")
 dofile(root .. "/tests/comprobar_lsp_web.lua")
+dofile(root .. "/tests/comprobar_pares.lua")

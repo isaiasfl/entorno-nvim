@@ -7,10 +7,11 @@ La configuración incorpora únicamente:
 - `lazy.nvim`, gestor directo de plugins;
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
 - `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos;
+- `mini.pairs`, cierre automático mínimo de pares al escribir;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
-No incluye Mason, motores externos de completado, servidores LSP, Git, IA,
-depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
+No incluye Mason, motores externos de completado, Git, IA, depuración, iconos
+ni temas. Tree-sitter y LSP se documentan por separado en
 [treesitter.md](treesitter.md) y [lsp.md](lsp.md).
 
 ## Dependencias
@@ -24,6 +25,7 @@ depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
 | lazy.nvim | Directa | Gestiona instalación, carga y lockfile |
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
+| mini.nvim | Directa | Proporciona únicamente el módulo `mini.pairs` |
 | nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
 
 No hay dependencias Lua transitivas obligatorias. `nvim-web-devicons` es
@@ -112,6 +114,24 @@ vim.g.loaded_netrwPlugin = 1
 También cambia `disable_netrw` a `false` en la configuración de nvim-tree. La
 convivencia es posible, pero no se adopta aquí porque dos exploradores tratando
 de abrir directorios producen un comportamiento menos predecible.
+
+## Pares automáticos
+
+`mini.nvim` se carga al entrar por primera vez en modo insertar, pero solo se
+inicializa `mini.pairs`. No se activa ningún otro módulo de la colección.
+
+| Al escribir | Resultado |
+| --- | --- |
+| `(` | `()` |
+| `[` | `[]` |
+| `{` | `{}` |
+| `"` | `""` |
+| `'` | `''` |
+| Acento grave (`\``) | Dos acentos graves |
+
+El cursor queda entre ambos caracteres. Al escribir el cierre delante del
+cierre ya generado, el cursor avanza sin duplicarlo. El comportamiento se
+limita al modo insertar; no modifica la línea de comandos ni el terminal.
 
 ## Aislamiento y versiones
 

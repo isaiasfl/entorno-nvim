@@ -66,6 +66,16 @@ una opción accidentalmente y permite mostrar su documentación. Neovim puede
 aplicar imports, ediciones adicionales y snippets al aceptar un elemento; no
 se instala un motor de snippets externo.
 
+## Diagnósticos durante la escritura
+
+`vim.diagnostic.config({ update_in_insert = true })` permite refrescar signos,
+subrayados y mensajes mientras se permanece en modo insertar. No inicia
+procesos adicionales: los servidores ya reciben los cambios del documento y
+esta opción controla cuándo Neovim presenta los diagnósticos recibidos. Con los
+servidores web locales el coste observado es despreciable. Si resulta visualmente
+ruidoso, puede volver al comportamiento predeterminado cambiando el valor a
+`false`; los diagnósticos se actualizarán al salir de insertar.
+
 ## Servidores web activos
 
 | Configuración | Lenguajes | Ejecutable |
@@ -79,6 +89,11 @@ Los comandos usan rutas absolutas bajo `tools/lsp-web/node_modules/.bin`; no
 dependen del `PATH` global. `nvim-lspconfig` sigue aportando tipos de archivo,
 raíces de proyecto, opciones iniciales y comandos específicos de TypeScript.
 En HTML se conservan los modos embebidos para JavaScript y CSS.
+
+Para `ts_ls`, la raíz se detecta por este orden: lockfile del gestor de
+paquetes, `package.json` y `.git`. Un proyecto sencillo con `package.json` pero
+sin lockfile queda aislado correctamente; los monorepos con lockfile conservan
+la raíz común. Los proyectos Deno siguen excluidos de `ts_ls`.
 
 `tailwindcss` no está instalado ni habilitado y será la siguiente subfase.
 LuaLS, `bashls` y BasedPyright quedan para una fase posterior. Tampoco existe
@@ -113,6 +128,18 @@ Node 22.23.2 y Corepack 0.34.6 ya estaban instalados. No se ejecuta
 ```sh
 ./scripts/instalar-lsp-web.sh
 ```
+
+En otra máquina, después de clonar el repositorio y comprobar que existen Node
+`>=22.13 <23` y Corepack, el comando exacto para recrear esta subfase es:
+
+```sh
+cd /ruta/al/entorno-nvim
+NVIM_XDG_ROOT="$PWD/.xdg/0.12.4" ./scripts/instalar-lsp-web.sh
+```
+
+No requiere `corepack enable`, pnpm global, Mason ni cambios en `PATH`. La orden
+descarga la versión de pnpm fijada, exige el lockfile sin cambios y recrea
+`tools/lsp-web/node_modules` usando el almacén aislado indicado.
 
 El manifiesto fija versiones exactas y el campo `packageManager` fija pnpm
 11.18.0 junto con el SHA-512 del artefacto. El lockfile conserva todas las
