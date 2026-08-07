@@ -6,16 +6,34 @@ PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
 NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-0.12.4/bin/nvim"}
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-0.26.11/bin/tree-sitter"}
+LSP_WEB_BIN=${LSP_WEB_BIN:-"$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"}
 
 case "$XDG_ROOT" in
   /*) ;;
   *) XDG_ROOT="$PROJECT_ROOT/$XDG_ROOT" ;;
 esac
 
+case "$LSP_WEB_BIN" in
+  /*) ;;
+  *) LSP_WEB_BIN="$PROJECT_ROOT/$LSP_WEB_BIN" ;;
+esac
+
 if [ ! -x "$TREE_SITTER_BIN" ]; then
   printf '%s\n' "Error: TREE_SITTER_BIN no es un ejecutable: $TREE_SITTER_BIN" >&2
   exit 1
 fi
+
+for executable in \
+  typescript-language-server \
+  vscode-html-language-server \
+  vscode-css-language-server \
+  vscode-json-language-server
+do
+  if [ ! -x "$LSP_WEB_BIN/$executable" ]; then
+    printf '%s\n' "Error: falta $LSP_WEB_BIN/$executable; ejecuta scripts/instalar-lsp-web.sh." >&2
+    exit 1
+  fi
+done
 
 TREE_SITTER_DIR=$(dirname -- "$TREE_SITTER_BIN")
 PATH="$TREE_SITTER_DIR:$PATH"
@@ -52,6 +70,7 @@ export XDG_RUNTIME_DIR="$XDG_ROOT/runtime"
 export ENTORNO_NVIM_ROOT="$PROJECT_ROOT"
 export ENTORNO_NVIM_XDG_ROOT="$XDG_ROOT"
 export ENTORNO_NVIM_TREE_SITTER_BIN="$TREE_SITTER_BIN"
+export ENTORNO_NVIM_LSP_WEB_BIN="$LSP_WEB_BIN"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 export PATH
 

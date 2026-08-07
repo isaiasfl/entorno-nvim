@@ -18,7 +18,20 @@ assert(package.loaded["lspconfig"] == nil, "no debe cargarse la API antigua de l
 
 for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "bashls", "basedpyright" }) do
   assert(type(vim.lsp.config[name]) == "table", "falta la configuracion de catalogo " .. name)
-  assert(not vim.lsp.is_enabled(name), "no debe habilitarse todavia " .. name)
+  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls" }, name)
+  assert(vim.lsp.is_enabled(name) == should_be_enabled, "estado de activacion incorrecto para " .. name)
+end
+
+local lsp = require("config.lsp")
+local web_bin = vim.env.ENTORNO_NVIM_LSP_WEB_BIN
+assert(type(web_bin) == "string" and web_bin ~= "", "falta la ruta de servidores web")
+for name, server in pairs(lsp.web_servers) do
+  local config = vim.lsp.config[name]
+  assert(config.cmd[1] == vim.fs.joinpath(web_bin, server.executable), name .. ": ejecutable incorrecto")
+  assert(config.cmd[2] == "--stdio", name .. ": falta el transporte stdio")
+end
+for _, section in ipairs({ "html", "css", "javascript" }) do
+  assert(type(vim.lsp.config.html.settings[section]) == "table", "HTML debe responder la seccion " .. section)
 end
 
 local function mapping(mode, lhs)
@@ -91,7 +104,6 @@ assert(received, "no se habilito el completado para un cliente compatible")
 assert(received[1] == true and received[2] == 42 and received[3] == bufnr, "argumentos de completado incorrectos")
 assert(received[4].autotrigger == true, "el completado debe usar los disparadores del servidor")
 
-local lsp = require("config.lsp")
 local original_config = vim.lsp.config
 local original_enable = vim.lsp.enable
 local configured
@@ -108,6 +120,8 @@ vim.lsp.enable = original_enable
 assert(configured[1] == "servidor_prueba", "config.lsp no usa vim.lsp.config")
 assert(configured[2].cmd[1] == "false", "config.lsp no conserva los ajustes propios")
 assert(enabled == "servidor_prueba", "config.lsp no usa vim.lsp.enable")
+
+assert(not vim.lsp.is_enabled("tailwindcss"), "Tailwind debe esperar a la siguiente subfase")
 
 for _, group in ipairs({ "entorno_nvim_lsp", "entorno_nvim_completion" }) do
   local autocmds = vim.api.nvim_get_autocmds({ event = "LspAttach", group = group })

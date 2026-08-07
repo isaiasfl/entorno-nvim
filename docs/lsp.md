@@ -12,10 +12,10 @@ con comandos, tipos de archivo, marcadores de raíz y ajustes iniciales. No es
 el cliente LSP, no instala servidores y no gestiona el completado. No se usa la
 API antigua `require("lspconfig")`.
 
-Esta subfase no habilita ninguna configuración con `vim.lsp.enable()`. El
-método `config.lsp.enable(nombre, ajustes)` queda preparado para combinar el
-catálogo con ajustes propios mediante `vim.lsp.config()` y activar después el
-servidor con la API nativa.
+`config.lsp.enable(nombre, ajustes)` combina el catálogo con ajustes propios
+mediante `vim.lsp.config()` y activa el servidor con `vim.lsp.enable()`. Están
+habilitados `ts_ls`, `html`, `cssls` y `jsonls`; sus procesos solo arrancan al
+abrir un tipo de archivo compatible.
 
 ## Mapas de Neovim 0.12
 
@@ -66,41 +66,93 @@ una opción accidentalmente y permite mostrar su documentación. Neovim puede
 aplicar imports, ediciones adicionales y snippets al aceptar un elemento; no
 se instala un motor de snippets externo.
 
-## Servidores posteriores
+## Servidores web activos
 
-La siguiente subfase priorizará:
+| Configuración | Lenguajes | Ejecutable |
+| --- | --- | --- |
+| `ts_ls` | JavaScript, TypeScript, JSX y TSX | `typescript-language-server --stdio` |
+| `html` | HTML | `vscode-html-language-server --stdio` |
+| `cssls` | CSS, SCSS y Less | `vscode-css-language-server --stdio` |
+| `jsonls` | JSON y JSON con comentarios | `vscode-json-language-server --stdio` |
 
-- `ts_ls` para JavaScript, TypeScript y React/TSX;
-- `html` para HTML;
-- `cssls` para CSS;
-- `jsonls` para JSON.
+Los comandos usan rutas absolutas bajo `tools/lsp-web/node_modules/.bin`; no
+dependen del `PATH` global. `nvim-lspconfig` sigue aportando tipos de archivo,
+raíces de proyecto, opciones iniciales y comandos específicos de TypeScript.
+En HTML se conservan los modos embebidos para JavaScript y CSS.
 
-Después se añadirá `tailwindcss` únicamente para proyectos Tailwind. LuaLS,
-`bashls` y BasedPyright quedan para una fase posterior. Hasta entonces no hay
-servidores habilitados ni procesos LSP al abrir archivos.
+`tailwindcss` no está instalado ni habilitado y será la siguiente subfase.
+LuaLS, `bashls` y BasedPyright quedan para una fase posterior. Tampoco existe
+format-on-save: `<leader>lf` sigue siendo una acción manual.
 
-## Propuesta reproducible con Corepack y pnpm
+## Versiones y decisión TypeScript
 
-El equipo tiene Node 22.23.2 y Corepack 0.34.6, pero no pnpm. No se activa ni se
-descarga pnpm en esta subfase.
+El 7 de agosto de 2026 se verificaron en el registro oficial estas versiones
+estables: pnpm 11.20.0, TypeScript 7.0.2, typescript-language-server 5.3.0 y
+vscode-langservers-extracted 4.10.0.
 
-La siguiente subfase deberá:
+El entorno fija pnpm 11.18.0 porque 11.20.0 llevaba solo cuatro días publicado
+y la política exige siete días de antigüedad. Se fija TypeScript 6.0.3 porque
+`typescript-language-server` 5.3.0 envuelve la API de `tsserver`; TypeScript 7
+es una implementación nativa distinta y ya no ofrece esa API estable. Migrar
+al servidor nativo de TypeScript 7 requiere una evaluación independiente.
 
-1. verificar una versión estable de pnpm compatible con Corepack 0.34.6;
-2. fijarla, con su hash de integridad, en el campo `packageManager` de un
-   manifiesto dedicado a herramientas web;
-3. fijar versiones exactas de `typescript`, `typescript-language-server` y
-   `vscode-langservers-extracted`;
-4. generar y versionar `pnpm-lock.yaml`;
-5. dirigir `COREPACK_HOME`, el almacén pnpm y `node_modules` a rutas aisladas
-   dentro del repositorio;
-6. bloquear scripts de dependencias y revisar individualmente cualquier build
-   solicitado antes de aprobarlo;
-7. usar `corepack pnpm install --frozen-lockfile` desde un script del proyecto,
-   sin activar pnpm globalmente ni cambiar `PATH`;
-8. pasar rutas explícitas de los ejecutables a las configuraciones LSP.
+Fuentes oficiales consultadas:
 
-Antes de crear ese manifiesto se revisarán las versiones, dependencias
-transitivas, scripts de instalación y alertas oficiales disponibles. El
-servidor Tailwind se incorporará en su propia subfase y no se mezclará con la
-instalación web inicial.
+- `https://registry.npmjs.org/pnpm/11.18.0`;
+- `https://registry.npmjs.org/typescript/6.0.3`;
+- `https://registry.npmjs.org/typescript-language-server/5.3.0`;
+- `https://registry.npmjs.org/vscode-langservers-extracted/4.10.0`;
+- `https://github.com/typescript-language-server/typescript-language-server/releases/tag/v5.3.0`;
+- `https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html`.
+
+## Instalación reproducible
+
+Node 22.23.2 y Corepack 0.34.6 ya estaban instalados. No se ejecuta
+`corepack enable`, no se instala pnpm globalmente y no se cambia el `PATH`.
+
+```sh
+./scripts/instalar-lsp-web.sh
+```
+
+El manifiesto fija versiones exactas y el campo `packageManager` fija pnpm
+11.18.0 junto con el SHA-512 del artefacto. El lockfile conserva todas las
+versiones transitivas e integridades. Corepack se descarga bajo
+`.xdg/0.12.4/corepack`, el almacén está en `.xdg/0.12.4/pnpm/store` y los
+enlaces ejecutables quedan en `tools/lsp-web/node_modules/.bin`.
+
+La política de `pnpm-workspace.yaml`:
+
+- retrasa siete días cualquier versión nueva;
+- falla si falta la fecha de publicación;
+- verifica integridad y contenido del almacén;
+- impide fuentes transitivas Git o tarballs arbitrarios;
+- considera error cualquier build no revisado;
+- deniega expresamente el `postinstall` informativo de `core-js`.
+
+Los tarballs directos se inspeccionaron antes de instalar y todas sus rutas
+quedaban bajo `package/`. Ninguno declara `preinstall`, `install` o
+`postinstall`; `typescript-language-server` conserva un `prepare` de desarrollo
+que no se ejecuta para el artefacto ya compilado. La inspección transitoria con
+`--ignore-scripts` confirmó que `core-js` era el único ciclo instalable. La
+auditoría del lockfile no encontró vulnerabilidades conocidas en esta fecha.
+
+## Comprobación funcional
+
+`tests/comprobar_lsp_web.lua` abre fixtures reales JS, TS, JSX, TSX, HTML, CSS y
+JSON. Comprueba conexión, diagnósticos, definición, `gd`, hover, referencias,
+rename, completado, disparadores automáticos, `Ctrl-Space`, auto-imports y la
+capacidad nativa de snippets. Los cambios de rename y completado no se escriben
+en los fixtures.
+
+Neovim anuncia soporte de snippets y usa `vim.snippet` cuando un servidor los
+entrega. No todos los elementos de completado son snippets; por ejemplo, el
+servidor HTML devuelve algunas etiquetas como texto plano. No se instala ningún
+motor externo.
+
+## Reversión
+
+La instalación no toca ubicaciones globales. Para revertirla se deshabilitan
+las cuatro llamadas de `config.lsp`, se retira `tools/lsp-web/node_modules` y,
+si no se usa para otra fase, se retiran `.xdg/0.12.4/corepack` y
+`.xdg/0.12.4/pnpm`. Los tres archivos reproducibles de `tools/lsp-web` permiten
+recrear el entorno después.

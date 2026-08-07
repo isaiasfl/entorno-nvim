@@ -10,6 +10,7 @@ Neovim. No requiere enlaces simbólicos y no modifica el binario instalado.
 Desde la raíz del repositorio:
 
 ```sh
+./scripts/instalar-lsp-web.sh
 ./scripts/arrancar.sh
 ```
 
@@ -118,10 +119,19 @@ ejecuta `error()` produce estado de salida no cero. La comprobación vigente usa
 | Sockets de ejecución | `./.xdg/0.12.4/runtime` |
 | Plugins descargados | `./.xdg/0.12.4/data/nvim/lazy` |
 | Informe de salud | `./.xdg/0.12.4/checkhealth.txt` |
+| Corepack aislado | `./.xdg/0.12.4/corepack` |
+| Almacén pnpm | `./.xdg/0.12.4/pnpm/store` |
+| Ejecutables LSP web | `./tools/lsp-web/node_modules/.bin` |
 
 `.xdg/` es temporal, reproducible y está ignorado por Git. Puede retirarse sin
 afectar a la configuración activa; los scripts lo recrean cuando es necesario.
 El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
+`node_modules` también está ignorado por Git; `package.json`,
+`pnpm-workspace.yaml` y `pnpm-lock.yaml` son la fuente reproducible versionada.
+
+`LSP_WEB_BIN` permite probar otro directorio de ejecutables sin cambiar el
+`PATH`. El runner lo publica dentro de Neovim como
+`ENTORNO_NVIM_LSP_WEB_BIN`; normalmente no hace falta definirlo.
 
 La comparación original se ejecutó sin compartir caché, estado, sockets ni
 plugins. Tras incorporar nvim-treesitter, la configuración requiere 0.12.4 y la

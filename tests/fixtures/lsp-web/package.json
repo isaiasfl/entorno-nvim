@@ -1,0 +1,5 @@
+{
+  "name": "fixture-lsp-web",
+  "private": true,
+  "type": "module"
+}

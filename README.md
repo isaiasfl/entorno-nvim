@@ -11,8 +11,10 @@ El proyecto contiene un núcleo nativo de Neovim y una capa mínima de plugins:
 `nvim-tree.lua` permite recorrer el proyecto como árbol. Tree-sitter añade
 resaltado estructural para shell, Python y desarrollo web. El cliente LSP y el
 completado son nativos; `nvim-lspconfig` aporta únicamente el catálogo de
-configuraciones. Todavía no hay servidores activados. Todo se ejecuta en un
-entorno XDG aislado y no modifica ni enlaza `~/.config/nvim`.
+configuraciones. Los servidores web para JavaScript, TypeScript, React/TSX,
+HTML, CSS y JSON se instalan de forma aislada y reproducible mediante Corepack
+y pnpm. Todo se ejecuta en un entorno XDG aislado y no modifica ni enlaza
+`~/.config/nvim`.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global
@@ -35,6 +37,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 Abrir Neovim con la configuración del repositorio:
 
 ```sh
+./scripts/instalar-lsp-web.sh
 ./scripts/arrancar.sh
 ```
 
