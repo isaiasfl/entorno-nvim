@@ -58,14 +58,17 @@ abren automáticamente el menú dependen de cada servidor.
 | --- | --- |
 | `Ctrl-Space` | Solicitar completado LSP expresamente |
 | `Ctrl-X Ctrl-O` | Usar el completado LSP mediante `omnifunc` |
-| `Ctrl-N` / `Ctrl-P` | Recorrer candidatos |
-| `Ctrl-Y` | Aceptar el candidato |
+| `Tab` / `Shift-Tab` | Recorrer candidatos cuando el menu esta visible |
+| `Ctrl-N` / `Ctrl-P` | Recorrer candidatos como alternativa nativa |
+| `Enter` / `Ctrl-Y` | Aceptar el candidato seleccionado |
 | `Ctrl-E` | Cerrar el menú |
 
 `completeopt` usa `menu`, `menuone`, `noselect` y `popup`. Esto evita aceptar
 una opción accidentalmente y permite mostrar su documentación. Neovim puede
 aplicar imports, ediciones adicionales y snippets al aceptar un elemento; no
-se instala un motor de snippets externo.
+se instala un motor de snippets externo. Fuera del menú, `Tab` y `Shift-Tab`
+conservan la indentación normal o saltan entre posiciones de un snippet nativo
+activo; `Enter` conserva la inserción de una línea nueva.
 
 ## Diagnósticos durante la escritura
 

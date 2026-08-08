@@ -8,6 +8,7 @@ La configuración incorpora únicamente:
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
 - `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos;
 - `mini.pairs`, cierre automático mínimo de pares al escribir;
+- `nvim-ts-autotag`, autocierre y autorrenombrado de etiquetas HTML/JSX/TSX;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
 No incluye Mason, motores externos de completado, Git, IA, depuración, iconos
@@ -26,6 +27,7 @@ ni temas. Tree-sitter y LSP se documentan por separado en
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
 | mini.nvim | Directa | Proporciona únicamente el módulo `mini.pairs` |
+| nvim-ts-autotag | Directa | Gestiona pares de etiquetas mediante Tree-sitter |
 | nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
 
 No hay dependencias Lua transitivas obligatorias. `nvim-web-devicons` es
@@ -132,6 +134,24 @@ inicializa `mini.pairs`. No se activa ningún otro módulo de la colección.
 El cursor queda entre ambos caracteres. Al escribir el cierre delante del
 cierre ya generado, el cursor avanza sin duplicarlo. El comportamiento se
 limita al modo insertar; no modifica la línea de comandos ni el terminal.
+
+## Etiquetas automáticas
+
+`nvim-ts-autotag` se limita a `html`, `javascriptreact` y `typescriptreact`.
+Al escribir `>` cierra etiquetas HTML y componentes JSX/TSX que necesiten un
+par. Al renombrar una etiqueta de apertura o cierre, actualiza su pareja al
+salir del modo insertar. Las etiquetas vacías y autocontenidas no reciben un
+cierre adicional; el cierre mediante una barra escrita manualmente permanece
+desactivado.
+
+Neovim, LSP y Tree-sitter reconocen y completan estas estructuras, pero no
+coordinan de forma nativa su autocierre y autorrenombrado. El plugin requiere
+Neovim 0.9.5 o posterior y un parser compatible; esta configuración tiene
+Neovim 0.12.4 y parsers fijados para HTML, JavaScript, TypeScript y TSX.
+
+No entra en conflicto con `mini.pairs`: este último administra `()`, `[]`,
+`{}` y comillas, mientras que autotag solo añade comportamiento local para
+`>` y las etiquetas. Tampoco modifica los mapas ni las APIs del completado LSP.
 
 ## Aislamiento y versiones
 
