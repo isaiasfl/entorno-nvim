@@ -44,6 +44,7 @@ El script acepta los mismos argumentos que Neovim:
 | Normal | `<leader>fg` | Buscar texto dentro del proyecto |
 | Normal | `<leader>fb` | Ver y abrir buffers cargados |
 | Normal | `<leader>gg` | Abrir lazygit en un terminal flotante |
+| Normal/Visual | `<leader>ac` | Enviar contexto al panel de agente de tmux |
 
 `Esc` conserva su funcionamiento normal y `kj` no está mapeado.
 
@@ -103,7 +104,9 @@ La comprobación, para el binario seleccionado:
 9. comprueba que Lazy, `fzf-lua` y el catálogo LSP están registrados y pueden
    cargarse;
 10. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
-11. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
+11. comprueba el layout tmux, las sesiones de proyecto y el transporte de
+    contexto hacia el panel de agente;
+12. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
 
 `NVIM_TEST_FILE` permite sustituir temporalmente la prueba Lua para comprobar el
 propio runner. Se verificó originalmente con ambas versiones que un archivo que

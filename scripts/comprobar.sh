@@ -24,6 +24,8 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
   "+lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), vim.env.ENTORNO_NVIM_HEALTH_REPORT)" \
   "+qa"
 
+"$PROJECT_ROOT/tests/comprobar_tmux.sh"
+
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"

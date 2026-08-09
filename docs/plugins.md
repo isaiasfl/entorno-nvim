@@ -11,8 +11,8 @@ La configuración incorpora únicamente:
 - `nvim-ts-autotag`, autocierre y autorrenombrado de etiquetas HTML/JSX/TSX;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
-No incluye Mason, motores externos de completado, plugins Git, IA, depuración,
-iconos ni temas. Tree-sitter y LSP se documentan por separado en
+No incluye Mason, motores externos de completado, plugins Git o de IA,
+depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
 [treesitter.md](treesitter.md) y [lsp.md](lsp.md).
 
 ## Dependencias
