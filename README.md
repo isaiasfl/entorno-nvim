@@ -31,6 +31,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 
 - [Decisiones e inventario](docs/decisiones.md)
 - [Entorno aislado](docs/entorno-aislado.md)
+- [Activación en el equipo principal](docs/activacion.md)
 - [Neovim 0.12.4 en paralelo](docs/neovim-0.12.md)
 - [Plugins, búsqueda y exploración](docs/plugins.md)
 - [Tree-sitter y parsers](docs/treesitter.md)

@@ -1,5 +1,10 @@
 local root = vim.env.ENTORNO_NVIM_ROOT
 local xdg_root = vim.env.ENTORNO_NVIM_XDG_ROOT
+local paths = require("config.paths")
+
+assert(paths.repository() == root, "la raiz aislada del repositorio es incorrecta")
+assert(paths.data() == vim.fn.stdpath("data"), "los datos aislados no deben cambiar de ubicacion")
+assert(vim.fn.exepath("tree-sitter") == paths.tree_sitter_bin(), "Neovim no prioriza el tree-sitter-cli fijado")
 
 assert(type(xdg_root) == "string" and xdg_root ~= "", "falta la raiz XDG de prueba")
 

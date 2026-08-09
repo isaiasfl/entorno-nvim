@@ -1,4 +1,5 @@
 local M = {}
+local paths = require("config.paths")
 
 local tailwind_config_names = {
   "tailwind.config.js",
@@ -217,10 +218,7 @@ function M.enable(name, config)
 end
 
 local function enable_web_servers()
-  local bin_dir = vim.env.ENTORNO_NVIM_LSP_WEB_BIN
-  if not bin_dir or bin_dir == "" then
-    error("Falta ENTORNO_NVIM_LSP_WEB_BIN; usa scripts/arrancar.sh")
-  end
+  local bin_dir = paths.web_lsp_bin()
 
   for name, server in pairs(M.web_servers) do
     local executable = vim.fs.joinpath(bin_dir, server.executable)
@@ -236,10 +234,7 @@ local function enable_web_servers()
 end
 
 local function enable_lua_server()
-  local executable = vim.env.ENTORNO_NVIM_LUALS_BIN
-  if not executable or executable == "" then
-    error("Falta ENTORNO_NVIM_LUALS_BIN; usa scripts/arrancar.sh")
-  end
+  local executable = paths.luals_bin()
   if vim.fn.executable(executable) ~= 1 then
     error("Servidor LSP no ejecutable: " .. executable)
   end
@@ -249,7 +244,7 @@ local function enable_lua_server()
     error("No se pudo determinar el runtime de Neovim para LuaLS")
   end
 
-  local log_dir = vim.fs.joinpath(vim.env.ENTORNO_NVIM_XDG_ROOT, "state", "nvim", "luals")
+  local log_dir = paths.luals_log_dir()
   M.enable("lua_ls", {
     cmd = { executable, "--logpath=" .. log_dir },
     settings = {

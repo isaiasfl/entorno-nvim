@@ -110,10 +110,7 @@ local function transport_path()
     return configured
   end
 
-  local root = vim.env.ENTORNO_NVIM_ROOT
-  if not root or root == "" then
-    return nil
-  end
+  local root = require("config.paths").repository()
   return vim.fs.joinpath(root, "scripts", "enviar-contexto-agente.sh")
 end
 
