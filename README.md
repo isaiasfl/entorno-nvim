@@ -17,8 +17,9 @@ y pnpm. LuaLS aporta soporte para los módulos Lua de esta configuración desde
 una instalación versionada bajo `~/.local/opt`. Tailwind CSS se activa solo
 cuando detecta una dependencia, una configuración clásica o una entrada
 CSS-first real. `mini.pairs` aporta cierre automático de delimitadores y
-comillas sin activar otros módulos de mini.nvim. Todo se ejecuta en un entorno
-XDG aislado y no modifica ni enlaza `~/.config/nvim`.
+comillas sin activar otros módulos de mini.nvim. La integración Git abre el
+`lazygit` existente mediante el terminal nativo, sin otro plugin. Todo se
+ejecuta en un entorno XDG aislado y no modifica ni enlaza `~/.config/nvim`.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global
@@ -32,6 +33,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 - [Plugins, búsqueda y exploración](docs/plugins.md)
 - [Tree-sitter y parsers](docs/treesitter.md)
 - [LSP y completado nativo](docs/lsp.md)
+- [Git y lazygit](docs/git.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
 - [Restauración](docs/restauracion.md)
 - [Contexto original](CONTEXTO_INICIAL.md)

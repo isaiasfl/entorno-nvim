@@ -43,6 +43,7 @@ El script acepta los mismos argumentos que Neovim:
 | Normal | `<leader>ff` | Buscar archivos del proyecto |
 | Normal | `<leader>fg` | Buscar texto dentro del proyecto |
 | Normal | `<leader>fb` | Ver y abrir buffers cargados |
+| Normal | `<leader>gg` | Abrir lazygit en un terminal flotante |
 
 `Esc` conserva su funcionamiento normal y `kj` no está mapeado.
 
