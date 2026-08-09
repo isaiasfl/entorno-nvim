@@ -235,6 +235,41 @@ local function enable_web_servers()
   end
 end
 
+local function enable_lua_server()
+  local executable = vim.env.ENTORNO_NVIM_LUALS_BIN
+  if not executable or executable == "" then
+    error("Falta ENTORNO_NVIM_LUALS_BIN; usa scripts/arrancar.sh")
+  end
+  if vim.fn.executable(executable) ~= 1 then
+    error("Servidor LSP no ejecutable: " .. executable)
+  end
+
+  local runtime = vim.env.VIMRUNTIME
+  if not runtime or runtime == "" or not vim.uv.fs_stat(runtime) then
+    error("No se pudo determinar el runtime de Neovim para LuaLS")
+  end
+
+  local log_dir = vim.fs.joinpath(vim.env.ENTORNO_NVIM_XDG_ROOT, "state", "nvim", "luals")
+  M.enable("lua_ls", {
+    cmd = { executable, "--logpath=" .. log_dir },
+    settings = {
+      Lua = {
+        runtime = {
+          version = "LuaJIT",
+          path = { "lua/?.lua", "lua/?/init.lua" },
+        },
+        diagnostics = { globals = { "vim" } },
+        workspace = {
+          checkThirdParty = "Disable",
+          library = { runtime },
+          ignoreDir = { ".backups", ".git", ".xdg", "node_modules" },
+          useGitIgnore = true,
+        },
+      },
+    },
+  })
+end
+
 function M.setup()
   vim.diagnostic.config({ update_in_insert = true })
 
@@ -248,6 +283,7 @@ function M.setup()
   })
 
   enable_web_servers()
+  enable_lua_server()
 end
 
 return M

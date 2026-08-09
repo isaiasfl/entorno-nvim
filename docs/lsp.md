@@ -14,9 +14,9 @@ API antigua `require("lspconfig")`.
 
 `config.lsp.enable(nombre, ajustes)` combina el catálogo con ajustes propios
 mediante `vim.lsp.config()` y activa el servidor con `vim.lsp.enable()`. Están
-habilitados `ts_ls`, `html`, `cssls`, `jsonls` y `tailwindcss`; sus procesos
-solo arrancan al abrir un tipo de archivo compatible y encontrar una raíz
-válida.
+habilitados `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls` y `tailwindcss`; sus
+procesos solo arrancan al abrir un tipo de archivo compatible y encontrar una
+raíz válida.
 
 ## Mapas de Neovim 0.12
 
@@ -100,8 +100,31 @@ paquetes, `package.json` y `.git`. Un proyecto sencillo con `package.json` pero
 sin lockfile queda aislado correctamente; los monorepos con lockfile conservan
 la raíz común. Los proyectos Deno siguen excluidos de `ts_ls`.
 
-LuaLS, `bashls` y el servidor de Python quedan para una fase posterior. Tampoco
+`bashls` y el servidor de Python quedan para una fase posterior. Tampoco
 existe format-on-save: `<leader>lf` sigue siendo una acción manual.
+
+## LuaLS para la configuración de Neovim
+
+LuaLS 3.19.0 se ejecuta mediante una ruta absoluta, sin Mason y sin depender
+del `PATH`. `lua_ls` se configura y activa con las mismas funciones nativas que
+los servidores web: `vim.lsp.config()` y `vim.lsp.enable()`.
+
+Los ajustes propios de Neovim son deliberadamente acotados:
+
+- el runtime es `LuaJIT` y las rutas de módulos son `lua/?.lua` y
+  `lua/?/init.lua`;
+- `vim` se declara como global conocido;
+- `workspace.library` contiene solo el `$VIMRUNTIME` del Neovim que está en
+  ejecución, no todo el `runtimepath` ni directorios del sistema;
+- la raíz procede de los marcadores del catálogo, incluida `.git`;
+- se respetan `.gitignore` y se excluyen `.git`, `.xdg`, `.backups` y
+  `node_modules` del diagnóstico del workspace;
+- la detección automática de addons de terceros queda desactivada para evitar
+  preguntas y ajustes implícitos.
+
+Los logs se escriben dentro del estado XDG aislado del repositorio, no junto al
+binario instalado. El catálogo mantiene sus capacidades base, como code lens e
+inlay hints; los ajustes anteriores solo especializan el entorno de Neovim.
 
 ## Activación selectiva de Tailwind
 
@@ -158,6 +181,38 @@ Fuentes oficiales consultadas:
 - `https://github.com/tailwindlabs/tailwindcss-intellisense#tailwindcssexperimentalconfigfile`;
 - `https://github.com/typescript-language-server/typescript-language-server/releases/tag/v5.3.0`;
 - `https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html`.
+
+## Versión y auditoría de LuaLS
+
+El 9 de agosto de 2026, la versión estable actual es LuaLS 3.19.0, publicada el
+7 de agosto como release no preliminar del repositorio oficial
+`LuaLS/lua-language-server`. Para esta máquina `x86_64` se usa el artefacto
+oficial `lua-language-server-3.19.0-linux-x64.tar.gz`, de 3.665.023 bytes, con
+SHA-256 publicado por GitHub:
+
+```text
+624ae8dd3bfbd5c2ee3ccf2f3547d33aeefa209971cce8c11d48f69fc1ec065a
+```
+
+El tarball se revisó antes de instalarlo: no contiene rutas absolutas, escapes
+`..`, enlaces ni scripts shell, Python o Perl. Solo
+`bin/lua-language-server` es ejecutable; el resto son módulos Lua, metadatos de
+tipos, traducciones, changelog y licencia. El binario es un ELF de 64 bits para
+x86-64, enlazado dinámicamente solo con el cargador de glibc, `libc`, `libm`,
+`libpthread` y `libdl`. No necesita Node, Java, Python ni un paso de build.
+
+La procedencia es el release oficial, generado y subido por GitHub Actions del
+proyecto. El archivo incluye la licencia MIT de LuaLS, copyright desde 2018.
+No se incorpora una dependencia al repositorio: el servidor es una herramienta
+externa directa y reemplaza la alternativa de Mason, que permanece excluida.
+
+Fuentes oficiales consultadas:
+
+- `https://github.com/LuaLS/lua-language-server/releases/tag/3.19.0`;
+- `https://api.github.com/repos/LuaLS/lua-language-server/releases/latest`;
+- `https://github.com/LuaLS/lua-language-server`;
+- `https://luals.github.io/#neovim-install`;
+- `https://luals.github.io/wiki/settings/`.
 
 ## Instalación reproducible
 
@@ -216,7 +271,30 @@ independiente. Ese paquete tampoco declara dependencias transitivas ni scripts
 de instalación. Su manifiesto y lockfile viven en
 `tests/fixtures/lsp-tailwind-v4`; `node_modules` permanece fuera de Git.
 
+LuaLS se instala por separado:
+
+```sh
+./scripts/instalar-luals.sh
+```
+
+El script solo admite por ahora Linux x86_64, la plataforma auditada. Descarga
+por HTTPS el artefacto exacto, comprueba el SHA-256 antes de extraerlo, rechaza
+rutas inseguras, valida contenido, versión y hash del ejecutable, y mueve el
+resultado terminado a `~/.local/opt/lua-language-server-3.19.0`. No usa
+`sudo`, Mason, gestores globales ni modifica el `PATH`. Si la ruta ya existe,
+solo la acepta cuando los metadatos y el binario coinciden.
+
+Actualizar LuaLS requiere revisar primero el nuevo release y sus hashes,
+cambiar las constantes del instalador y la ruta predeterminada del runner, y
+repetir la prueba funcional completa. No se usa una URL flotante `latest` para
+instalar.
+
 ## Comprobación funcional
+
+`tests/comprobar_lsp_lua.lua` usa un fixture Lua real y comprueba conexión,
+raíz, capacidades, completado sobre `vim.`, hover de la API de Neovim,
+definición, navegación con `gd`, diagnósticos, referencias y rename. Los
+cambios de completado y rename permanecen en memoria y no escriben el fixture.
 
 `tests/comprobar_lsp_web.lua` abre fixtures reales JS, TS, JSX, TSX, HTML, CSS y
 JSON. Comprueba conexión, diagnósticos, definición, `gd`, hover, referencias,
@@ -237,20 +315,24 @@ sin Tailwind confirma que el servidor no arranca fuera de su ámbito.
 
 ## Lenguajes pendientes
 
-- Lua: evaluar e instalar Lua Language Server de forma aislada y configurar
-  `lua_ls`, incluyendo los tipos de la API de Neovim.
 - Bash: evaluar `bash-language-server`, su dependencia de Node y la convivencia
   opcional con ShellCheck sin instalarla todavía.
 - Python: decidir entre BasedPyright y Pyright según tipado, licencia, consumo y
   método de instalación reproducible; después configurar el servidor elegido.
 
-Estas tareas no forman parte de la subfase Tailwind y no hay binarios ni
-configuraciones activas para esos tres lenguajes.
+Estas tareas no forman parte de la subfase LuaLS y no hay binarios ni
+configuraciones activas para esos dos lenguajes.
 
 ## Reversión
 
-La instalación no toca ubicaciones globales. Para revertirla se deshabilitan
-las cinco configuraciones de `config.lsp`, se retiran
+La instalación no toca ubicaciones globales. Para revertir LuaLS se deshabilita
+`lua_ls` y se retira manualmente
+`~/.local/opt/lua-language-server-3.19.0`; esa eliminación está fuera del
+repositorio y debe confirmarse expresamente. Los logs aislados bajo
+`.xdg/0.12.4/state/nvim/luals` son reproducibles.
+
+Para revertir los servidores web se deshabilitan
+las cinco configuraciones correspondientes de `config.lsp`, se retiran
 `tools/lsp-web/node_modules` y `tests/fixtures/lsp-tailwind-v4/node_modules` y,
 si no se usa para otra fase, se retiran `.xdg/0.12.4/corepack` y
 `.xdg/0.12.4/pnpm`. Los tres archivos reproducibles de `tools/lsp-web` permiten

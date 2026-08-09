@@ -18,9 +18,22 @@ assert(package.loaded["lspconfig"] == nil, "no debe cargarse la API antigua de l
 
 for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "bashls", "basedpyright" }) do
   assert(type(vim.lsp.config[name]) == "table", "falta la configuracion de catalogo " .. name)
-  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss" }, name)
+  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls" }, name)
   assert(vim.lsp.is_enabled(name) == should_be_enabled, "estado de activacion incorrecto para " .. name)
 end
+
+local luals_bin = vim.env.ENTORNO_NVIM_LUALS_BIN
+local lua_config = vim.lsp.config.lua_ls
+assert(lua_config.cmd[1] == luals_bin, "lua_ls no usa el ejecutable aislado")
+assert(lua_config.cmd[2]:match("^%-%-logpath="), "lua_ls no aisla sus logs")
+assert(lua_config.settings.Lua.runtime.version == "LuaJIT", "lua_ls no usa el runtime LuaJIT de Neovim")
+assert(vim.tbl_contains(lua_config.settings.Lua.diagnostics.globals, "vim"), "lua_ls no reconoce el global vim")
+assert(
+  vim.tbl_contains(lua_config.settings.Lua.workspace.library, vim.env.VIMRUNTIME),
+  "lua_ls no conoce el runtime de Neovim"
+)
+assert(lua_config.settings.Lua.workspace.checkThirdParty == "Disable", "lua_ls no desactivo la deteccion de addons")
+assert(lua_config.settings.Lua.workspace.useGitIgnore == true, "lua_ls no respeta .gitignore")
 
 local lsp = require("config.lsp")
 local web_bin = vim.env.ENTORNO_NVIM_LSP_WEB_BIN

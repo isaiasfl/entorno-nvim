@@ -11,6 +11,7 @@ Desde la raíz del repositorio:
 
 ```sh
 ./scripts/instalar-lsp-web.sh
+./scripts/instalar-luals.sh
 ./scripts/arrancar.sh
 ```
 
@@ -122,6 +123,8 @@ ejecuta `error()` produce estado de salida no cero. La comprobación vigente usa
 | Corepack aislado | `./.xdg/0.12.4/corepack` |
 | Almacén pnpm | `./.xdg/0.12.4/pnpm/store` |
 | Ejecutables LSP web | `./tools/lsp-web/node_modules/.bin` |
+| LuaLS | `~/.local/opt/lua-language-server-3.19.0` |
+| Logs de LuaLS | `./.xdg/0.12.4/state/nvim/luals` |
 
 `.xdg/` es temporal, reproducible y está ignorado por Git. Puede retirarse sin
 afectar a la configuración activa; los scripts lo recrean cuando es necesario.
@@ -132,6 +135,11 @@ El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
 `LSP_WEB_BIN` permite probar otro directorio de ejecutables sin cambiar el
 `PATH`. El runner lo publica dentro de Neovim como
 `ENTORNO_NVIM_LSP_WEB_BIN`; normalmente no hace falta definirlo.
+
+`LUALS_BIN` permite seleccionar otro binario de LuaLS. El valor predeterminado
+es `~/.local/opt/lua-language-server-3.19.0/bin/lua-language-server`; se pasa a
+Neovim como `ENTORNO_NVIM_LUALS_BIN`, sin añadirlo al `PATH` global. El
+instalador admite `LUALS_OPT_ROOT` para probar la instalación en otra raíz.
 
 La comparación original se ejecutó sin compartir caché, estado, sockets ni
 plugins. Tras incorporar nvim-treesitter, la configuración requiere 0.12.4 y la
