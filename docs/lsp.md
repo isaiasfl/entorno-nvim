@@ -315,8 +315,12 @@ sin Tailwind confirma que el servidor no arranca fuera de su ámbito.
 
 ## Lenguajes pendientes
 
-- Bash: evaluar `bash-language-server`, su dependencia de Node y la convivencia
-  opcional con ShellCheck sin instalarla todavía.
+- Bash: `bash-language-server` 5.6.0 se evaluó el 9 de agosto de 2026, pero no
+  se instaló. `pnpm audit --audit-level low` detectó tres vulnerabilidades altas
+  en la dependencia transitiva `minimatch 10.0.1`, introducida mediante
+  `bash-language-server > editorconfig > minimatch`. No se añadieron overrides
+  ni se forzó otra versión; se reevaluará cuando el paquete oficial actualice
+  sus dependencias.
 - Python: decidir entre BasedPyright y Pyright según tipado, licencia, consumo y
   método de instalación reproducible; después configurar el servidor elegido.
 
