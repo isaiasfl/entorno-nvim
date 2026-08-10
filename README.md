@@ -136,3 +136,7 @@ actualizaciones automáticas de plugins, parsers ni LSP.
 Primero ejecuta `./scripts/restaurar.sh`. Después pueden retirarse manualmente
 la raíz XDG del repositorio y los directorios versionados de `~/.local/opt`
 cuando ningún proceso los use. El proyecto nunca borra backups automáticamente.
+
+## Licencia
+
+MIT © 2026 Isaías Fernández Lozano

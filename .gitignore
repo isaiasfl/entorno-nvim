@@ -1,15 +1,16 @@
 # Copias locales previas a modificaciones
 .backups/
 .xdg/
-tools/lsp-web/node_modules/
-tools/lsp-python/node_modules/
-tests/fixtures/lsp-tailwind-v4/node_modules/
+**/node_modules/
 
 # Archivos generados por pruebas y editores
 *.log
 .nvimlog
 *.swp
 *.swo
+.DS_Store
+*~
+*.bak
 
 # PDF generados desde los ejemplos Markdown
 examples/**/*.pdf
@@ -22,6 +23,15 @@ examples/**/*.pdf
 *.pem
 *.key
 *.p12
+*.p8
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+id_ecdsa
+id_dsa
+credentials.json
 **/.ssh/
 **/.gnupg/
 **/.password-store/
@@ -34,3 +44,11 @@ examples/**/*.pdf
 **/.s3cfg
 **/.kube/config
 **/.docker/config.json
+
+# Estado y configuración privada local de agentes (solo en la raíz).
+/.codex/
+/.claude/
+/.opencode/
+/.jarvis/
+/.config/opencode/
+/.config/jarvis/
