@@ -26,6 +26,7 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
 
 "$PROJECT_ROOT/tests/comprobar_tmux.sh"
 "$PROJECT_ROOT/tests/comprobar_activacion.sh"
+"$PROJECT_ROOT/tests/comprobar_markdown_pdf.sh"
 
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"

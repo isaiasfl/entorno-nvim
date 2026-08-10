@@ -9,3 +9,6 @@ tests/fixtures/lsp-tailwind-v4/node_modules/
 .nvimlog
 *.swp
 *.swo
+
+# PDF generados desde los ejemplos Markdown
+examples/**/*.pdf

@@ -27,6 +27,7 @@ assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
 assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 assert(package.loaded["config.lsp"], "config.lsp no se cargo")
 assert(package.loaded["config.completion"], "config.completion no se cargo")
+assert(package.loaded["config.markdown_pdf"], "config.markdown_pdf no se cargo")
 assert(vim.g.loaded_netrw == 1, "netrw debe estar desactivado")
 assert(vim.g.loaded_netrwPlugin == 1, "el plugin de netrw debe estar desactivado")
 
@@ -48,6 +49,11 @@ assert(mapping("n", "<C-k>").rhs == "<C-w>k", "Ctrl+k no cambia a la ventana sup
 assert(mapping("n", "<C-l>").rhs == "<C-w>l", "Ctrl+l no cambia a la ventana derecha")
 assert(mapping("n", "n").rhs == "nzzzv", "n no centra resultados")
 assert(mapping("n", "N").rhs == "Nzzzv", "N no centra resultados")
+
+local markdown_pdf = mapping("n", " mp")
+assert(markdown_pdf.desc == "Generar PDF del Markdown actual", "leader+mp no esta configurado")
+assert(type(markdown_pdf.callback) == "function", "leader+mp no usa el exportador nativo")
+assert(vim.fn.exists(":MarkdownPdf") == 2, "falta el comando MarkdownPdf")
 
 local jk = mapping("i", "jk")
 assert(jk.rhs == "<Esc>", "jk no equivale a Esc")

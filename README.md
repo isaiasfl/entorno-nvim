@@ -20,8 +20,10 @@ CSS-first real. `mini.pairs` aporta cierre automático de delimitadores y
 comillas sin activar otros módulos de mini.nvim. La integración Git abre el
 `lazygit` existente mediante el terminal nativo, sin otro plugin. Un flujo tmux
 por proyecto separa Neovim, un agente intercambiable y una terminal de trabajo;
-el contexto se envia sin plugins de IA ni acoplamiento a proveedores. Todo se
-ejecuta en un entorno XDG aislado y no modifica ni enlaza `~/.config/nvim`.
+el contexto se envia sin plugins de IA ni acoplamiento a proveedores. Los
+documentos Markdown se exportan a PDF A4 mediante Pandoc, CSS propio y Chromium
+desde un comando nativo de Neovim. Todo se ejecuta en un entorno XDG aislado y
+no modifica ni enlaza `~/.config/nvim`.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global

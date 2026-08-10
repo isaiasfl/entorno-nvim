@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" role="img" aria-labelledby="title desc">
+  <title id="title">Circuito eléctrico sencillo</title>
+  <desc id="desc">Una pila, un interruptor y una lámpara conectados en serie.</desc>
+  <rect width="760" height="260" rx="18" fill="#eef2f7"/>
+  <g fill="none" stroke="#205493" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 70H300M390 70H620V190H110V70"/>
+    <path d="M300 70l78-42"/>
+    <circle cx="632" cy="130" r="42" fill="#fff"/>
+    <path d="M608 106l48 48M656 106l-48 48"/>
+    <path d="M82 107v46M110 92v76"/>
+  </g>
+  <g fill="#172033" font-family="sans-serif" font-size="22">
+    <text x="42" y="220">Pila</text>
+    <text x="270" y="220">Interruptor</text>
+    <text x="592" y="220">Lámpara</text>
+  </g>
+</svg>

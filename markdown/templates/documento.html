@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="$if(lang)$$lang$$else$es$endif$">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$if(pagetitle)$$pagetitle$$else$Documento$endif$</title>
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(highlighting-css)$
+  <style>$highlighting-css$</style>
+$endif$
+  <style>
+    :root {
+      --cabecera-izquierda: "$if(header-left)$$header-left$$else$IFL · Documento$endif$";
+      --cabecera-derecha: "$if(header-right)$$header-right$$endif$";
+      --pie-izquierda: "$if(footer-left)$$footer-left$$endif$";
+    }
+  </style>
+</head>
+<body>
+  <main>
+$body$
+  </main>
+</body>
+</html>

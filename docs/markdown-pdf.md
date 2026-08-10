@@ -1,29 +1,145 @@
 # Markdown y PDF
 
-## Necesidad
+## Resultado
 
-El flujo debe manejar exámenes con tablas e imágenes y producir una
-previsualización cercana al PDF final. También debe ser reproducible y evitar
-archivos de estilo ocultos en la configuración personal.
+La cadena elegida es:
 
-## Estado actual
+```text
+Markdown → Pandoc → HTML autocontenido + CSS → Chromium/Chrome → PDF A4
+```
 
-La configuración anterior genera HTML con Pandoc y después intenta convertirlo
-con WeasyPrint. Depende de una plantilla y un CSS bajo `~/.config/mdpdf`, y abre
-el resultado con `xdg-open`. Pandoc está instalado, pero WeasyPrint no está en el
-`PATH`. También están disponibles pdfLaTeX, XeLaTeX y LuaLaTeX.
+No usa plugins de Neovim ni archivos ocultos de la configuración anterior. La
+plantilla, el estilo, el ejemplo y el exportador viven en el repositorio.
 
-## Criterio propuesto
+## Por qué esta cadena
 
-No se elegirá todavía un plugin de previsualización ni se instalará un motor.
-Primero se añadirá al repositorio un documento de muestra, una imagen local y
-los estilos necesarios. Se compararán dos rutas:
+En Debian están disponibles Pandoc 3.1.11.1, Chromium 151, Google Chrome 151,
+pdfLaTeX, XeLaTeX y LuaLaTeX. No están disponibles WeasyPrint, wkhtmltopdf,
+Paged.js, Typst ni Tectonic.
 
-1. Pandoc a HTML/PDF con CSS compartido, que favorece la coherencia visual entre
-   navegador y PDF pero puede requerir un conversor adicional.
-2. Pandoc a PDF mediante XeLaTeX o LuaLaTeX, ya disponibles, con buena tipografía
-   e impresión pero una previsualización distinta del PDF.
+Se eligió HTML/CSS con Chromium porque:
 
-La decisión se tomará midiendo tablas, saltos de página, imágenes, tipografía,
-velocidad y comportamiento en Linux y macOS. Cualquier dependencia Node o
-script de construcción requerirá revisión específica antes de ejecutarse.
+- el CSS es la única fuente de estilos para pantalla e impresión;
+- Pandoc resuelve tablas, bloques de código, imágenes relativas y metadatos;
+- Chromium soporta A4, saltos y cajas de margen paginadas con contadores;
+- `--embed-resources` produce un HTML temporal autocontenido antes de imprimir;
+- Chromium o Chrome están disponibles en Debian, CachyOS y macOS.
+
+Pandoc con XeLaTeX o LuaLaTeX también es estable para impresión y queda como
+alternativa si en el futuro se requieren fórmulas o composición tipográfica muy
+avanzada. No se usa ahora porque obligaría a mantener estilos LaTeX separados
+del CSS. WeasyPrint habría sido una buena ruta HTML/CSS, pero falta en el equipo
+y no aporta una ventaja que justifique instalarlo. `wkhtmltopdf` usa un motor
+HTML antiguo; Paged.js añadiría Node y otra dependencia.
+
+## Archivos
+
+- `scripts/markdown-pdf.sh`: exportador reproducible.
+- `markdown/templates/documento.html`: plantilla HTML de Pandoc.
+- `markdown/styles/examen.css`: estilos de pantalla e impresión.
+- `examples/examen/examen.md`: examen de validación.
+- `examples/examen/assets/circuito.svg`: imagen relativa del ejemplo.
+- `tests/comprobar_markdown_pdf.sh`: prueba funcional que genera un PDF real.
+
+Los PDF de `examples/` se ignoran en Git porque son artefactos generados.
+
+## Uso
+
+Desde la terminal:
+
+```sh
+./scripts/markdown-pdf.sh ruta/documento.md
+./scripts/markdown-pdf.sh ruta/documento.md ruta/salida.pdf
+```
+
+Sin segundo argumento, el PDF se crea junto al Markdown con el mismo nombre.
+Las rutas con espacios se admiten si se entrecomillan en la shell.
+
+Desde Neovim, con el Markdown abierto:
+
+- `<leader>mp` guarda el archivo y genera el PDF junto a él;
+- `:MarkdownPdf` hace lo mismo;
+- `:MarkdownPdf ruta/salida.pdf` permite elegir la salida.
+
+La ejecución es asíncrona y Neovim muestra una notificación al terminar. El
+comando no abre el PDF automáticamente, para conservar portabilidad y evitar
+acoplar el flujo a `xdg-open` o `open`.
+
+## Metadatos y contenido
+
+La cabecera YAML del documento admite estas variables:
+
+```yaml
+---
+title: "Título del documento"
+lang: es
+header-left: "IFL · Departamento"
+header-right: "Curso 2026–2027"
+footer-left: "Texto del pie"
+---
+```
+
+La numeración `Página N de M` se añade automáticamente. Conviene evitar
+comillas dobles dentro de los tres textos de cabecera y pie porque se insertan
+como contenido CSS.
+
+Para forzar un salto de página:
+
+```markdown
+::: page-break
+:::
+```
+
+Para intentar mantener un bloque unido en una página:
+
+```markdown
+::: no-break
+Contenido que no debería partirse.
+:::
+```
+
+Las imágenes se escriben con rutas relativas al propio Markdown:
+
+```markdown
+![Descripción](assets/imagen.png){width=70%}
+```
+
+## Personalización
+
+Los colores, familias tipográficas, márgenes A4, tablas, código y espaciado se
+definen en `markdown/styles/examen.css`. Las variables de `:root` son el punto
+de partida para cambios de identidad visual. Se usan alternativas tipográficas
+comunes y no se presupone una Nerd Font.
+
+Puede probarse otro estilo o plantilla sin modificar el script:
+
+```sh
+MDPDF_STYLE=ruta/otro.css ./scripts/markdown-pdf.sh documento.md
+MDPDF_TEMPLATE=ruta/otra.html ./scripts/markdown-pdf.sh documento.md
+```
+
+Los emojis dependen de las fuentes instaladas y del motor del navegador. Para
+elementos esenciales es preferible usar texto o una imagen versionada.
+
+## Dependencias y portabilidad
+
+Las dependencias directas son Pandoc y Chromium o Google Chrome. `pdfinfo` y
+`pdftotext` mejoran la prueba, pero son opcionales durante el uso normal. El
+navegador se detecta por nombre; en macOS se buscan además las aplicaciones
+habituales. `CHROMIUM_BIN` permite indicar otro ejecutable.
+
+Antes de instalar nada en otro equipo, se puede diagnosticar con:
+
+```sh
+command -v pandoc chromium google-chrome pdfinfo pdftotext
+```
+
+## Comprobación
+
+```sh
+./tests/comprobar_markdown_pdf.sh
+```
+
+La prueba genera `examples/examen/examen.pdf`, comprueba que no esté vacío, que
+tenga al menos dos páginas y, si Poppler está disponible, valida contenido y
+numeración mediante `pdfinfo` y `pdftotext`.

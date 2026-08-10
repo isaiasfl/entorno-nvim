@@ -1,0 +1,191 @@
+:root {
+  --color-tinta: #172033;
+  --color-suave: #eef2f7;
+  --color-borde: #aeb8c6;
+  --color-acento: #205493;
+  --fuente-texto: "Noto Sans", "DejaVu Sans", Arial, sans-serif;
+  --fuente-codigo: "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+@page {
+  size: A4;
+  margin: 22mm 18mm 20mm;
+
+  @top-left {
+    color: #526174;
+    content: var(--cabecera-izquierda);
+    font-family: "Noto Sans", "DejaVu Sans", Arial, sans-serif;
+    font-size: 8.5pt;
+  }
+
+  @top-right {
+    color: #526174;
+    content: var(--cabecera-derecha);
+    font-family: "Noto Sans", "DejaVu Sans", Arial, sans-serif;
+    font-size: 8.5pt;
+  }
+
+  @bottom-left {
+    color: #687588;
+    content: var(--pie-izquierda);
+    font-family: "Noto Sans", "DejaVu Sans", Arial, sans-serif;
+    font-size: 8pt;
+  }
+
+  @bottom-right {
+    color: #687588;
+    content: "Página " counter(page) " de " counter(pages);
+    font-family: "Noto Sans", "DejaVu Sans", Arial, sans-serif;
+    font-size: 8pt;
+  }
+}
+
+html {
+  color: var(--color-tinta);
+  font-family: var(--fuente-texto);
+  font-size: 10.5pt;
+  line-height: 1.45;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  break-after: avoid;
+  color: var(--color-acento);
+  line-height: 1.2;
+}
+
+h1 {
+  border-bottom: 2px solid var(--color-acento);
+  font-size: 22pt;
+  margin: 0 0 8mm;
+  padding-bottom: 3mm;
+}
+
+h2 {
+  font-size: 15pt;
+  margin: 7mm 0 3mm;
+}
+
+h3 {
+  font-size: 12pt;
+}
+
+p,
+li {
+  orphans: 3;
+  widows: 3;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 9.5pt;
+  margin: 5mm 0;
+  width: 100%;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+th,
+td {
+  border: 1px solid var(--color-borde);
+  padding: 2.5mm 3mm;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--color-suave);
+  color: #24344d;
+}
+
+figure {
+  break-inside: avoid;
+  margin: 6mm auto;
+  text-align: center;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+figcaption {
+  color: #526174;
+  font-size: 9pt;
+  margin-top: 2mm;
+}
+
+pre {
+  background: #f5f7fa;
+  border-left: 3px solid var(--color-acento);
+  break-inside: avoid;
+  font-family: var(--fuente-codigo);
+  font-size: 8.5pt;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  padding: 3mm 4mm;
+  white-space: pre-wrap;
+}
+
+code {
+  font-family: var(--fuente-codigo);
+}
+
+blockquote {
+  border-left: 3px solid var(--color-borde);
+  color: #445066;
+  margin-left: 0;
+  padding-left: 5mm;
+}
+
+.datos-examen {
+  background: var(--color-suave);
+  border: 1px solid var(--color-borde);
+  display: grid;
+  gap: 4mm;
+  grid-template-columns: 2fr 1fr;
+  margin-bottom: 7mm;
+  padding: 4mm;
+}
+
+.page-break {
+  break-before: page;
+  page-break-before: always;
+}
+
+.no-break {
+  break-inside: avoid;
+}
+
+@media screen {
+  body {
+    background: #e5e9ef;
+    padding: 10mm;
+  }
+
+  main {
+    background: white;
+    box-shadow: 0 2mm 8mm rgb(23 32 51 / 18%);
+    margin: auto;
+    max-width: 174mm;
+    min-height: 247mm;
+    padding: 22mm 18mm 20mm;
+  }
+}

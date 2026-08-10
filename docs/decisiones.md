@@ -142,8 +142,6 @@ adornos en el arranque mínimo.
 
 - Empezar con capacidades nativas y añadir plugins solo ante carencias medidas.
 - Mantener fuera del alcance inicial la IA y la depuración.
-- Elegir el motor de PDF después de una prueba reproducible entre HTML/CSS y
-  LaTeX, priorizando coherencia visual y portabilidad.
 
 ## Fase 2: núcleo aislado
 
@@ -182,3 +180,21 @@ recomendar un sorter nativo adicional, aumentando el alcance y las dependencias.
 Lazy tiene deshabilitados LuaRocks, las especificaciones locales de proyecto,
 la comprobación automática de actualizaciones y las fuentes de paquetes. Las
 actualizaciones deben ser explícitas y conservar el lockfile revisado.
+
+## Fase 7: Markdown y PDF
+
+La fase fija Pandoc a HTML autocontenido y Chromium/Chrome como motor de
+impresión. Esta combinación usa un CSS versionado como fuente única de estilo y
+funciona con las herramientas ya disponibles en Debian, sin rescatar archivos
+de LazyVim ni instalar un plugin Markdown.
+
+El exportador detecta sus dependencias, resuelve imágenes desde el directorio
+del documento y genera un PDF A4 con cabeceras, pies, numeración y saltos
+controlados. El módulo Lua solo aporta el comando `:MarkdownPdf` y el mapa
+`<leader>mp`; el trabajo reproducible permanece en un script independiente de
+Neovim. El ejemplo y la prueba funcional cubren títulos, tabla, SVG relativo,
+código, emoji y dos páginas.
+
+XeLaTeX y LuaLaTeX se descartaron como ruta principal porque exigirían mantener
+otro sistema de estilos. WeasyPrint, Paged.js, Typst y wkhtmltopdf no están
+disponibles y no ofrecen una ventaja suficiente para añadir otra dependencia.
