@@ -26,9 +26,10 @@ for plugin, _ in pairs(lock) do
   local expected = xdg .. "/data/nvim/lazy/" .. plugin
   assert(lazy.plugins[plugin].dir == expected, "plugin fuera del XDG temporal: " .. plugin)
 end
-require("lazy").load({ plugins = { "fzf-lua", "nvim-tree.lua", "mini.nvim" } })
+require("lazy").load({ plugins = { "fzf-lua", "nvim-tree.lua", "nvim-web-devicons", "mini.nvim" } })
 assert(package.loaded["fzf-lua"], "fzf-lua no se cargo")
 assert(package.loaded["nvim-tree"], "nvim-tree no se cargo")
+assert(package.loaded["nvim-web-devicons"], "nvim-web-devicons no se cargo")
 
 for _, executable in ipairs({
   "typescript-language-server",

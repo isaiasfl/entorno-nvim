@@ -61,9 +61,9 @@ Corepack y pnpm viven dentro de la raíz XDG aislada.
 
 ## E. Plugins y parsers
 
-Los siete plugins están fijados por commit en `nvim/lazy-lock.json`:
-`lazy.nvim`, `fzf-lua`, `nvim-tree.lua`, `nvim-lspconfig`, `nvim-treesitter`,
-`nvim-ts-autotag` y `mini.nvim`.
+Los ocho plugins están fijados por commit en `nvim/lazy-lock.json`:
+`lazy.nvim`, `fzf-lua`, `nvim-tree.lua`, `nvim-web-devicons`,
+`nvim-lspconfig`, `nvim-treesitter`, `nvim-ts-autotag` y `mini.nvim`.
 
 Los parsers externos fijados son `bash`, `python`, `javascript`, `typescript`,
 `tsx`, `json`, `html` y `css`. Lua, Markdown y Markdown inline proceden de

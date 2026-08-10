@@ -134,7 +134,8 @@ end
 local lazy_config = require("lazy.core.config")
 assert(lazy_config.plugins["fzf-lua"], "fzf-lua no esta registrado")
 assert(lazy_config.plugins["nvim-tree.lua"], "nvim-tree.lua no esta registrado")
-assert(not lazy_config.plugins["nvim-web-devicons"], "nvim-web-devicons no debe estar registrado")
+local devicons_plugin = assert(lazy_config.plugins["nvim-web-devicons"], "nvim-web-devicons no esta registrado")
+assert(devicons_plugin.commit == "2ae6958df7ced50baac5035cec0c15799eedfbf7", "nvim-web-devicons no fija la revision esperada")
 assert(vim.fn.executable("fzf") == 1, "fzf no esta disponible")
 assert(vim.fn.executable("rg") == 1, "ripgrep no esta disponible")
 
@@ -234,9 +235,55 @@ assert(not tree_config.diagnostics.enable, "los diagnosticos de nvim-tree deben 
 assert(not tree_config.modified.enable, "los indicadores de modificacion deben estar desactivados")
 assert(not tree_config.filters.enable, "nvim-tree no debe aplicar filtros")
 assert(vim.tbl_isempty(tree_config.renderer.decorators), "nvim-tree no debe usar decoradores")
-for name, enabled in pairs(tree_config.renderer.icons.show) do
-  assert(not enabled, "el icono " .. name .. " debe estar desactivado")
+for _, name in ipairs({ "file", "folder", "folder_arrow" }) do
+  assert(tree_config.renderer.icons.show[name], "el icono " .. name .. " debe estar activado")
 end
+for _, name in ipairs({ "git", "modified", "hidden", "diagnostics", "bookmarks" }) do
+  assert(not tree_config.renderer.icons.show[name], "el icono " .. name .. " debe estar desactivado")
+end
+assert(tree_config.renderer.icons.web_devicons.file.enable, "nvim-tree no usa devicons para archivos")
+assert(tree_config.renderer.icons.web_devicons.file.color, "los iconos de archivo no conservan sus colores")
+assert(not tree_config.renderer.icons.web_devicons.folder.enable, "las carpetas deben usar los iconos sobrios de nvim-tree")
+assert(tree_config.renderer.highlight_git == "none", "Git no debe colorear nombres completos")
+assert(tree_config.renderer.highlight_opened_files == "none", "los archivos abiertos no deben colorear el nombre completo")
+
+local devicons = require("nvim-web-devicons")
+for _, filename in ipairs({
+  "init.lua",
+  "app.js",
+  "types.ts",
+  "component.tsx",
+  "main.py",
+  "README.md",
+  "data.json",
+  "index.html",
+  "style.css",
+  ".gitignore",
+  "script.sh",
+}) do
+  local icon, highlight = devicons.get_icon(filename, nil, { default = true })
+  assert(type(icon) == "string" and icon ~= "", "falta icono para " .. filename)
+  assert(type(highlight) == "string" and highlight:match("^DevIcon"), "falta color de icono para " .. filename)
+end
+local plain_icon, plain_highlight = devicons.get_icon("LICENSE", nil, { default = true })
+assert(type(plain_icon) == "string" and plain_icon ~= "", "falta fallback para archivos sin extension")
+assert(type(plain_highlight) == "string", "el fallback sin extension no tiene highlight")
+
+-- El wrapper de nvim-tree debe degradar a su glifo generico si require falla.
+local loaded_devicons = package.loaded["nvim-web-devicons"]
+local loaded_component = package.loaded["nvim-tree.renderer.components.devicons"]
+local preload_devicons = package.preload["nvim-web-devicons"]
+package.loaded["nvim-web-devicons"] = nil
+package.loaded["nvim-tree.renderer.components.devicons"] = nil
+package.preload["nvim-web-devicons"] = function()
+  error("fallo simulado de devicons")
+end
+local fallback_component = require("nvim-tree.renderer.components.devicons")
+local fallback_ok, fallback_icon = pcall(fallback_component.get_icon, "init.lua", "lua", { default = true })
+assert(fallback_ok and fallback_icon == nil, "nvim-tree no degrada limpiamente sin devicons")
+package.preload["nvim-web-devicons"] = preload_devicons
+package.loaded["nvim-web-devicons"] = loaded_devicons
+package.loaded["nvim-tree.renderer.components.devicons"] = loaded_component
 assert(tree_config.ui.confirm.remove, "borrar debe pedir confirmacion")
 assert(tree_config.ui.confirm.trash, "enviar a la papelera debe pedir confirmacion")
 assert(not tree_config.ui.confirm.default_yes, "la confirmacion no debe aceptar por defecto")
@@ -277,7 +324,8 @@ assert(mapping("n", "<C-k>").rhs == "<C-w>k", "Ctrl+k global cambio fuera de nvi
 
 local lockfile = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim/lazy-lock.json"), "\n"))
 assert(lockfile["nvim-tree.lua"], "nvim-tree.lua no esta fijado en el lockfile")
-assert(not lockfile["nvim-web-devicons"], "nvim-web-devicons no debe aparecer en el lockfile")
+assert(lockfile["nvim-web-devicons"], "nvim-web-devicons no aparece en el lockfile")
+assert(lockfile["nvim-web-devicons"].commit == devicons_plugin.commit, "lockfile y spec de devicons no coinciden")
 
 dofile(root .. "/tests/comprobar_lsp.lua")
 dofile(root .. "/tests/comprobar_lsp_lua.lua")

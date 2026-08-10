@@ -7,12 +7,13 @@ La configuración incorpora únicamente:
 - `lazy.nvim`, gestor directo de plugins;
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
 - `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos;
+- `nvim-web-devicons`, iconos de tipo de archivo usados por nvim-tree;
 - `mini.pairs`, cierre automático mínimo de pares al escribir;
 - `nvim-ts-autotag`, autocierre y autorrenombrado de etiquetas HTML/JSX/TSX;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
 No incluye Mason, motores externos de completado, plugins Git o de IA,
-depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
+depuración ni temas. Tree-sitter y LSP se documentan por separado en
 [treesitter.md](treesitter.md) y [lsp.md](lsp.md).
 
 ## Dependencias
@@ -26,14 +27,16 @@ depuración, iconos ni temas. Tree-sitter y LSP se documentan por separado en
 | lazy.nvim | Directa | Gestiona instalación, carga y lockfile |
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
+| nvim-web-devicons | Directa de nvim-tree | Aporta glifos y colores por tipo de archivo |
 | mini.nvim | Directa | Proporciona únicamente el módulo `mini.pairs` |
 | nvim-ts-autotag | Directa | Gestiona pares de etiquetas mediante Tree-sitter |
 | nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
 
-No hay dependencias Lua transitivas obligatorias. `nvim-web-devicons` es
-opcional para nvim-tree y no se declara ni se instala. Los iconos están
-desactivados, por lo que no se necesita una Nerd Font. Ninguno de estos plugins
-ejecuta un proceso de construcción; Git solo descarga sus repositorios.
+`nvim-web-devicons` queda fijado por commit y se carga junto a nvim-tree. Sus
+glifos requieren una Nerd Font configurada en el terminal; si el módulo no puede
+cargarse, nvim-tree conserva su glifo genérico y sigue funcionando. Ninguno de
+estos plugins ejecuta un proceso de construcción; Git solo descarga sus
+repositorios.
 
 ## Atajos
 
@@ -95,8 +98,11 @@ cerrarse con `q` desde el árbol o con `<leader>ee` desde cualquier ventana.
 
 Crear, renombrar y borrar solicitan entrada de forma explícita. El borrado y el
 envío a la papelera mantienen confirmación, con respuesta negativa por defecto.
-La integración Git, los diagnósticos, los indicadores de modificación, los
-filtros y los decoradores visuales están desactivados.
+Los iconos de archivo conservan el color por tipo definido por devicons; los
+nombres siguen los highlights normales de nvim-tree. Las carpetas usan sus
+iconos y colores propios, sin iconos por nombre. La integración Git, los
+diagnósticos, los indicadores de modificación, los filtros y los decoradores
+visuales permanecen desactivados.
 
 ## Sustitución de netrw
 

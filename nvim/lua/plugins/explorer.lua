@@ -1,6 +1,12 @@
 return {
   {
     "nvim-tree/nvim-tree.lua",
+    dependencies = {
+      {
+        "nvim-tree/nvim-web-devicons",
+        commit = "2ae6958df7ced50baac5035cec0c15799eedfbf7",
+      },
+    },
     cmd = {
       "NvimTreeFocus",
       "NvimTreeOpen",
@@ -82,10 +88,20 @@ return {
         renderer = {
           decorators = {},
           icons = {
+            web_devicons = {
+              file = {
+                enable = true,
+                color = true,
+              },
+              folder = {
+                enable = false,
+                color = false,
+              },
+            },
             show = {
-              file = false,
-              folder = false,
-              folder_arrow = false,
+              file = true,
+              folder = true,
+              folder_arrow = true,
               git = false,
               modified = false,
               hidden = false,
