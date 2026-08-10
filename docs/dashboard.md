@@ -4,7 +4,7 @@
 
 La pantalla inicial está implementada con la API nativa de Neovim. No se añade
 `dashboard-nvim`, `alpha-nvim`, `mini.starter` ni otro plugin: para un logotipo
-ASCII y seis acciones, un módulo pequeño ofrece menos arranque, menos
+ASCII y nueve acciones, un módulo pequeño ofrece menos arranque, menos
 dependencias y un comportamiento más fácil de entender.
 
 ## Comportamiento
@@ -52,8 +52,9 @@ adaptan sin fijar una paleta propia.
 
 El menú se calcula como una caja única: todas las teclas y descripciones
 comparten columna y el conjunto se vuelve a centrar al cambiar el tamaño de la
-interfaz. Bajo el menú aparecen la versión efectiva de Neovim y el directorio
-actual, abreviado cuando no cabe.
+interfaz o de la ventana/split que lo muestra. Bajo el menú aparecen la versión
+efectiva de Neovim y el directorio actual, abreviado cuando no cabe. El estado
+local guardado se elimina también si una ventana se cierra directamente.
 
 La implementación está en `nvim/lua/config/dashboard.lua` y la prueba en
 `tests/comprobar_dashboard.lua`.

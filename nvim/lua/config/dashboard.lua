@@ -74,12 +74,14 @@ end
 
 local function restore_window_ui(window)
   local saved = window_options[window]
-  if not saved or not vim.api.nvim_win_is_valid(window) then
+  if not saved then
     return
   end
 
-  for option, value in pairs(saved) do
-    vim.wo[window][option] = value
+  if vim.api.nvim_win_is_valid(window) then
+    for option, value in pairs(saved) do
+      vim.wo[window][option] = value
+    end
   end
   window_options[window] = nil
 end
@@ -250,6 +252,15 @@ local function define_highlights()
   vim.api.nvim_set_hl(0, "IFLSecondary", { link = "Comment" })
 end
 
+local function rerender_dashboards()
+  for _, window in ipairs(vim.api.nvim_list_wins()) do
+    local buffer = vim.api.nvim_win_get_buf(window)
+    if is_dashboard(buffer) then
+      render(buffer, window)
+    end
+  end
+end
+
 function M.setup()
   define_highlights()
   local group = vim.api.nvim_create_augroup("entorno_nvim_dashboard", { clear = true })
@@ -263,16 +274,9 @@ function M.setup()
       end
     end,
   })
-  vim.api.nvim_create_autocmd("VimResized", {
+  vim.api.nvim_create_autocmd({ "VimResized", "WinResized" }, {
     group = group,
-    callback = function()
-      for _, window in ipairs(vim.api.nvim_list_wins()) do
-        local buffer = vim.api.nvim_win_get_buf(window)
-        if is_dashboard(buffer) then
-          render(buffer, window)
-        end
-      end
-    end,
+    callback = rerender_dashboards,
   })
   vim.api.nvim_create_autocmd("BufLeave", {
     group = group,
@@ -285,6 +289,15 @@ function M.setup()
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = group,
     callback = define_highlights,
+  })
+  vim.api.nvim_create_autocmd("WinClosed", {
+    group = group,
+    callback = function(event)
+      local window = tonumber(event.match)
+      if window then
+        window_options[window] = nil
+      end
+    end,
   })
 end
 

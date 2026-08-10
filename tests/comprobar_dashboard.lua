@@ -3,6 +3,14 @@ local dashboard = require("config.dashboard")
 assert(package.loaded["config.dashboard"], "config.dashboard no se cargo")
 assert(vim.fn.exists(":IFL") == 2, "falta el comando IFL")
 
+local resize_events = {}
+for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ group = "entorno_nvim_dashboard" })) do
+  resize_events[autocmd.event] = true
+end
+assert(resize_events.VimResized, "el dashboard no atiende VimResized")
+assert(resize_events.WinResized, "el dashboard no atiende WinResized")
+assert(resize_events.WinClosed, "el dashboard no limpia el estado de ventanas cerradas")
+
 local lazy_config = require("lazy.core.config")
 for name in pairs(lazy_config.plugins) do
   local lower = name:lower()
@@ -106,6 +114,14 @@ for _, size in ipairs(sizes) do
   for _, line in ipairs(rendered) do
     assert(vim.fn.strdisplaywidth(line) <= window_width, "una línea excede el ancho " .. window_width)
   end
+end
+
+vim.cmd("vertical resize 46")
+vim.api.nvim_exec_autocmds("WinResized", {})
+local resized_width = vim.api.nvim_win_get_width(0)
+local resized_lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
+for _, line in ipairs(resized_lines) do
+  assert(vim.fn.strdisplaywidth(line) <= resized_width, "WinResized dejó una línea fuera de la ventana")
 end
 
 vim.cmd.enew()
