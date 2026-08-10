@@ -11,10 +11,11 @@ El proyecto contiene un núcleo nativo de Neovim y una capa mínima de plugins:
 `nvim-tree.lua` permite recorrer el proyecto como árbol. Tree-sitter añade
 resaltado estructural para shell, Python y desarrollo web. El cliente LSP y el
 completado son nativos; `nvim-lspconfig` aporta únicamente el catálogo de
-configuraciones. Los servidores web para JavaScript, TypeScript, React/TSX,
-HTML, CSS y JSON se instalan de forma aislada y reproducible mediante Corepack
-y pnpm. LuaLS aporta soporte para los módulos Lua de esta configuración desde
-una instalación versionada bajo `~/.local/opt`. Tailwind CSS se activa solo
+configuraciones. Los servidores para JavaScript, TypeScript, React/TSX, HTML,
+CSS, JSON y Python se instalan de forma aislada y reproducible mediante
+Corepack y pnpm. Pyright cubre Python y LuaLS aporta soporte para los módulos
+Lua de esta configuración desde una instalación versionada bajo
+`~/.local/opt`. Tailwind CSS se activa solo
 cuando detecta una dependencia, una configuración clásica o una entrada
 CSS-first real. `mini.pairs` aporta cierre automático de delimitadores y
 comillas sin activar otros módulos de mini.nvim. La integración Git abre el
@@ -53,6 +54,7 @@ Abrir Neovim con la configuración del repositorio:
 
 ```sh
 ./scripts/instalar-lsp-web.sh
+./scripts/instalar-lsp-python.sh
 ./scripts/instalar-luals.sh
 ./scripts/arrancar.sh
 ```

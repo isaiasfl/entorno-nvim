@@ -11,6 +11,7 @@ Desde la raíz del repositorio:
 
 ```sh
 ./scripts/instalar-lsp-web.sh
+./scripts/instalar-lsp-python.sh
 ./scripts/instalar-luals.sh
 ./scripts/arrancar.sh
 ```
@@ -103,10 +104,12 @@ La comprobación, para el binario seleccionado:
 8. ejecuta `checkhealth` y falla si el informe contiene errores;
 9. comprueba que Lazy, `fzf-lua` y el catálogo LSP están registrados y pueden
    cargarse;
-10. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
-11. comprueba el layout tmux, las sesiones de proyecto y el transporte de
+10. comprueba Pyright con un proyecto Python real y conserva las pruebas de
+    LuaLS, servidores web y Tailwind;
+11. valida los atajos de búsqueda y los ejecutables `fzf` y `rg`;
+12. comprueba el layout tmux, las sesiones de proyecto y el transporte de
     contexto hacia el panel de agente;
-12. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
+13. guarda el informe en la raíz indicada mediante `NVIM_XDG_ROOT`.
 
 `NVIM_TEST_FILE` permite sustituir temporalmente la prueba Lua para comprobar el
 propio runner. Se verificó originalmente con ambas versiones que un archivo que
@@ -127,6 +130,7 @@ ejecuta `error()` produce estado de salida no cero. La comprobación vigente usa
 | Corepack aislado | `./.xdg/0.12.4/corepack` |
 | Almacén pnpm | `./.xdg/0.12.4/pnpm/store` |
 | Ejecutables LSP web | `./tools/lsp-web/node_modules/.bin` |
+| Ejecutables LSP Python | `./tools/lsp-python/node_modules/.bin` |
 | LuaLS | `~/.local/opt/lua-language-server-3.19.0` |
 | Logs de LuaLS | `./.xdg/0.12.4/state/nvim/luals` |
 
@@ -139,6 +143,11 @@ El directorio `runtime` usa permisos `0700`, como exige la especificación XDG.
 `LSP_WEB_BIN` permite probar otro directorio de ejecutables sin cambiar el
 `PATH`. El runner lo publica dentro de Neovim como
 `ENTORNO_NVIM_LSP_WEB_BIN`; normalmente no hace falta definirlo.
+
+`LSP_PYTHON_BIN` hace lo mismo para el directorio que contiene
+`pyright-langserver`. El runner lo publica como
+`ENTORNO_NVIM_LSP_PYTHON_BIN` y falla con una instrucción concreta cuando no se
+ha ejecutado todavía `scripts/instalar-lsp-python.sh`.
 
 `LUALS_BIN` permite seleccionar otro binario de LuaLS. El valor predeterminado
 es `~/.local/opt/lua-language-server-3.19.0/bin/lua-language-server`; se pasa a

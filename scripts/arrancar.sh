@@ -7,6 +7,7 @@ NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-0.12.4/bin/nvim"}
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-0.26.11/bin/tree-sitter"}
 LSP_WEB_BIN=${LSP_WEB_BIN:-"$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"}
+LSP_PYTHON_BIN=${LSP_PYTHON_BIN:-"$PROJECT_ROOT/tools/lsp-python/node_modules/.bin"}
 LUALS_BIN=${LUALS_BIN:-"$HOME/.local/opt/lua-language-server-3.19.0/bin/lua-language-server"}
 
 case "$XDG_ROOT" in
@@ -17,6 +18,11 @@ esac
 case "$LSP_WEB_BIN" in
   /*) ;;
   *) LSP_WEB_BIN="$PROJECT_ROOT/$LSP_WEB_BIN" ;;
+esac
+
+case "$LSP_PYTHON_BIN" in
+  /*) ;;
+  *) LSP_PYTHON_BIN="$PROJECT_ROOT/$LSP_PYTHON_BIN" ;;
 esac
 
 if [ ! -x "$TREE_SITTER_BIN" ]; then
@@ -36,6 +42,11 @@ do
     exit 1
   fi
 done
+
+if [ ! -x "$LSP_PYTHON_BIN/pyright-langserver" ]; then
+  printf '%s\n' "Error: falta $LSP_PYTHON_BIN/pyright-langserver; ejecuta scripts/instalar-lsp-python.sh." >&2
+  exit 1
+fi
 
 if [ ! -x "$LUALS_BIN" ]; then
   printf '%s\n' "Error: LUALS_BIN no es un ejecutable: $LUALS_BIN; ejecuta scripts/instalar-luals.sh." >&2
@@ -78,6 +89,7 @@ export ENTORNO_NVIM_ROOT="$PROJECT_ROOT"
 export ENTORNO_NVIM_XDG_ROOT="$XDG_ROOT"
 export ENTORNO_NVIM_TREE_SITTER_BIN="$TREE_SITTER_BIN"
 export ENTORNO_NVIM_LSP_WEB_BIN="$LSP_WEB_BIN"
+export ENTORNO_NVIM_LSP_PYTHON_BIN="$LSP_PYTHON_BIN"
 export ENTORNO_NVIM_LUALS_BIN="$LUALS_BIN"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 export PATH

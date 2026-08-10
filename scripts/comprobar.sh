@@ -44,6 +44,7 @@ git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-treesitter
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/mini.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/site/parser/javascript.so"
 git -C "$PROJECT_ROOT" check-ignore -q "$PROJECT_ROOT/tools/lsp-web/node_modules/.bin/typescript-language-server"
+git -C "$PROJECT_ROOT" check-ignore -q "$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
 git -C "$PROJECT_ROOT" check-ignore -q "$PROJECT_ROOT/tests/fixtures/lsp-tailwind-v4/node_modules/tailwindcss"
 
 if [ ! -f "$PROJECT_ROOT/nvim/lazy-lock.json" ]; then
@@ -53,6 +54,11 @@ fi
 
 if [ ! -f "$PROJECT_ROOT/tools/lsp-web/pnpm-lock.yaml" ]; then
   printf '%s\n' "Error: falta tools/lsp-web/pnpm-lock.yaml." >&2
+  exit 1
+fi
+
+if [ ! -f "$PROJECT_ROOT/tools/lsp-python/pnpm-lock.yaml" ]; then
+  printf '%s\n' "Error: falta tools/lsp-python/pnpm-lock.yaml." >&2
   exit 1
 fi
 

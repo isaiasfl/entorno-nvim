@@ -265,6 +265,27 @@ local function enable_lua_server()
   })
 end
 
+local function enable_python_server()
+  local executable = vim.fs.joinpath(paths.python_lsp_bin(), "pyright-langserver")
+  if vim.fn.executable(executable) ~= 1 then
+    error("Servidor LSP no ejecutable: " .. executable)
+  end
+
+  M.enable("pyright", {
+    cmd = { executable, "--stdio" },
+    settings = {
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "openFilesOnly",
+          typeCheckingMode = "basic",
+          useLibraryCodeForTypes = true,
+        },
+      },
+    },
+  })
+end
+
 function M.setup()
   vim.diagnostic.config({ update_in_insert = true })
 
@@ -279,6 +300,7 @@ function M.setup()
 
   enable_web_servers()
   enable_lua_server()
+  enable_python_server()
 end
 
 return M

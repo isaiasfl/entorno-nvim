@@ -16,11 +16,18 @@ assert(package.loaded["config.lsp"], "config.lsp no se cargo")
 assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(package.loaded["lspconfig"] == nil, "no debe cargarse la API antigua de lspconfig")
 
-for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "bashls", "basedpyright" }) do
+for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "pyright", "bashls", "basedpyright" }) do
   assert(type(vim.lsp.config[name]) == "table", "falta la configuracion de catalogo " .. name)
-  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls" }, name)
+  local should_be_enabled = vim.tbl_contains({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "pyright" }, name)
   assert(vim.lsp.is_enabled(name) == should_be_enabled, "estado de activacion incorrecto para " .. name)
 end
+
+local python_bin = vim.env.ENTORNO_NVIM_LSP_PYTHON_BIN
+local pyright_config = vim.lsp.config.pyright
+assert(pyright_config.cmd[1] == vim.fs.joinpath(python_bin, "pyright-langserver"), "Pyright no usa el ejecutable aislado")
+assert(pyright_config.cmd[2] == "--stdio", "Pyright no usa el transporte stdio")
+assert(pyright_config.settings.python.analysis.typeCheckingMode == "basic", "Pyright debe usar tipado basico")
+assert(pyright_config.settings.python.analysis.diagnosticMode == "openFilesOnly", "Pyright debe analizar archivos abiertos")
 
 local luals_bin = vim.env.ENTORNO_NVIM_LUALS_BIN
 local lua_config = vim.lsp.config.lua_ls

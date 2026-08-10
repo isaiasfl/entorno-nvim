@@ -16,7 +16,7 @@ API antigua `require("lspconfig")`.
 mediante `vim.lsp.config()` y activa el servidor con `vim.lsp.enable()`. Están
 habilitados `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls` y `tailwindcss`; sus
 procesos solo arrancan al abrir un tipo de archivo compatible y encontrar una
-raíz válida.
+raíz válida. Pyright está habilitado con el mismo mecanismo para Python.
 
 ## Mapas de Neovim 0.12
 
@@ -100,8 +100,55 @@ paquetes, `package.json` y `.git`. Un proyecto sencillo con `package.json` pero
 sin lockfile queda aislado correctamente; los monorepos con lockfile conservan
 la raíz común. Los proyectos Deno siguen excluidos de `ts_ls`.
 
-`bashls` y el servidor de Python quedan para una fase posterior. Tampoco
-existe format-on-save: `<leader>lf` sigue siendo una acción manual.
+`bashls` queda para una fase posterior. Tampoco existe format-on-save:
+`<leader>lf` sigue siendo una acción manual.
+
+## Python: Pyright frente a BasedPyright
+
+El 10 de agosto de 2026 se compararon Pyright 1.1.411 y BasedPyright 1.39.9.
+Ambos están mantenidos, usan el núcleo de análisis de Pyright y ofrecen
+diagnósticos, completado, hover, definición, referencias y rename. Ambos siguen
+la evolución del tipado de Python y son aptos para código moderno.
+
+| Criterio | Pyright | BasedPyright |
+| --- | --- | --- |
+| Mantenimiento y estabilidad | Proyecto original de Microsoft, releases frecuentes y amplia adopción | Fork activo que integra upstream y publica releases frecuentes |
+| Diagnóstico | Rápido, estable y configurable | Añade reglas, correcciones y avisos que upstream no incluye |
+| Navegación y completado | Cubre todas las operaciones LSP requeridas | Cubre las mismas y añade algunas funciones de Pylance |
+| Ruido inicial | Permite elegir `basic` | Su valor predeterminado `recommended` habilita todas las reglas y es deliberadamente más estricto |
+| Instalación aislada | Paquete npm oficial; requiere Node | PyPI recomendado o npm; el paquete PyPI incorpora la parte Node mediante `nodejs-wheel` |
+| Dependencias y seguridad | Una dependencia opcional, `fsevents` en macOS; release firmada y licencia MIT | Paquete PyPI MIT, publicado con Trusted Publishing; su página actual muestra un mantenedor |
+
+Para scripts, docencia y proyectos generalistas se elige **Pyright 1.1.411**.
+BasedPyright es una alternativa sólida si más adelante se desea una política de
+tipado más exigente, pero sus valores predeterminados no encajan tan bien con
+el objetivo de evitar ruido a principiantes. No hay diferencia material entre
+ambos para las operaciones de edición requeridas.
+
+La configuración propia mantiene deliberadamente estos valores:
+
+- `typeCheckingMode = "basic"`: detecta incompatibilidades sencillas y nombres
+  indefinidos sin exigir anotaciones exhaustivas;
+- `diagnosticMode = "openFilesOnly"`: limita el trabajo y los avisos cotidianos
+  a los archivos abiertos;
+- `autoSearchPaths = true`: reconoce disposiciones habituales como `src`;
+- `useLibraryCodeForTypes = true`: aprovecha el código de bibliotecas cuando no
+  hay stubs disponibles.
+
+Un `pyrightconfig.json` o la sección `[tool.pyright]` de un proyecto puede
+especializar estos valores. El catálogo conserva también
+`:LspPyrightSetPythonPath /ruta/al/.venv/bin/python` para seleccionar
+manualmente un entorno virtual en el buffer actual. No se fija la versión de
+Python de los proyectos desde Neovim.
+
+Fuentes oficiales consultadas:
+
+- `https://github.com/microsoft/pyright/releases/tag/1.1.411`;
+- `https://github.com/microsoft/pyright/blob/main/docs/configuration.md`;
+- `https://github.com/microsoft/pyright/blob/1.1.411/packages/pyright/package.json`;
+- `https://docs.basedpyright.com/latest/benefits-over-pyright/better-defaults/`;
+- `https://docs.basedpyright.com/latest/installation/command-line-and-language-server/`;
+- `https://pypi.org/project/basedpyright/1.39.9/`.
 
 ## LuaLS para la configuración de Neovim
 
@@ -221,6 +268,7 @@ Node 22.23.2 y Corepack 0.34.6 ya estaban instalados. No se ejecuta
 
 ```sh
 ./scripts/instalar-lsp-web.sh
+./scripts/instalar-lsp-python.sh
 ```
 
 En otra máquina, después de clonar el repositorio y comprobar que existen Node
@@ -240,6 +288,35 @@ El manifiesto fija versiones exactas y el campo `packageManager` fija pnpm
 versiones transitivas e integridades. Corepack se descarga bajo
 `.xdg/0.12.4/corepack`, el almacén está en `.xdg/0.12.4/pnpm/store` y los
 enlaces ejecutables quedan en `tools/lsp-web/node_modules/.bin`.
+
+Pyright se instala de forma independiente bajo
+`tools/lsp-python/node_modules/.bin`. Su manifiesto fija Pyright 1.1.411 y el
+mismo pnpm 11.18.0; el lockfile registra versiones e integridades. El script
+invoca esa versión de pnpm explícitamente, usa el mismo almacén XDG aislado y
+exige el lockfile congelado. No usa Mason, `sudo`, npm global ni modifica el
+`PATH`.
+
+El paquete oficial de Pyright no declara ciclos `preinstall`, `install` ni
+`postinstall`; sus órdenes `build` y `prepack` son de desarrollo/publicación y
+no se ejecutan al instalar el tarball. La única dependencia de ejecución es
+`fsevents 2.3.3`, opcional y limitada a macOS. Su build queda denegado en
+`pnpm-workspace.yaml`: Pyright conserva el watcher portable de Node. El
+lockfile y la política de pnpm bloquean fuentes exóticas, verifican el almacén
+y rechazan builds no revisados. `pnpm audit --audit-level low` no encontró
+vulnerabilidades conocidas el 10 de agosto de 2026.
+
+La instalación y las pruebas funcionales se han validado en Debian 13. El
+diseño usa Node, Corepack y rutas POSIX razonables para CachyOS y macOS, pero no
+se afirma una validación real en esos sistemas. En macOS se omite el build
+opcional de `fsevents`, por lo que Pyright usará el mecanismo portable de
+observación de archivos.
+
+Para actualizar Pyright hay que comprobar el release oficial y su manifiesto,
+cambiar la versión exacta en `tools/lsp-python/package.json`, ejecutar desde la
+raíz `corepack pnpm@11.18.0 --dir tools/lsp-python install
+--no-frozen-lockfile`, revisar el nuevo `pnpm-lock.yaml` y repetir las pruebas
+LSP. Para recrear la versión ya fijada basta con ejecutar
+`./scripts/instalar-lsp-python.sh`.
 
 La política de `pnpm-workspace.yaml`:
 
@@ -296,6 +373,13 @@ raíz, capacidades, completado sobre `vim.`, hover de la API de Neovim,
 definición, navegación con `gd`, diagnósticos, referencias y rename. Los
 cambios de completado y rename permanecen en memoria y no escriben el fixture.
 
+`tests/comprobar_lsp_python.lua` abre un proyecto Python 3.13 con un módulo
+local y comprueba conexión, raíz, imports, capacidades, definición, hover,
+referencias, rename, completado de atributos, un error sencillo de tipos y una
+variable indefinida. Confirma además que solo Pyright se conecta al buffer; la
+suite conserva después las pruebas reales de LuaLS, `ts_ls`, HTML/CSS/JSON y
+Tailwind. Las ediciones de completado y rename permanecen en memoria.
+
 `tests/comprobar_lsp_web.lua` abre fixtures reales JS, TS, JSX, TSX, HTML, CSS y
 JSON. Comprueba conexión, diagnósticos, definición, `gd`, hover, referencias,
 rename, completado, disparadores automáticos, `Ctrl-Space`, auto-imports y la
@@ -321,11 +405,8 @@ sin Tailwind confirma que el servidor no arranca fuera de su ámbito.
   `bash-language-server > editorconfig > minimatch`. No se añadieron overrides
   ni se forzó otra versión; se reevaluará cuando el paquete oficial actualice
   sus dependencias.
-- Python: decidir entre BasedPyright y Pyright según tipado, licencia, consumo y
-  método de instalación reproducible; después configurar el servidor elegido.
 
-Estas tareas no forman parte de la subfase LuaLS y no hay binarios ni
-configuraciones activas para esos dos lenguajes.
+No hay configuración activa para Bash. Python queda cubierto por Pyright.
 
 ## Reversión
 
@@ -341,3 +422,8 @@ las cinco configuraciones correspondientes de `config.lsp`, se retiran
 si no se usa para otra fase, se retiran `.xdg/0.12.4/corepack` y
 `.xdg/0.12.4/pnpm`. Los tres archivos reproducibles de `tools/lsp-web` permiten
 recrear el entorno después.
+
+Para desinstalar Pyright se deshabilita `pyright` en `config.lsp` y se retira
+`tools/lsp-python/node_modules`. No queda ningún paquete global. El manifiesto,
+la política pnpm y el lockfile pueden mantenerse para reinstalarlo después o
+retirarse junto con la configuración si la decisión se revierte.
