@@ -16,40 +16,19 @@ ninguna suma de versiones anteriores.
 
 ## Instalación
 
-El tarball se valida antes de extraer. Su listado debe contener únicamente
-rutas relativas bajo `nvim-linux-x86_64/`. Después se extrae en un directorio
-temporal y se mueve a:
+La V1 conserva el procedimiento auditado en un script idempotente:
+
+```sh
+./scripts/instalar-neovim.sh
+```
+
+El tarball se valida antes de extraer. `scripts/lib/comun.sh` usa
+`sha256sum` cuando existe y `shasum -a 256` en sistemas BSD/macOS. Su listado
+debe contener únicamente rutas relativas bajo `nvim-linux-x86_64/`. Después se
+extrae en un directorio temporal y se mueve a:
 
 ```text
 ~/.local/opt/nvim-0.12.4
-```
-
-Procedimiento reproducible utilizado:
-
-```sh
-workdir="$(mktemp -d /tmp/neovim-v0.12.4.XXXXXX)"
-archive="$workdir/nvim-linux-x86_64.tar.gz"
-listing="$workdir/listing.txt"
-
-curl --fail --location --proto '=https' --tlsv1.2 \
-  --output "$archive" \
-  https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz
-
-printf '%s  %s\n' \
-  012bf3fcac5ade43914df3f174668bf64d05e049a4f032a388c027b1ebd78628 \
-  "$archive" | sha256sum --check -
-
-tar -tzf "$archive" > "$listing"
-awk 'BEGIN { ok = 1 }
-  /^\// || /(^|\/)\.\.(\/|$)/ || $0 !~ /^nvim-linux-x86_64(\/|$)/ {
-    print "Ruta no valida: " $0 > "/dev/stderr"
-    ok = 0
-  }
-  END { exit(ok ? 0 : 1) }' "$listing"
-tar -xzf "$archive" -C "$workdir"
-test ! -e "$HOME/.local/opt/nvim-0.12.4"
-mkdir -p "$HOME/.local/opt"
-mv "$workdir/nvim-linux-x86_64" "$HOME/.local/opt/nvim-0.12.4"
 ```
 
 Antes de la extracción se validó automáticamente que las 2228 entradas eran

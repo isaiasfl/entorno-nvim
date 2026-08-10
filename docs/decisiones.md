@@ -49,8 +49,8 @@ contener datos sensibles y deben permanecer fuera del proyecto.
 - Datos de Neovim: aproximadamente 618 MB.
 - Estado de Neovim: aproximadamente 1,9 MB.
 - Caché de Neovim: aproximadamente 76 MB.
-- Copia completa verificada en
-  `/home/isaiasfl/copias-seguridad/nvim-20260805-221016`: 623 MB.
+- Copia completa histórica bajo `~/copias-seguridad`: 623 MB en el inventario
+  inicial.
 
 La copia contiene configuración, datos y estado. No se modificó ni se leyó el
 contenido de sus archivos potencialmente sensibles.

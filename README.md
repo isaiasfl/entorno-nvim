@@ -1,76 +1,138 @@
-# Entorno Neovim de Isaías
+# entorno-nvim
 
-Configuración de Neovim construida desde cero, modular y portable. El objetivo
-es disponer de un entorno comprensible para programación y edición de Markdown,
-sin depender de una distribución prefabricada.
+## Qué es
 
-## Estado
+`entorno-nvim` v1.0.0 es una configuración de Neovim y tmux comprensible,
+versionada y reversible para programación, docencia y documentos Markdown.
+La referencia probada es Debian 13 con Neovim 0.12.4.
 
-El proyecto contiene un núcleo nativo de Neovim y una capa mínima de plugins:
-`lazy.nvim` gestiona dependencias, `fzf-lua` proporciona búsqueda y
-`nvim-tree.lua` permite recorrer el proyecto como árbol. Tree-sitter añade
-resaltado estructural para shell, Python y desarrollo web. El cliente LSP y el
-completado son nativos; `nvim-lspconfig` aporta únicamente el catálogo de
-configuraciones. Los servidores para JavaScript, TypeScript, React/TSX, HTML,
-CSS, JSON y Python se instalan de forma aislada y reproducible mediante
-Corepack y pnpm. Pyright cubre Python y LuaLS aporta soporte para los módulos
-Lua de esta configuración desde una instalación versionada bajo
-`~/.local/opt`. Tailwind CSS se activa solo
-cuando detecta una dependencia, una configuración clásica o una entrada
-CSS-first real. `mini.pairs` aporta cierre automático de delimitadores y
-comillas sin activar otros módulos de mini.nvim. La integración Git abre el
-`lazygit` existente mediante el terminal nativo, sin otro plugin. Un flujo tmux
-por proyecto separa Neovim, un agente intercambiable y una terminal de trabajo;
-el contexto se envia sin plugins de IA ni acoplamiento a proveedores. Los
-documentos Markdown se exportan a PDF A4 mediante Pandoc, CSS propio y Chromium
-desde un comando nativo de Neovim. Todo se ejecuta en un entorno XDG aislado y
-no modifica ni enlaza `~/.config/nvim`. Al arrancar sin archivos aparece un
-dashboard IFL nativo, sin incorporar otro plugin.
+## Qué incluye
 
-El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
-scripts seleccionan su instalación paralela sin cambiar el binario global
-0.11.4. Se buscará compatibilidad razonable con CachyOS y macOS.
+- Neovim modular en Lua, dashboard IFL, búsqueda, explorador y Git.
+- LSP nativo para Lua, web y Python; completado nativo de Neovim 0.12.
+- Tree-sitter con ocho parsers externos fijados.
+- sesiones tmux por proyecto en el socket dedicado `entorno-nvim`;
+- Markdown → Pandoc → HTML/CSS → Chromium → PDF A4.
 
-## Documentación
+El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
-- [Decisiones e inventario](docs/decisiones.md)
-- [Entorno aislado](docs/entorno-aislado.md)
-- [Activación en el equipo principal](docs/activacion.md)
-- [Neovim 0.12.4 en paralelo](docs/neovim-0.12.md)
-- [Plugins, búsqueda y exploración](docs/plugins.md)
-- [Tree-sitter y parsers](docs/treesitter.md)
-- [LSP y completado nativo](docs/lsp.md)
-- [Git y lazygit](docs/git.md)
-- [Terminal, tmux y agentes](docs/terminal-tmux-agentes.md)
-- [Auditoría de endurecimiento de tmux y agentes](docs/auditoria-tmux-agentes.md)
-- [Flujo de Markdown y PDF](docs/markdown-pdf.md)
-- [Dashboard IFL](docs/dashboard.md)
-- [Restauración](docs/restauracion.md)
-- [Contexto original](CONTEXTO_INICIAL.md)
-
-## Ejecución
-
-Abrir Neovim con la configuración del repositorio:
+## Instalación rápida
 
 ```sh
-./scripts/instalar-lsp-web.sh
-./scripts/instalar-lsp-python.sh
-./scripts/instalar-luals.sh
+git clone URL_DEL_REPOSITORIO entorno-nvim
+cd entorno-nvim
+./scripts/comprobar-requisitos.sh
+./scripts/instalar.sh
 ./scripts/arrancar.sh
 ```
 
-También se puede abrir un archivo o pasar cualquier argumento normal de
-Neovim:
+El instalador es idempotente, no usa `sudo`, no activa la configuración y no
+elimina instalaciones anteriores. Si faltan paquetes del sistema, muestra un
+comando orientativo y se detiene. Véase [instalación V1](docs/instalacion.md).
+
+## Comprobar requisitos
 
 ```sh
-./scripts/arrancar.sh README.md
+./scripts/comprobar-requisitos.sh
 ```
 
-Ejecutar las comprobaciones headless:
+Solo lee el estado y clasifica cada elemento como `OK`, `FALTA` u `OPCIONAL`.
+
+## Activar
+
+Tras probar el entorno aislado:
 
 ```sh
-./scripts/comprobar.sh
+./scripts/activar.sh
 ```
 
-Los detalles de las rutas utilizadas y del aislamiento están en
-[docs/entorno-aislado.md](docs/entorno-aislado.md).
+Crea un backup fechado y enlaza `~/.config/nvim` al directorio `nvim/` del
+repositorio. No modifica la configuración tmux personal. Detalles en
+[activación](docs/activacion.md).
+
+## Restaurar
+
+```sh
+./scripts/restaurar.sh
+```
+
+Restaura la configuración y el comando de Neovim anteriores desde el último
+backup registrado. El backup histórico se conserva. Véase
+[restauración](docs/restauracion.md).
+
+## Flujo diario
+
+```sh
+export ENTORNO_TMUX_PROJECT_ROOTS="$HOME/Proyectos:$HOME/Projects"
+./scripts/proyecto.sh
+```
+
+La sesión contiene Neovim, un panel de agente y una shell para pruebas o
+servidores. La [chuleta diaria](docs/chuleta.md) resume los comandos habituales.
+
+## Neovim
+
+`./scripts/arrancar.sh` ejecuta Neovim con datos, caché, estado y sockets XDG
+aislados. La configuración activa usa el mismo código mediante un enlace
+simbólico reversible. [Arquitectura aislada](docs/entorno-aislado.md).
+
+## tmux
+
+El flujo usa `tmux -L entorno-nvim` y no carga ni altera `~/.tmux.conf`.
+`Ctrl-b P` abre el selector de proyectos en un popup. Más detalles en
+[terminal y tmux](docs/terminal-tmux-agentes.md).
+
+## Agentes
+
+El panel derecho admite agentes CLI intercambiables. `<leader>ac` pega contexto
+solo tras validar el proceso de destino y nunca envía Enter. El entorno no
+instala agentes ni gestiona sus credenciales.
+
+## Markdown/PDF
+
+`<leader>mp` genera el PDF real y `<leader>mv` lo genera y abre en el visor
+externo. Cabecera y pie usan `module`, `centre` y `teacher` del YAML. Véase
+[Markdown/PDF](docs/markdown-pdf.md).
+
+## LSP
+
+LuaLS 3.19.0, los servidores web fijados y Pyright 1.1.411 se instalan de forma
+aislada, sin Mason ni npm global. BashLS sigue aplazado. Véase
+[LSP y completado](docs/lsp.md).
+
+## Mappings principales
+
+| Mapa | Acción |
+| --- | --- |
+| `<leader>w` | Guardar |
+| `<leader>gg` | Lazygit |
+| `<leader>mp` / `<leader>mv` | Generar PDF / generar y visualizar |
+| `<leader>ac` | Pegar contexto revisable en el agente |
+| `gd`, `grr`, `grn`, `K` | Definición, referencias, rename y hover LSP |
+| `Ctrl-h/j/k/l` | Navegar splits de Neovim |
+| `Ctrl-b h/j/k/l` | Navegar paneles tmux |
+| `Ctrl-b P` | Selector de proyectos tmux |
+
+## Portabilidad
+
+Probado: Debian 13 x86_64. Objetivo no probado: Arch/CachyOS x86_64 y macOS
+moderno. Los scripts evitan incompatibilidades BSD evidentes, pero no se afirma
+validación real fuera de Debian. Consulta [instalación V1](docs/instalacion.md).
+
+## Seguridad
+
+No se versionan secretos, estado de editores, credenciales ni configuraciones
+privadas de agentes. El contexto hacia agentes tiene una barrera preventiva,
+no un DLP. El compilador PDF solo está diseñado para Markdown propio y fiable.
+
+## Actualización
+
+Actualizar una versión fijada exige revisar origen, checksum o lockfile,
+ejecutar `./scripts/comprobar.sh` y revisar el diff antes de confirmar. No hay
+actualizaciones automáticas de plugins, parsers ni LSP.
+
+## Desinstalación
+
+Primero ejecuta `./scripts/restaurar.sh`. Después pueden retirarse manualmente
+la raíz XDG del repositorio y los directorios versionados de `~/.local/opt`
+cuando ningún proceso los use. El proyecto nunca borra backups automáticamente.

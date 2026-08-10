@@ -52,20 +52,14 @@ Después:
 
 1. mueve íntegramente la configuración activa anterior a un backup fechado
    bajo `~/copias-seguridad`;
-2. crea `~/.config/nvim` como symlink a `~/Proyectos/entorno-nvim/nvim`;
+2. crea `~/.config/nvim` como symlink al directorio `nvim/` del checkout actual;
 3. crea `~/.local/bin/nvim` como symlink al binario 0.12.4;
 4. registra el último backup en
    `~/.local/state/entorno-nvim/ultimo-backup` con permisos `0600`.
 
-En esta activación, la configuración anterior quedó en:
-
-```text
-/home/isaiasfl/copias-seguridad/nvim-activa-20260809-213621
-```
-
-La copia histórica
-`/home/isaiasfl/copias-seguridad/nvim-20260805-221016` permanece separada e
-intacta.
+Cada activación registra su ruta concreta bajo
+`~/copias-seguridad/nvim-activa-AAAAMMDD-HHMMSS`. Las copias históricas que ya
+existían permanecen separadas e intactas.
 
 Si una operación falla antes de terminar, el script revierte los movimientos
 que haya realizado. No modifica archivos de shell, `/usr/local/bin/nvim` ni el
@@ -76,7 +70,7 @@ AppImage 0.11.4.
 ```sh
 which nvim
 nvim --version
-readlink -f ~/.config/nvim
+readlink ~/.config/nvim
 nvim --headless '+lua print(vim.fn.stdpath("config"))' +qa
 ```
 
