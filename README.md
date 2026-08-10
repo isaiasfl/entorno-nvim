@@ -19,7 +19,7 @@ El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 ## Instalación rápida
 
 ```sh
-git clone URL_DEL_REPOSITORIO entorno-nvim
+git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
 ./scripts/comprobar-requisitos.sh
 ./scripts/instalar.sh
