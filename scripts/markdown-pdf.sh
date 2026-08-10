@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 STYLE=${MDPDF_STYLE:-"$PROJECT_ROOT/markdown/styles/examen.css"}
 TEMPLATE=${MDPDF_TEMPLATE:-"$PROJECT_ROOT/markdown/templates/documento.html"}
+METADATA_FILTER="$PROJECT_ROOT/markdown/filters/metadata-css.lua"
 
 usage() {
   printf '%s\n' "Uso: $0 archivo.md [salida.pdf]" >&2
@@ -38,6 +39,11 @@ if [ ! -f "$TEMPLATE" ]; then
   exit 1
 fi
 
+if [ ! -f "$METADATA_FILTER" ]; then
+  printf 'Error: no existe el filtro de metadatos: %s\n' "$METADATA_FILTER" >&2
+  exit 1
+fi
+
 case "$INPUT" in
   /*) ;;
   *) INPUT="$(pwd)/$INPUT" ;;
@@ -61,6 +67,10 @@ OUTPUT_DIR=$(CDPATH= cd "$OUTPUT_DIR" && pwd)
 OUTPUT="$OUTPUT_DIR/$(basename "$OUTPUT")"
 
 if [ -n "${CHROMIUM_BIN:-}" ]; then
+  if [ ! -f "$CHROMIUM_BIN" ] || [ ! -x "$CHROMIUM_BIN" ]; then
+    printf 'Error: CHROMIUM_BIN no es un navegador ejecutable: %s\n' "$CHROMIUM_BIN" >&2
+    exit 127
+  fi
   BROWSER=$CHROMIUM_BIN
 elif command -v chromium >/dev/null 2>&1; then
   BROWSER=$(command -v chromium)
@@ -87,6 +97,7 @@ pandoc "$INPUT" \
   --standalone \
   --embed-resources \
   --resource-path="$INPUT_DIR:$PROJECT_ROOT" \
+  --lua-filter="$METADATA_FILTER" \
   --template="$TEMPLATE" \
   --css="$STYLE" \
   --highlight-style=tango \

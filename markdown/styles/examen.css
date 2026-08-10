@@ -138,9 +138,11 @@ tr {
 th,
 td {
   border: 1px solid var(--color-borde);
+  overflow-wrap: anywhere;
   padding: 2.5mm 3mm;
   text-align: left;
   vertical-align: top;
+  word-break: break-word;
 }
 
 th {

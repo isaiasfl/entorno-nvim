@@ -35,11 +35,13 @@ HTML antiguo; Paged.js añadiría Node y otra dependencia.
 ## Archivos
 
 - `scripts/markdown-pdf.sh`: exportador reproducible.
+- `markdown/filters/metadata-css.lua`: conversión segura de metadatos a texto CSS.
 - `markdown/templates/documento.html`: plantilla HTML de Pandoc.
 - `markdown/styles/examen.css`: estilos de pantalla e impresión.
 - `examples/examen/examen.md`: examen de validación.
 - `examples/examen/assets/circuito.svg`: imagen relativa del ejemplo.
-- `tests/comprobar_markdown_pdf.sh`: prueba funcional que genera un PDF real.
+- `tests/comprobar_markdown_pdf.sh`: prueba funcional que genera PDF reales.
+- `tests/comprobar_markdown_pdf.lua`: integración nativa con Neovim.
 
 Los PDF de `examples/` se ignoran en Git porque son artefactos generados.
 
@@ -88,8 +90,10 @@ La plantilla solo transporta esos valores. Fuente, tamaños, color, márgenes,
 separación y líneas divisorias se controlan centralmente mediante las variables
 y reglas `@page` de `markdown/styles/examen.css`. Los márgenes reservan espacio
 exclusivo para las cajas, evitando que cabecera y pie invadan tablas, imágenes,
-código o el contenido de la primera y última página. Conviene evitar comillas
-dobles dentro de los tres metadatos porque se insertan como contenido CSS.
+código o el contenido de la primera y última página. Antes de interpolarlos, el
+filtro Lua convierte `module`, `centre` y `teacher` a texto plano y escapa
+comillas, barras inversas, saltos y controles para formar cadenas CSS válidas.
+Así, caracteres razonables no rompen silenciosamente la cabecera o el pie.
 
 Para forzar un salto de página:
 
@@ -136,11 +140,40 @@ Las dependencias directas son Pandoc y Chromium o Google Chrome. `pdfinfo` y
 navegador se detecta por nombre; en macOS se buscan además las aplicaciones
 habituales. `CHROMIUM_BIN` permite indicar otro ejecutable.
 
+Las cajas de margen `@page`, las cabeceras y pies y los contadores
+`counter(page)` y `counter(pages)` se han validado con Chromium
+151.0.7922.108. La versión mínima exacta de Chromium que soporta conjuntamente
+estas funciones, incluida `Página X de Y`, queda por confirmar: no se deduce de
+forma fiable a partir del navegador instalado y no se fija aquí una cifra
+inventada. En otro sistema debe comprobarse el PDF de ejemplo antes de adoptar
+una versión anterior.
+
+Los scripts relacionados se han revisado para evitar usos evidentes no
+portables como `dirname --`, `basename --` y `readlink -f`. Emplean shell POSIX
+y detección separada para las rutas habituales de Chrome en macOS. Esta revisión
+no sustituye una prueba real en CachyOS o macOS, que sigue pendiente.
+
 Antes de instalar nada en otro equipo, se puede diagnosticar con:
 
 ```sh
 command -v pandoc chromium google-chrome pdfinfo pdftotext
 ```
+
+## Modelo de seguridad
+
+El exportador está diseñado para Markdown propio y confiable. No debe usarse
+como compilador seguro de documentos arbitrarios de terceros: Pandoc admite
+HTML crudo, los documentos pueden referenciar recursos remotos y Chromium se
+ejecuta actualmente con `--allow-file-access-from-files` para que las imágenes
+y estilos relativos funcionen durante la impresión.
+
+No se implementa un sandbox en esta fase. Si en el futuro se procesan trabajos
+de alumnos o Markdown no confiable habrá que evaluar, como una unidad separada:
+
+- desactivar `raw_html`;
+- impedir recursos remotos y bloquear la red de Chromium;
+- revisar la necesidad de `--allow-file-access-from-files`;
+- añadir sanitización específica si el modelo de amenazas lo exige.
 
 ## Comprobación
 
@@ -148,6 +181,8 @@ command -v pandoc chromium google-chrome pdfinfo pdftotext
 ./tests/comprobar_markdown_pdf.sh
 ```
 
-La prueba genera `examples/examen/examen.pdf`, comprueba que no esté vacío, que
-tenga al menos dos páginas y, si Poppler está disponible, valida contenido y
-numeración mediante `pdfinfo` y `pdftotext`.
+La prueba genera `examples/examen/examen.pdf`, cubre rutas con espacios,
+metadatos ausentes y parciales, caracteres especiales, tablas con cadenas
+largas, ausencia de navegador y la integración `:MarkdownPdf`/`<leader>mp`. Si
+Poppler está disponible, también valida páginas, contenido y numeración mediante
+`pdfinfo` y `pdftotext`.
