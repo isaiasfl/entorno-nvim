@@ -73,15 +73,23 @@ La cabecera YAML del documento admite estas variables:
 ---
 title: "Título del documento"
 lang: es
-header-left: "IFL · Departamento"
-header-right: "Curso 2026–2027"
-footer-left: "Texto del pie"
+module: "Desarrollo Web en Entorno Cliente"
+centre: "IES Hermenegildo Lanz"
+teacher: "Isaías FL"
 ---
 ```
 
-La numeración `Página N de M` se añade automáticamente. Conviene evitar
-comillas dobles dentro de los tres textos de cabecera y pie porque se insertan
-como contenido CSS.
+`module`, `centre` y `teacher` son opcionales. Cuando existen, se convierten en
+la cabecera izquierda, la cabecera derecha y `Profesor: nombre` en el pie
+izquierdo. La numeración `Página N de M` se añade automáticamente en el pie
+derecho mediante los contadores paginados de Chromium.
+
+La plantilla solo transporta esos valores. Fuente, tamaños, color, márgenes,
+separación y líneas divisorias se controlan centralmente mediante las variables
+y reglas `@page` de `markdown/styles/examen.css`. Los márgenes reservan espacio
+exclusivo para las cajas, evitando que cabecera y pie invadan tablas, imágenes,
+código o el contenido de la primera y última página. Conviene evitar comillas
+dobles dentro de los tres metadatos porque se insertan como contenido CSS.
 
 Para forzar un salto de página:
 

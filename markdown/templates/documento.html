@@ -12,9 +12,9 @@ $if(highlighting-css)$
 $endif$
   <style>
     :root {
-      --cabecera-izquierda: "$if(header-left)$$header-left$$else$IFL · Documento$endif$";
-      --cabecera-derecha: "$if(header-right)$$header-right$$endif$";
-      --pie-izquierda: "$if(footer-left)$$footer-left$$endif$";
+      --cabecera-izquierda: "$if(module)$$module$$endif$";
+      --cabecera-derecha: "$if(centre)$$centre$$endif$";
+      --pie-izquierda: "$if(teacher)$Profesor: $teacher$$endif$";
     }
   </style>
 </head>

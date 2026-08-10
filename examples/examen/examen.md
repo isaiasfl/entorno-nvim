@@ -1,9 +1,9 @@
 ---
 title: "Examen de ejemplo"
 lang: es
-header-left: "IFL · Departamento de Tecnología"
-header-right: "Curso 2026–2027"
-footer-left: "Documento de prueba"
+module: "Desarrollo Web en Entorno Cliente"
+centre: "IES Hermenegildo Lanz"
+teacher: "Isaías FL"
 ---
 
 # Examen de ejemplo 📝
