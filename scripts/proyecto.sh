@@ -3,6 +3,34 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+
+tmux_session_environment() {
+  tmux_environment_name=$1
+  tmux_environment_line=$(command tmux show-environment "$tmux_environment_name" 2>/dev/null) || return 1
+  case "$tmux_environment_line" in
+    "$tmux_environment_name"=*) printf '%s\n' "${tmux_environment_line#*=}" ;;
+    *) return 1 ;;
+  esac
+}
+
+# Un pane no recibe retroactivamente el entorno guardado en su sesion. El popup
+# conserva TMUX y TMUX_PANE, por lo que puede recuperar aqui los valores que no
+# estuvieran exportados en la shell desde la que se abrio.
+if [ -n "${TMUX:-}" ]; then
+  if [ -z "${ENTORNO_TMUX_SOCKET:-}" ]; then
+    ENTORNO_TMUX_SOCKET=$(tmux_session_environment ENTORNO_TMUX_SOCKET) || ENTORNO_TMUX_SOCKET=
+  fi
+  if [ -z "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
+    ENTORNO_TMUX_PROJECT_ROOTS=$(tmux_session_environment ENTORNO_TMUX_PROJECT_ROOTS) || ENTORNO_TMUX_PROJECT_ROOTS=
+  fi
+  if [ -z "${ENTORNO_TMUX_PROJECT_DEPTH:-}" ]; then
+    ENTORNO_TMUX_PROJECT_DEPTH=$(tmux_session_environment ENTORNO_TMUX_PROJECT_DEPTH) || ENTORNO_TMUX_PROJECT_DEPTH=
+  fi
+  if [ -z "${NVIM_BIN:-}" ]; then
+    NVIM_BIN=$(tmux_session_environment NVIM_BIN) || NVIM_BIN=
+  fi
+fi
+
 TMUX_CONFIG="$PROJECT_ROOT/tmux/tmux.conf"
 TMUX_SOCKET=${ENTORNO_TMUX_SOCKET:-entorno-nvim}
 MAX_DEPTH=${ENTORNO_TMUX_PROJECT_DEPTH:-5}

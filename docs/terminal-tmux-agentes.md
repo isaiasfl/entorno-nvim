@@ -74,6 +74,13 @@ ejecuta directamente `scripts/proyecto.sh`: no existe un segundo sessionizer ni
 otra implementación del descubrimiento. `Esc` y `Ctrl-C` cancelan fzf, cierran
 el popup y no crean sesiones parciales.
 
+Las shells de paneles creados antes de guardar el entorno de sesión no reciben
+retroactivamente esas variables. Por ello, el popup consulta
+`ENTORNO_NVIM_ROOT` mediante `tmux show-environment` y `proyecto.sh` recupera de
+la misma sesión el socket, los roots, la profundidad y `NVIM_BIN` que falten.
+No se usa el entorno global del servidor —que podría mezclar sesiones— y
+`Ctrl-b P` no depende de que la raíz esté exportada en la shell del panel.
+
 `ENTORNO_TMUX_PROJECT_ROOTS` debe estar exportada al iniciar o reconectar el
 proyecto. `proyecto.sh` conserva en la sesión los roots, la profundidad y el
 ejecutable de Neovim que recibió, para que el popup pueda crear otra sesión con
