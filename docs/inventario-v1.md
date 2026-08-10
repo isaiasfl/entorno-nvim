@@ -8,7 +8,7 @@ usuario se expresan con `~`; el repositorio puede residir en cualquier ruta.
 | Área | Fuente reproducible |
 | --- | --- |
 | Neovim | `nvim/`, módulos Lua y `nvim/lazy-lock.json` |
-| tmux | `tmux/tmux.conf`, `scripts/proyecto.sh`, `agente.sh` y transporte de contexto |
+| tmux | `tmux/tmux.conf`, `scripts/proyecto.sh`, lanzador del popup, `agente.sh` y transporte de contexto |
 | Markdown/PDF | `markdown/`, `scripts/markdown-pdf.sh`, visor y ejemplos |
 | Instalación | `scripts/instalar*.sh`, activación, restauración y librerías de versiones |
 | Pruebas | `tests/` y `scripts/comprobar.sh` |

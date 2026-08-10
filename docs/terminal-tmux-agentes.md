@@ -51,13 +51,17 @@ ha probado todavía en CachyOS ni macOS.
 
 ## Selección de proyectos
 
-Las raíces se configuran explícitamente mediante una lista separada por dos
-puntos; nunca se recorre todo el directorio personal:
+Las raíces pueden configurarse explícitamente mediante una lista separada por
+dos puntos; nunca se recorre todo el directorio personal:
 
 ```sh
 export ENTORNO_TMUX_PROJECT_ROOTS="$HOME/Proyectos:$HOME/Projects"
 ./scripts/proyecto.sh
 ```
+
+Si la variable no existe, el fallback se limita a `$HOME/Proyectos` y
+`$HOME/Projects` que existan. Si ninguno existe, el selector muestra un error
+claro y pide definir `ENTORNO_TMUX_PROJECT_ROOTS`.
 
 El selector reconoce `fd` y `fdfind`, repositorios normales y worktrees. Si se
 cancela fzf, termina sin crear una sesión parcial. También puede abrirse una
@@ -69,20 +73,24 @@ ruta concreta:
 
 Dentro de cualquier panel de una sesión gestionada por este entorno,
 `Ctrl-b P` abre el mismo selector en un popup centrado del 85% por 75%. El
-popup usa un borde ASCII sencillo, parte del directorio del panel actual y
-ejecuta directamente `scripts/proyecto.sh`: no existe un segundo sessionizer ni
-otra implementación del descubrimiento. `Esc` y `Ctrl-C` cancelan fzf, cierran
-el popup y no crean sesiones parciales.
+popup usa un borde ASCII sencillo y parte del directorio del panel actual. El
+lanzador `scripts/popup-proyecto.sh` solo conserva el cliente, panel y sesión de
+origen; delega en `scripts/proyecto.sh`, por lo que no existe un segundo
+sessionizer ni otra implementación del descubrimiento. `Esc` y `Ctrl-C`
+cancelan fzf, cierran el popup y no crean sesiones parciales.
 
 Las shells de paneles creados antes de guardar el entorno de sesión no reciben
-retroactivamente esas variables. Por ello, el popup consulta
-`ENTORNO_NVIM_ROOT` mediante `tmux show-environment` y `proyecto.sh` recupera de
-la misma sesión el socket, los roots, la profundidad y `NVIM_BIN` que falten.
-No se usa el entorno global del servidor —que podría mezclar sesiones— y
-`Ctrl-b P` no depende de que la raíz esté exportada en la shell del panel.
+retroactivamente esas variables, y el proceso del popup tampoco conserva
+necesariamente `TMUX_PANE`. Por ello, el binding resuelve primero el
+identificador de su sesión y lo pasa explícitamente al popup. Tanto el popup
+como `proyecto.sh` usan ese destino con `tmux show-environment -t` para recuperar
+la raíz, el socket, los roots, la profundidad y `NVIM_BIN` que falten. No se usa
+el entorno global del servidor —que podría mezclar sesiones— y `Ctrl-b P` no
+depende de que la raíz esté exportada en la shell del panel.
 
-`ENTORNO_TMUX_PROJECT_ROOTS` debe estar exportada al iniciar o reconectar el
-proyecto. `proyecto.sh` conserva en la sesión los roots, la profundidad y el
+Si se define `ENTORNO_TMUX_PROJECT_ROOTS`, debe exportarse al iniciar o
+reconectar el proyecto. `proyecto.sh` conserva en la sesión los roots efectivos,
+incluidos los del fallback, la profundidad y el
 ejecutable de Neovim que recibió, para que el popup pueda crear otra sesión con
 las mismas reglas. La selección conecta con una sesión existente sin tocar su
 layout o crea el layout normal cuando todavía no existe. Todo ocurre en el

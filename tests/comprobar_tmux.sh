@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 SOCKET="entorno-nvim-test-$$"
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-tmux.XXXXXX")
+FALLBACK_HOME="$WORK_DIR-fallback casa con espacios"
 CONTEXT_DIR="$WORK_DIR/runtime/agent-context"
 
 tmux_test() {
@@ -13,7 +14,7 @@ tmux_test() {
 
 cleanup() {
   tmux_test kill-server 2>/dev/null || true
-  rm -rf "$WORK_DIR"
+  rm -rf "$WORK_DIR" "$FALLBACK_HOME"
 }
 trap cleanup EXIT HUP INT TERM
 
@@ -59,12 +60,14 @@ command -v fzf >/dev/null 2>&1 || fail "fzf no esta disponible"
 
 REPOSITORY="$WORK_DIR/proyecto principal"
 WORKTREE="$WORK_DIR/proyecto-worktree"
-mkdir -p "$REPOSITORY" "$CONTEXT_DIR"
+FALLBACK_REPOSITORY="$FALLBACK_HOME/Proyectos/proyecto fallback"
+mkdir -p "$REPOSITORY" "$FALLBACK_REPOSITORY" "$CONTEXT_DIR"
 chmod 700 "$CONTEXT_DIR"
 git -C "$REPOSITORY" init -q
 git -C "$REPOSITORY" -c user.name=Prueba -c user.email=prueba@example.invalid \
   commit --allow-empty -q -m inicial
 git -C "$REPOSITORY" worktree add -q -b prueba-worktree "$WORKTREE"
+git -C "$FALLBACK_REPOSITORY" init -q
 
 SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
   ENTORNO_NVIM_ROOT= \
@@ -148,18 +151,25 @@ for binding in h j k l H J K L C-b P r; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
 POPUP_BINDING=$(tmux_test list-keys -T prefix P)
-printf '%s\n' "$POPUP_BINDING" | grep -q 'display-popup' || fail "Ctrl-b P no abre un popup"
-printf '%s\n' "$POPUP_BINDING" | grep -q 'proyecto\.sh' || fail "el popup no reutiliza proyecto.sh"
-printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment ENTORNO_NVIM_ROOT' ||
+printf '%s\n' "$POPUP_BINDING" | grep -q 'popup-proyecto\.sh' || fail "Ctrl-b P no usa el lanzador del popup"
+printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment -t.*ENTORNO_NVIM_ROOT' ||
   fail "el popup no obtiene la raiz desde el entorno de sesion"
-if printf '%s\n' "$POPUP_BINDING" | grep -q 'exec \"\$ENTORNO_NVIM_ROOT'; then
+if printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment ENTORNO_NVIM_ROOT'; then
+  fail "el binding consulta la raiz sin un destino de sesion explicito"
+fi
+if printf '%s\n' "$POPUP_BINDING" | grep -q '\$ENTORNO_NVIM_ROOT/scripts/proyecto'; then
   fail "el popup sigue dependiendo de ENTORNO_NVIM_ROOT en la shell"
 fi
-printf '%s\n' "$POPUP_BINDING" | grep -q '#{pane_current_path}' || fail "el popup no conserva el cwd del panel"
-printf '%s\n' "$POPUP_BINDING" | grep -q '85%' || fail "el popup no tiene anchura suficiente"
-printf '%s\n' "$POPUP_BINDING" | grep -q '75%' || fail "el popup no tiene altura suficiente"
-printf '%s\n' "$POPUP_BINDING" | grep -q -- '-b simple' || fail "el popup no usa un borde ASCII portable"
-if printf '%s\n' "$POPUP_BINDING" | grep -Eq 'sesh|gum|fzf-tmux'; then
+POPUP_SCRIPT="$PROJECT_ROOT/scripts/popup-proyecto.sh"
+[ -x "$POPUP_SCRIPT" ] || fail "el lanzador del popup no es ejecutable"
+grep -q 'display-popup' "$POPUP_SCRIPT" || fail "el lanzador no abre un popup"
+grep -q '#{pane_current_path}' "$POPUP_SCRIPT" || fail "el popup no conserva el cwd del panel"
+grep -q '85%' "$POPUP_SCRIPT" || fail "el popup no tiene anchura suficiente"
+grep -q '75%' "$POPUP_SCRIPT" || fail "el popup no tiene altura suficiente"
+grep -q -- '-b simple' "$POPUP_SCRIPT" || fail "el popup no usa un borde ASCII portable"
+grep -q 'scripts/proyecto\.sh' "$POPUP_SCRIPT" || fail "el popup no reutiliza proyecto.sh"
+if printf '%s\n' "$POPUP_BINDING" | grep -Eq 'sesh|gum|fzf-tmux' ||
+  grep -Eq 'sesh|gum|fzf-tmux' "$POPUP_SCRIPT"; then
   fail "el popup introdujo un sessionizer o selector adicional"
 fi
 REFRESH_BINDING=$(tmux_test list-keys -T prefix r)
@@ -168,18 +178,45 @@ if printf '%s\n' "$REFRESH_BINDING" | grep -q 'ENTORNO_'; then
   fail "Ctrl-b r depende indebidamente del entorno de entorno-nvim"
 fi
 
-# Simula el proceso del popup: solo hereda TMUX/TMUX_PANE y recupera el resto
-# desde la sesion. El socket es deliberadamente no predeterminado.
-POPUP_SELECTED=$(ENTORNO_TMUX_SOCKET= \
-  ENTORNO_TMUX_PROJECT_ROOTS= \
-  ENTORNO_TMUX_PROJECT_DEPTH= \
-  NVIM_BIN= \
-  ENTORNO_TMUX_NO_ATTACH=1 \
-  FZF_DEFAULT_OPTS='--filter=principal' \
-  TMUX="$(cat "$SHELL_TMUX_FILE")" \
-  TMUX_PANE="$SHELL_PANE" \
-  "$PROJECT_ROOT/scripts/proyecto.sh")
-[ "$POPUP_SELECTED" = "$SESSION" ] || fail "el selector no recupero el entorno de sesion desde el popup"
+# Regresion exacta: la shell no tiene la raiz, tmux si; ademas existe otra
+# sesion y el popup no dispone de TMUX_PANE. El destino explicito evita mezclar
+# entornos de sesion.
+DECOY_SESSION=sesion-ajena
+tmux_test new-session -d -s "$DECOY_SESSION" -c "$WORK_DIR"
+tmux_test set-environment -t "=$DECOY_SESSION" ENTORNO_NVIM_ROOT "$WORK_DIR/raiz-incorrecta"
+POPUP_SELECTED=$(
+  unset TMUX_PANE
+  ENTORNO_TMUX_SOCKET= \
+    ENTORNO_TMUX_PROJECT_ROOTS= \
+    ENTORNO_TMUX_PROJECT_DEPTH= \
+    ENTORNO_SOURCE_SESSION="$SESSION" \
+    NVIM_BIN= \
+    ENTORNO_TMUX_NO_ATTACH=1 \
+    FZF_DEFAULT_OPTS='--filter=principal' \
+    TMUX="$(cat "$SHELL_TMUX_FILE")" \
+    "$PROJECT_ROOT/scripts/proyecto.sh"
+)
+[ "$POPUP_SELECTED" = "$SESSION" ] || fail "el popup no uso la sesion de origen explicita"
+
+# Una sesion antigua sin roots usa solo los fallbacks documentados de HOME.
+tmux_test set-environment -u -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS
+FALLBACK_SELECTED=$(
+  unset TMUX_PANE
+  HOME="$FALLBACK_HOME" \
+    ENTORNO_TMUX_SOCKET= \
+    ENTORNO_TMUX_PROJECT_ROOTS= \
+    ENTORNO_TMUX_PROJECT_DEPTH= \
+    ENTORNO_SOURCE_SESSION="$SESSION" \
+    NVIM_BIN="$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh" \
+    ENTORNO_TMUX_NO_ATTACH=1 \
+    FZF_DEFAULT_OPTS='--filter=fallback' \
+    TMUX="$(cat "$SHELL_TMUX_FILE")" \
+    "$PROJECT_ROOT/scripts/proyecto.sh"
+)
+tmux_test has-session -t "=$FALLBACK_SELECTED"
+[ "$(tmux_test show-environment -t "=$FALLBACK_SELECTED" ENTORNO_TMUX_PROJECT_ROOTS)" = "ENTORNO_TMUX_PROJECT_ROOTS=$FALLBACK_HOME/Proyectos" ] ||
+  fail "el fallback de roots no quedo limitado a HOME/Proyectos"
+tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv mouse)" = "off" ] || fail "mouse debe estar desactivado"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"

@@ -6,16 +6,40 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 
 tmux_session_environment() {
   tmux_environment_name=$1
-  tmux_environment_line=$(command tmux show-environment "$tmux_environment_name" 2>/dev/null) || return 1
+  tmux_environment_target=${ENTORNO_SOURCE_SESSION:-}
+  if [ -z "$tmux_environment_target" ] && [ -n "${TMUX_PANE:-}" ]; then
+    tmux_environment_target=$(command tmux display-message -p -t "$TMUX_PANE" '#{session_id}' 2>/dev/null) ||
+      tmux_environment_target=
+  fi
+  [ -n "$tmux_environment_target" ] || return 1
+  tmux_environment_line=$(command tmux show-environment -t "$tmux_environment_target" "$tmux_environment_name" 2>/dev/null) || return 1
   case "$tmux_environment_line" in
     "$tmux_environment_name"=*) printf '%s\n' "${tmux_environment_line#*=}" ;;
     *) return 1 ;;
   esac
 }
 
+default_project_roots() {
+  [ -n "${HOME:-}" ] || return 1
+  default_roots=
+  for default_root in "$HOME/Proyectos" "$HOME/Projects"; do
+    [ -d "$default_root" ] || continue
+    case ":$default_roots:" in
+      *:"$default_root":*) continue ;;
+    esac
+    if [ -n "$default_roots" ]; then
+      default_roots=$default_roots:$default_root
+    else
+      default_roots=$default_root
+    fi
+  done
+  [ -n "$default_roots" ] || return 1
+  printf '%s\n' "$default_roots"
+}
+
 # Un pane no recibe retroactivamente el entorno guardado en su sesion. El popup
-# conserva TMUX y TMUX_PANE, por lo que puede recuperar aqui los valores que no
-# estuvieran exportados en la shell desde la que se abrio.
+# recibe de su binding la sesion de origen; en procesos normales del pane se
+# puede obtener la misma informacion mediante TMUX_PANE.
 if [ -n "${TMUX:-}" ]; then
   if [ -z "${ENTORNO_TMUX_SOCKET:-}" ]; then
     ENTORNO_TMUX_SOCKET=$(tmux_session_environment ENTORNO_TMUX_SOCKET) || ENTORNO_TMUX_SOCKET=
@@ -29,6 +53,10 @@ if [ -n "${TMUX:-}" ]; then
   if [ -z "${NVIM_BIN:-}" ]; then
     NVIM_BIN=$(tmux_session_environment NVIM_BIN) || NVIM_BIN=
   fi
+fi
+
+if [ -z "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
+  ENTORNO_TMUX_PROJECT_ROOTS=$(default_project_roots) || ENTORNO_TMUX_PROJECT_ROOTS=
 fi
 
 TMUX_CONFIG="$PROJECT_ROOT/tmux/tmux.conf"
@@ -68,7 +96,7 @@ project_from_directory() {
 
 find_projects() {
   roots=${ENTORNO_TMUX_PROJECT_ROOTS:-}
-  [ -n "$roots" ] || fail "define ENTORNO_TMUX_PROJECT_ROOTS con raices separadas por dos puntos"
+  [ -n "$roots" ] || fail "define ENTORNO_TMUX_PROJECT_ROOTS; tampoco existen \$HOME/Proyectos ni \$HOME/Projects"
   command -v fzf >/dev/null 2>&1 || fail "fzf no esta disponible"
 
   if command -v fd >/dev/null 2>&1; then
