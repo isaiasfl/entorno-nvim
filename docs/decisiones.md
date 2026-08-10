@@ -198,3 +198,15 @@ código, emoji y dos páginas.
 XeLaTeX y LuaLaTeX se descartaron como ruta principal porque exigirían mantener
 otro sistema de estilos. WeasyPrint, Paged.js, Typst y wkhtmltopdf no están
 disponibles y no ofrecen una ventaja suficiente para añadir otra dependencia.
+
+## Dashboard IFL
+
+La pantalla de inicio se implementa con un buffer nativo no listado y de solo
+lectura. Se abre únicamente en una interfaz sin argumentos ni entrada estándar,
+se puede recuperar con `:IFL` y restaura las opciones locales de la ventana al
+salir. El logotipo ASCII evita depender de una Nerd Font.
+
+Las acciones reutilizan `fzf-lua` de forma diferida para archivos, texto y
+recientes, además de ofrecer archivo nuevo, acceso a la configuración y salida.
+No se incorpora un plugin de dashboard porque la API nativa cubre el alcance
+completo con menos dependencias y sin ampliar el tiempo de arranque.

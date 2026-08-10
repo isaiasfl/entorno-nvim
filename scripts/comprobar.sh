@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 TEST_FILE=${NVIM_TEST_FILE:-"$PROJECT_ROOT/tests/comprobar_nucleo.lua"}
+DASHBOARD_TEST="$PROJECT_ROOT/tests/comprobar_dashboard.lua"
 
 case "$XDG_ROOT" in
   /*) ;;
@@ -15,6 +16,7 @@ HEALTH_REPORT="$XDG_ROOT/checkhealth.txt"
 
 export ENTORNO_NVIM_HEALTH_REPORT="$HEALTH_REPORT"
 export ENTORNO_NVIM_TEST_FILE="$TEST_FILE"
+export ENTORNO_NVIM_DASHBOARD_TEST="$DASHBOARD_TEST"
 export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
 
 "$SCRIPT_DIR/arrancar.sh" --headless \
@@ -22,6 +24,10 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
   "+checkhealth" \
   "+lua require('fzf-lua._health').check()" \
   "+lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), vim.env.ENTORNO_NVIM_HEALTH_REPORT)" \
+  "+qa"
+
+"$SCRIPT_DIR/arrancar.sh" --headless \
+  "+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_DASHBOARD_TEST); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
   "+qa"
 
 "$PROJECT_ROOT/tests/comprobar_tmux.sh"

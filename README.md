@@ -23,7 +23,8 @@ por proyecto separa Neovim, un agente intercambiable y una terminal de trabajo;
 el contexto se envia sin plugins de IA ni acoplamiento a proveedores. Los
 documentos Markdown se exportan a PDF A4 mediante Pandoc, CSS propio y Chromium
 desde un comando nativo de Neovim. Todo se ejecuta en un entorno XDG aislado y
-no modifica ni enlaza `~/.config/nvim`.
+no modifica ni enlaza `~/.config/nvim`. Al arrancar sin archivos aparece un
+dashboard IFL nativo, sin incorporar otro plugin.
 
 El entorno principal es Debian 13 y el objetivo actual es Neovim 0.12.4. Los
 scripts seleccionan su instalación paralela sin cambiar el binario global
@@ -41,6 +42,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 - [Git y lazygit](docs/git.md)
 - [Terminal, tmux y agentes](docs/terminal-tmux-agentes.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
+- [Dashboard IFL](docs/dashboard.md)
 - [Restauración](docs/restauracion.md)
 - [Contexto original](CONTEXTO_INICIAL.md)
 

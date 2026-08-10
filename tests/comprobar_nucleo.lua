@@ -28,6 +28,8 @@ assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 assert(package.loaded["config.lsp"], "config.lsp no se cargo")
 assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(package.loaded["config.markdown_pdf"], "config.markdown_pdf no se cargo")
+assert(package.loaded["config.dashboard"], "config.dashboard no se cargo")
+assert(vim.fn.exists(":IFL") == 2, "falta el comando IFL")
 assert(vim.g.loaded_netrw == 1, "netrw debe estar desactivado")
 assert(vim.g.loaded_netrwPlugin == 1, "el plugin de netrw debe estar desactivado")
 
