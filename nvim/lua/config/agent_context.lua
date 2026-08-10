@@ -1,6 +1,7 @@
 local M = {}
 
-local max_bytes = 32768
+local default_max_bytes = 32768
+local max_age_seconds = 24 * 60 * 60
 
 local function notify_error(message)
   vim.notify(message, vim.log.levels.ERROR, { title = "Contexto de agente" })
@@ -10,14 +11,22 @@ local function is_sensitive(path)
   local normalized = path:gsub("\\", "/"):lower()
   local basename = vim.fs.basename(normalized)
 
-  if basename == ".env" or basename:match("^%.env%.") then
+  if basename:match("^%.env")
+    or basename:match("%.pem$")
+    or basename:match("%.key$")
+    or basename:match("%.p12$")
+  then
     return true
   end
 
   local sensitive_names = {
+    [".git-credentials"] = true,
+    [".my.cnf"] = true,
     [".netrc"] = true,
     [".npmrc"] = true,
+    [".pgpass"] = true,
     [".pypirc"] = true,
+    [".s3cfg"] = true,
     ["credentials"] = true,
     ["credentials.json"] = true,
     ["id_dsa"] = true,
@@ -29,7 +38,9 @@ local function is_sensitive(path)
     return true
   end
 
+  local components = {}
   for component in normalized:gmatch("[^/]+") do
+    table.insert(components, component)
     if component == ".ssh"
       or component == ".gnupg"
       or component == ".password-store"
@@ -39,7 +50,71 @@ local function is_sensitive(path)
     end
   end
 
+  for index, component in ipairs(components) do
+    local child = components[index + 1]
+    if (component == ".kube" and child == "config")
+      or (component == ".docker" and child == "config.json")
+    then
+      return true
+    end
+  end
+
   return false
+end
+
+local function context_max_bytes()
+  local raw = vim.env.ENTORNO_AGENT_CONTEXT_MAX_BYTES
+  if raw == nil or raw == "" then
+    return default_max_bytes
+  end
+
+  if not raw:match("^%d+$") then
+    return nil, "ENTORNO_AGENT_CONTEXT_MAX_BYTES debe ser un entero positivo"
+  end
+
+  local value = tonumber(raw)
+  if not value or value < 1 then
+    return nil, "ENTORNO_AGENT_CONTEXT_MAX_BYTES debe ser mayor que cero"
+  end
+  return value
+end
+
+local function context_directory()
+  return vim.fs.joinpath(vim.fn.stdpath("run"), "agent-context")
+end
+
+local function prepare_context_directory(directory)
+  local stat = vim.uv.fs_lstat(directory)
+  if not stat then
+    vim.fn.mkdir(directory, "p")
+    stat = vim.uv.fs_lstat(directory)
+  end
+  if not stat or stat.type ~= "directory" then
+    return nil, "el directorio runtime de contexto no es un directorio regular"
+  end
+  local changed, chmod_error = vim.uv.fs_chmod(directory, 448)
+  if not changed then
+    return nil, chmod_error or "no se pudieron fijar permisos 0700"
+  end
+  return true
+end
+
+local function purge_old_contexts(directory)
+  local directory_stat = vim.uv.fs_lstat(directory)
+  if not directory_stat or directory_stat.type ~= "directory" then
+    return
+  end
+
+  local threshold = os.time() - max_age_seconds
+  for name, kind in vim.fs.dir(directory) do
+    if kind == "file" and name:match("^context%-%d+%-%d+%.json$") then
+      local path = vim.fs.joinpath(directory, name)
+      local stat = vim.uv.fs_lstat(path)
+      if stat and stat.type == "file" and stat.mtime and stat.mtime.sec < threshold then
+        vim.uv.fs_unlink(path)
+      end
+    end
+  end
 end
 
 local function ordered_positions(first, last)
@@ -83,12 +158,9 @@ local function capture_context(visual)
   return context
 end
 
-local function write_private_payload(payload)
-  local directory = vim.fs.joinpath(vim.fn.stdpath("run"), "agent-context")
-  vim.fn.mkdir(directory, "p")
-  vim.uv.fs_chmod(directory, 448)
-
-  local path = vim.fs.joinpath(directory, string.format("context-%d-%d.json", vim.fn.getpid(), vim.uv.hrtime()))
+local function write_private_payload(payload, directory)
+  local name = string.format("context-%d-%d.json", vim.fn.getpid(), vim.uv.hrtime())
+  local path = vim.fs.joinpath(directory, name)
   local file, open_error = vim.uv.fs_open(path, "wx", 384)
   if not file then
     return nil, open_error
@@ -116,6 +188,20 @@ end
 
 function M.send(options)
   options = options or {}
+  local directory = context_directory()
+  local prepared, directory_error = prepare_context_directory(directory)
+  if not prepared then
+    notify_error(directory_error)
+    return
+  end
+  purge_old_contexts(directory)
+
+  local max_bytes, limit_error = context_max_bytes()
+  if not max_bytes then
+    notify_error(limit_error)
+    return
+  end
+
   local context, capture_error = capture_context(options.visual == true)
   if not context then
     notify_error(capture_error)
@@ -134,7 +220,7 @@ function M.send(options)
       return
     end
 
-    local path, write_error = write_private_payload(payload)
+    local path, write_error = write_private_payload(payload, directory)
     if not path then
       notify_error("no se pudo crear el contexto temporal: " .. tostring(write_error))
       return
@@ -146,7 +232,13 @@ function M.send(options)
       return
     end
 
-    vim.system({ transport, path }, { text = true }, function(result)
+    vim.system({ transport, path }, {
+      text = true,
+      env = {
+        ENTORNO_AGENT_CONTEXT_DIR = directory,
+        ENTORNO_AGENT_CONTEXT_MAX_BYTES = tostring(max_bytes),
+      },
+    }, function(result)
       vim.schedule(function()
         if result.code == 0 then
           vim.notify(vim.trim(result.stdout), vim.log.levels.INFO, { title = "Contexto de agente" })

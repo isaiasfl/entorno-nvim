@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-activacion.XXXXXX")
 TEST_HOME="$TEST_ROOT/home"
 TEST_REPOSITORY="$TEST_ROOT/repositorio"
@@ -31,8 +31,8 @@ PATH="$TEST_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin" \
   "$PROJECT_ROOT/scripts/activar.sh" >/dev/null
 
 BACKUP="$TEST_BACKUPS/nvim-activa-20260809-000000"
-[ "$(readlink -f "$TEST_HOME/.config/nvim")" = "$(readlink -f "$TEST_REPOSITORY/nvim")" ]
-[ "$(readlink -f "$TEST_HOME/.local/bin/nvim")" = "$(readlink -f "$TEST_HOME/.local/opt/nvim-0.12.4/bin/nvim")" ]
+[ "$(readlink "$TEST_HOME/.config/nvim")" = "$TEST_REPOSITORY/nvim" ]
+[ "$(readlink "$TEST_HOME/.local/bin/nvim")" = "$TEST_HOME/.local/opt/nvim-0.12.4/bin/nvim" ]
 [ "$(sed -n '1p' "$BACKUP/nvim/init.lua")" = "configuracion-anterior" ]
 [ "$(sed -n '1p' "$TEST_HOME/.local/state/entorno-nvim/ultimo-backup")" = "$BACKUP" ]
 

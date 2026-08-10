@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 STYLE=${MDPDF_STYLE:-"$PROJECT_ROOT/markdown/styles/examen.css"}
 TEMPLATE=${MDPDF_TEMPLATE:-"$PROJECT_ROOT/markdown/templates/documento.html"}
 
@@ -42,8 +42,8 @@ case "$INPUT" in
   /*) ;;
   *) INPUT="$(pwd)/$INPUT" ;;
 esac
-INPUT_DIR=$(CDPATH= cd -- "$(dirname -- "$INPUT")" && pwd)
-INPUT="$INPUT_DIR/$(basename -- "$INPUT")"
+INPUT_DIR=$(CDPATH= cd "$(dirname "$INPUT")" && pwd)
+INPUT="$INPUT_DIR/$(basename "$INPUT")"
 
 if [ "$#" -eq 2 ]; then
   OUTPUT=$2
@@ -55,10 +55,10 @@ case "$OUTPUT" in
   /*) ;;
   *) OUTPUT="$(pwd)/$OUTPUT" ;;
 esac
-OUTPUT_DIR=$(dirname -- "$OUTPUT")
+OUTPUT_DIR=$(dirname "$OUTPUT")
 mkdir -p "$OUTPUT_DIR"
-OUTPUT_DIR=$(CDPATH= cd -- "$OUTPUT_DIR" && pwd)
-OUTPUT="$OUTPUT_DIR/$(basename -- "$OUTPUT")"
+OUTPUT_DIR=$(CDPATH= cd "$OUTPUT_DIR" && pwd)
+OUTPUT="$OUTPUT_DIR/$(basename "$OUTPUT")"
 
 if [ -n "${CHROMIUM_BIN:-}" ]; then
   BROWSER=$CHROMIUM_BIN
@@ -77,7 +77,7 @@ fi
 
 TMP_BASE=${TMPDIR:-/tmp}
 TMP_DIR=$(mktemp -d "$TMP_BASE/entorno-nvim-mdpdf.XXXXXX")
-trap 'rm -rf -- "$TMP_DIR"' EXIT HUP INT TERM
+trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
 HTML="$TMP_DIR/documento.html"
 BROWSER_LOG="$TMP_DIR/chromium.log"
 

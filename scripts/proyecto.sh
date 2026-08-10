@@ -1,26 +1,18 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 TMUX_CONFIG="$PROJECT_ROOT/tmux/tmux.conf"
-TMUX_SOCKET=${ENTORNO_TMUX_SOCKET:-}
+TMUX_SOCKET=${ENTORNO_TMUX_SOCKET:-entorno-nvim}
 MAX_DEPTH=${ENTORNO_TMUX_PROJECT_DEPTH:-5}
 
 tmux_cmd() {
-  if [ -n "$TMUX_SOCKET" ]; then
-    command tmux -L "$TMUX_SOCKET" "$@"
-  else
-    command tmux "$@"
-  fi
+  command tmux -L "$TMUX_SOCKET" "$@"
 }
 
 tmux_new_session() {
-  if [ -n "$TMUX_SOCKET" ]; then
-    command tmux -L "$TMUX_SOCKET" -f "$TMUX_CONFIG" new-session "$@"
-  else
-    command tmux -f "$TMUX_CONFIG" new-session "$@"
-  fi
+  command tmux -L "$TMUX_SOCKET" -f "$TMUX_CONFIG" new-session "$@"
 }
 
 fail() {
@@ -29,7 +21,11 @@ fail() {
 }
 
 canonical_directory() {
-  CDPATH= cd -- "$1" 2>/dev/null && pwd -P
+  directory_operand=$1
+  case "$directory_operand" in
+    -*) directory_operand=./$directory_operand ;;
+  esac
+  CDPATH= cd "$directory_operand" 2>/dev/null && pwd -P
 }
 
 project_from_directory() {
@@ -57,7 +53,7 @@ find_projects() {
 
   candidates=$(mktemp "${TMPDIR:-/tmp}/entorno-nvim-proyectos.XXXXXX")
   chmod 600 "$candidates"
-  trap 'rm -f -- "$candidates"' EXIT HUP INT TERM
+  trap 'rm -f "$candidates"' EXIT HUP INT TERM
 
   remaining=$roots
   while :; do
@@ -74,12 +70,12 @@ find_projects() {
 
     "$fd_bin" --hidden --type directory --max-depth "$MAX_DEPTH" '^\.git$' "$root" 2>/dev/null |
       while IFS= read -r marker; do
-        project_from_directory "$(dirname -- "$marker")"
+        project_from_directory "$(dirname "$marker")"
       done >> "$candidates"
 
     "$fd_bin" --hidden --type file --max-depth "$MAX_DEPTH" '^\.git$' "$root" 2>/dev/null |
       while IFS= read -r marker; do
-        project_from_directory "$(dirname -- "$marker")"
+        project_from_directory "$(dirname "$marker")"
       done >> "$candidates"
 
     [ "$last" -eq 0 ] || break
@@ -88,7 +84,7 @@ find_projects() {
   sorted=$(mktemp "${TMPDIR:-/tmp}/entorno-nvim-proyectos-ordenados.XXXXXX")
   chmod 600 "$sorted"
   sort -u "$candidates" > "$sorted"
-  mv -- "$sorted" "$candidates"
+  mv "$sorted" "$candidates"
 
   [ -s "$candidates" ] || fail "no se encontraron repositorios Git en las raices configuradas"
   selection=$(fzf --prompt='Proyecto> ' < "$candidates") || exit 0
@@ -97,7 +93,8 @@ find_projects() {
 }
 
 session_name() {
-  base=$(basename -- "$1" | tr -c '[:alnum:]_-' '_')
+  base=$(basename "$1")
+  base=$(printf '%s' "$base" | tr -c '[:alnum:]_-' '_')
   checksum=$(printf '%s' "$1" | cksum)
   checksum=${checksum%% *}
   printf '%s-%s\n' "$base" "$checksum"
@@ -110,7 +107,10 @@ start_editor() {
   [ -n "$nvim_path" ] && [ -x "$nvim_path" ] || fail "NVIM_BIN no es ejecutable: $nvim_command"
 
   quoted=$(printf '%s' "$nvim_path" | sed "s/'/'\\\\''/g")
-  tmux_cmd send-keys -l -t "$pane" "exec '$quoted' ."
+  quoted_socket=$(printf '%s' "$TMUX_SOCKET" | sed "s/'/'\\\\''/g")
+  quoted_root=$(printf '%s' "$PROJECT_ROOT" | sed "s/'/'\\\\''/g")
+  tmux_cmd send-keys -l -t "$pane" \
+    "export ENTORNO_TMUX_SOCKET='$quoted_socket' ENTORNO_NVIM_ROOT='$quoted_root'; '$quoted' ."
   tmux_cmd send-keys -t "$pane" Enter
 }
 
@@ -128,6 +128,7 @@ if [ "$#" -eq 1 ]; then
 else
   project=$(find_projects)
 fi
+[ -n "$project" ] || exit 0
 
 session=$(session_name "$project")
 
@@ -137,9 +138,12 @@ fi
 
 if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
   tmux_new_session -d -s "$session" -n work -c "$project"
+  tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
+  tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
   tmux_cmd split-window -v -p 25 -t "$editor_pane" -c "$project" >/dev/null
   agent_pane=$(tmux_cmd split-window -h -p 35 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+  tmux_cmd set-option -p -t "$editor_pane" @entorno_role editor
   tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
   tmux_cmd select-pane -t "$editor_pane"
   start_editor "$editor_pane"
@@ -147,10 +151,13 @@ fi
 
 if [ "${ENTORNO_TMUX_NO_ATTACH:-0}" = "1" ]; then
   printf '%s\n' "$session"
-elif [ -n "${TMUX:-}" ] && [ -z "$TMUX_SOCKET" ]; then
+elif [ -n "${TMUX:-}" ]; then
+  current_socket=${TMUX%%,*}
+  target_socket=$(tmux_cmd display-message -p '#{socket_path}')
+  if [ "$current_socket" != "$target_socket" ]; then
+    fail "tmux anidado no admitido: separa la sesion actual y ejecuta proyecto.sh desde una terminal externa"
+  fi
   tmux_cmd switch-client -t "=$session"
-elif [ -n "$TMUX_SOCKET" ]; then
-  exec tmux -L "$TMUX_SOCKET" attach-session -t "=$session"
 else
-  exec tmux attach-session -t "=$session"
+  exec tmux -L "$TMUX_SOCKET" attach-session -t "=$session"
 fi

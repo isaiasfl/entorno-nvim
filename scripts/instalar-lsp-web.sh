@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 TOOLS_DIR="$PROJECT_ROOT/tools/lsp-web"
 TAILWIND_FIXTURE_DIR="$PROJECT_ROOT/tests/fixtures/lsp-tailwind-v4"
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}

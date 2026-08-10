@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-0.12.4/bin/nvim"}
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
 TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-0.26.11/bin/tree-sitter"}
@@ -42,7 +42,7 @@ if [ ! -x "$LUALS_BIN" ]; then
   exit 1
 fi
 
-TREE_SITTER_DIR=$(dirname -- "$TREE_SITTER_BIN")
+TREE_SITTER_DIR=$(dirname "$TREE_SITTER_BIN")
 PATH="$TREE_SITTER_DIR:$PATH"
 
 case "$NVIM_BIN" in

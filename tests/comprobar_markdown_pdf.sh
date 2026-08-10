@@ -1,12 +1,12 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT_ROOT=$(dirname -- "$SCRIPT_DIR")
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 EXAMPLE="$PROJECT_ROOT/examples/examen/examen.md"
 OUTPUT="$PROJECT_ROOT/examples/examen/examen.pdf"
 TEMPORARY_DIR=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-mdpdf-test.XXXXXX")
-trap 'rm -rf -- "$TEMPORARY_DIR"' EXIT HUP INT TERM
+trap 'rm -rf "$TEMPORARY_DIR"' EXIT HUP INT TERM
 
 "$PROJECT_ROOT/scripts/markdown-pdf.sh" "$EXAMPLE" "$OUTPUT"
 

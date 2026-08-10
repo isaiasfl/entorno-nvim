@@ -41,6 +41,7 @@ scripts seleccionan su instalación paralela sin cambiar el binario global
 - [LSP y completado nativo](docs/lsp.md)
 - [Git y lazygit](docs/git.md)
 - [Terminal, tmux y agentes](docs/terminal-tmux-agentes.md)
+- [Auditoría de endurecimiento de tmux y agentes](docs/auditoria-tmux-agentes.md)
 - [Flujo de Markdown y PDF](docs/markdown-pdf.md)
 - [Dashboard IFL](docs/dashboard.md)
 - [Restauración](docs/restauracion.md)

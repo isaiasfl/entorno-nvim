@@ -210,3 +210,17 @@ Las acciones reutilizan `fzf-lua` de forma diferida para archivos, texto y
 recientes, además de ofrecer archivo nuevo, acceso a la configuración y salida.
 No se incorpora un plugin de dashboard porque la API nativa cubre el alcance
 completo con menos dependencias y sin ampliar el tiempo de arranque.
+
+## Endurecimiento de tmux y agentes
+
+El flujo usa un socket tmux dedicado para no alterar el servidor personal. El
+envío de contexto valida el proceso real del panel, deniega shells y procesos
+desconocidos y permite incorporar agentes mediante una lista de identidades y
+un lanzador agnóstico para wrappers. El límite se comparte entre Lua y shell,
+los temporales tienen permisos privados y una purga acotada, y las rutas
+sensibles comunes se bloquean como medida preventiva.
+
+El panel de Neovim conserva una shell al cerrar el editor y las reconexiones no
+reconstruyen layouts existentes. La compatibilidad se revisó con sintaxis POSIX
+y alternativas GNU/BSD, pero la ejecución real solo se validó en Debian 13; las
+pruebas en CachyOS y macOS siguen pendientes.

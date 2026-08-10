@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-REPOSITORY=${ENTORNO_NVIM_REPOSITORY:-"$(dirname -- "$SCRIPT_DIR")"}
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+REPOSITORY=${ENTORNO_NVIM_REPOSITORY:-"$(dirname "$SCRIPT_DIR")"}
 USER_HOME=${ENTORNO_NVIM_HOME:-"$HOME"}
 CONFIG_PATH="$USER_HOME/.config/nvim"
 CONFIG_TARGET="$REPOSITORY/nvim"
@@ -16,7 +16,7 @@ fail() {
 }
 
 same_target() {
-  [ -L "$1" ] && [ "$(readlink -f "$1")" = "$(readlink -f "$2")" ]
+  [ -L "$1" ] && [ "$(readlink "$1")" = "$2" ]
 }
 
 case "$USER_HOME" in

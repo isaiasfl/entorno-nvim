@@ -32,9 +32,9 @@ WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-luals.XXXXXX")
 STAGING_DIR=$(mktemp -d "$OPT_ROOT/.lua-language-server-$VERSION.XXXXXX")
 
 cleanup() {
-  rm -rf -- "$WORK_DIR"
+  rm -rf "$WORK_DIR"
   if [ -n "${STAGING_DIR:-}" ] && [ -d "$STAGING_DIR" ]; then
-    rm -rf -- "$STAGING_DIR"
+    rm -rf "$STAGING_DIR"
   fi
 }
 trap cleanup EXIT HUP INT TERM
