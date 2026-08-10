@@ -128,6 +128,28 @@ fi
 grep -Fq 'CHROMIUM_BIN no es un navegador ejecutable' "$BROWSER_ERROR" ||
   fail "la ausencia de navegador no produjo un error claro"
 
+FAKE_VIEWER="$TEMPORARY_DIR/visor-prueba.sh"
+VIEWER_PATH_MARKER="$TEMPORARY_DIR/visor-ruta.txt"
+VIEWER_CHECKSUM_MARKER="$TEMPORARY_DIR/visor-checksum.txt"
+printf '%s\n' \
+  '#!/bin/sh' \
+  'set -eu' \
+  'printf '\''%s\n'\'' "$1" > "$ENTORNO_VIEWER_PATH_MARKER"' \
+  'cksum "$1" > "$ENTORNO_VIEWER_CHECKSUM_MARKER"' \
+  >"$FAKE_VIEWER"
+chmod 700 "$FAKE_VIEWER"
+
+ENTORNO_PDF_VIEWER="$FAKE_VIEWER" \
+  ENTORNO_VIEWER_PATH_MARKER="$VIEWER_PATH_MARKER" \
+  ENTORNO_VIEWER_CHECKSUM_MARKER="$VIEWER_CHECKSUM_MARKER" \
+  "$PROJECT_ROOT/scripts/abrir-pdf.sh" "$PARTIAL_PDF"
+
+[ "$(sed -n '1p' "$VIEWER_PATH_MARKER")" = "$PARTIAL_PDF" ] ||
+  fail "el visor no recibió exactamente la ruta del PDF generado"
+EXPECTED_CHECKSUM=$(cksum "$PARTIAL_PDF")
+[ "$(sed -n '1p' "$VIEWER_CHECKSUM_MARKER")" = "$EXPECTED_CHECKSUM" ] ||
+  fail "el visor no recibió exactamente el contenido del PDF generado"
+
 NVIM_TEST_COMMAND="+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_MARKDOWN_PDF_TEST);"
 NVIM_TEST_COMMAND="${NVIM_TEST_COMMAND} if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end"
 ENTORNO_NVIM_MARKDOWN_PDF_TEST="$PROJECT_ROOT/tests/comprobar_markdown_pdf.lua" \
