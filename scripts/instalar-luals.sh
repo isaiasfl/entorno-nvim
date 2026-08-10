@@ -1,11 +1,15 @@
 #!/bin/sh
 set -eu
 
-VERSION=3.19.0
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib/versiones.sh"
+. "$SCRIPT_DIR/lib/comun.sh"
+
+VERSION=$ENTORNO_LUALS_VERSION
 ARCHIVE="lua-language-server-$VERSION-linux-x64.tar.gz"
 URL="https://github.com/LuaLS/lua-language-server/releases/download/$VERSION/$ARCHIVE"
 SHA256=624ae8dd3bfbd5c2ee3ccf2f3547d33aeefa209971cce8c11d48f69fc1ec065a
-BINARY_SHA256=39d9c9f8937d619c482f1fb2b7a4cce46a85b7a35cbe67cef7e2555aff3dc4f1
+BINARY_SHA256=$ENTORNO_LUALS_LINUX_X64_BINARY_SHA256
 OPT_ROOT=${LUALS_OPT_ROOT:-"$HOME/.local/opt"}
 INSTALL_DIR="$OPT_ROOT/lua-language-server-$VERSION"
 
@@ -16,7 +20,7 @@ fi
 
 if [ -d "$INSTALL_DIR" ]; then
   if [ -x "$INSTALL_DIR/bin/lua-language-server" ] \
-    && [ "$(sha256sum "$INSTALL_DIR/bin/lua-language-server" | awk '{ print $1 }')" = "$BINARY_SHA256" ] \
+    && [ "$(entorno_sha256 "$INSTALL_DIR/bin/lua-language-server")" = "$BINARY_SHA256" ] \
     && [ -f "$INSTALL_DIR/.source.sha256" ] \
     && [ "$(cat "$INSTALL_DIR/.source.sha256")" = "$SHA256  $ARCHIVE" ]; then
     printf '%s\n' "LuaLS $VERSION ya esta instalado y verificado en $INSTALL_DIR"
@@ -39,8 +43,8 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-curl --fail --location --proto '=https' --tlsv1.2 --output "$WORK_DIR/$ARCHIVE" "$URL"
-printf '%s  %s\n' "$SHA256" "$WORK_DIR/$ARCHIVE" | sha256sum --check
+entorno_descargar "$URL" "$WORK_DIR/$ARCHIVE"
+entorno_verificar_sha256 "$WORK_DIR/$ARCHIVE" "$SHA256"
 
 if tar -tzf "$WORK_DIR/$ARCHIVE" | awk '
   /^\// || /(^|\/)\.\.($|\/)/ { bad = 1 }
@@ -59,7 +63,7 @@ if [ ! -x "$STAGING_DIR/bin/lua-language-server" ] || [ ! -f "$STAGING_DIR/LICEN
   exit 1
 fi
 
-if [ "$(sha256sum "$STAGING_DIR/bin/lua-language-server" | awk '{ print $1 }')" != "$BINARY_SHA256" ]; then
+if [ "$(entorno_sha256 "$STAGING_DIR/bin/lua-language-server")" != "$BINARY_SHA256" ]; then
   printf '%s\n' "Error: el binario extraido de LuaLS no coincide con el hash esperado." >&2
   exit 1
 fi

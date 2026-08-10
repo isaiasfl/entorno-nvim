@@ -2,12 +2,13 @@
 set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib/versiones.sh"
 REPOSITORY=${ENTORNO_NVIM_REPOSITORY:-"$(dirname "$SCRIPT_DIR")"}
 USER_HOME=${ENTORNO_NVIM_HOME:-"$HOME"}
 CONFIG_PATH="$USER_HOME/.config/nvim"
 CONFIG_TARGET="$REPOSITORY/nvim"
 USER_BIN="$USER_HOME/.local/bin/nvim"
-NVIM_TARGET=${ENTORNO_NVIM_TARGET:-"$USER_HOME/.local/opt/nvim-0.12.4/bin/nvim"}
+NVIM_TARGET=${ENTORNO_NVIM_TARGET:-"$USER_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"}
 STATE_DIR=${ENTORNO_NVIM_STATE_DIR:-"$USER_HOME/.local/state/entorno-nvim"}
 
 fail() {
@@ -39,7 +40,7 @@ fi
 [ -d "$BACKUP_DIR" ] || fail "backup inexistente: $BACKUP_DIR"
 [ -f "$BACKUP_DIR/manifest.txt" ] || fail "falta el manifiesto del backup"
 same_target "$CONFIG_PATH" "$CONFIG_TARGET" || fail "$CONFIG_PATH no apunta a la configuracion de este repositorio"
-same_target "$USER_BIN" "$NVIM_TARGET" || fail "$USER_BIN no apunta a Neovim 0.12.4"
+same_target "$USER_BIN" "$NVIM_TARGET" || fail "$USER_BIN no apunta a Neovim $ENTORNO_NVIM_VERSION"
 
 config_original=$(sed -n 's/^config_original=//p' "$BACKUP_DIR/manifest.txt")
 bin_original=$(sed -n 's/^bin_original=//p' "$BACKUP_DIR/manifest.txt")
@@ -52,11 +53,11 @@ trap 'rm -rf "$config_tmp" "$bin_tmp"' EXIT HUP INT TERM
 
 if [ "$config_original" = "present" ]; then
   [ -e "$BACKUP_DIR/nvim" ] || [ -L "$BACKUP_DIR/nvim" ] || fail "el backup no contiene la configuracion anterior"
-  cp -a "$BACKUP_DIR/nvim" "$config_tmp"
+  cp -R -P -p "$BACKUP_DIR/nvim" "$config_tmp"
 fi
 if [ "$bin_original" = "present" ]; then
   [ -e "$BACKUP_DIR/nvim-user-command" ] || [ -L "$BACKUP_DIR/nvim-user-command" ] || fail "el backup no contiene el comando anterior"
-  cp -a "$BACKUP_DIR/nvim-user-command" "$bin_tmp"
+  cp -R -P -p "$BACKUP_DIR/nvim-user-command" "$bin_tmp"
 fi
 
 rm -f "$CONFIG_PATH" "$USER_BIN"

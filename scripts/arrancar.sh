@@ -3,12 +3,13 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
-NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-0.12.4/bin/nvim"}
-XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
-TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-0.26.11/bin/tree-sitter"}
+. "$SCRIPT_DIR/lib/versiones.sh"
+NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"}
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
+TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter"}
 LSP_WEB_BIN=${LSP_WEB_BIN:-"$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"}
 LSP_PYTHON_BIN=${LSP_PYTHON_BIN:-"$PROJECT_ROOT/tools/lsp-python/node_modules/.bin"}
-LUALS_BIN=${LUALS_BIN:-"$HOME/.local/opt/lua-language-server-3.19.0/bin/lua-language-server"}
+LUALS_BIN=${LUALS_BIN:-"$HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"}
 
 case "$XDG_ROOT" in
   /*) ;;

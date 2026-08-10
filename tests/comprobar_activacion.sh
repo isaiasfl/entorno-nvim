@@ -36,6 +36,17 @@ BACKUP="$TEST_BACKUPS/nvim-activa-20260809-000000"
 [ "$(sed -n '1p' "$BACKUP/nvim/init.lua")" = "configuracion-anterior" ]
 [ "$(sed -n '1p' "$TEST_HOME/.local/state/entorno-nvim/ultimo-backup")" = "$BACKUP" ]
 
+# Una segunda activacion sobre los mismos destinos no crea otro backup.
+ENTORNO_NVIM_HOME="$TEST_HOME" \
+ENTORNO_NVIM_REPOSITORY="$TEST_REPOSITORY" \
+ENTORNO_NVIM_BACKUP_ROOT="$TEST_BACKUPS" \
+ENTORNO_NVIM_ACTIVATION_TIMESTAMP=20260809-000001 \
+PATH="$TEST_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin" \
+  "$PROJECT_ROOT/scripts/activar.sh" >/dev/null
+[ ! -e "$TEST_BACKUPS/nvim-activa-20260809-000001" ]
+set -- "$TEST_BACKUPS"/nvim-activa-*
+[ "$#" -eq 1 ] && [ "$1" = "$BACKUP" ]
+
 ENTORNO_NVIM_HOME="$TEST_HOME" \
 ENTORNO_NVIM_REPOSITORY="$TEST_REPOSITORY" \
   "$PROJECT_ROOT/scripts/restaurar.sh" >/dev/null

@@ -3,7 +3,8 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
-XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
+. "$SCRIPT_DIR/lib/versiones.sh"
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 TEST_FILE=${NVIM_TEST_FILE:-"$PROJECT_ROOT/tests/comprobar_nucleo.lua"}
 DASHBOARD_TEST="$PROJECT_ROOT/tests/comprobar_dashboard.lua"
 
@@ -33,6 +34,7 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
 "$PROJECT_ROOT/tests/comprobar_tmux.sh"
 "$PROJECT_ROOT/tests/comprobar_activacion.sh"
 "$PROJECT_ROOT/tests/comprobar_markdown_pdf.sh"
+"$PROJECT_ROOT/tests/comprobar_instalacion.sh"
 
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"

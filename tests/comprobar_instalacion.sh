@@ -1,0 +1,73 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+. "$PROJECT_ROOT/scripts/lib/versiones.sh"
+
+TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-instalacion.XXXXXX")
+TEST_HOME="$TEST_ROOT/home"
+TEST_XDG="$TEST_ROOT/xdg"
+REAL_HOME=$HOME
+TMUX_SOCKET="entorno-nvim-install-$$"
+
+cleanup() {
+  tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
+  rm -rf "$TEST_ROOT"
+}
+trap cleanup EXIT HUP INT TERM
+
+mkdir -p "$TEST_HOME/.local/opt" "$TEST_XDG/data/nvim/lazy" "$TEST_XDG/data/nvim/site/parser"
+
+for directory in \
+  "nvim-$ENTORNO_NVIM_VERSION" \
+  "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION" \
+  "lua-language-server-$ENTORNO_LUALS_VERSION"
+do
+  [ -d "$REAL_HOME/.local/opt/$directory" ] || {
+    printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
+    exit 1
+  }
+  ln -s "$REAL_HOME/.local/opt/$directory" "$TEST_HOME/.local/opt/$directory"
+done
+
+while IFS=' ' read -r plugin commit; do
+  [ -n "$plugin" ] || continue
+  source_dir="$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION/data/nvim/lazy/$plugin"
+  [ -d "$source_dir/.git" ] || {
+    printf 'Error: falta el plugin local para la prueba aislada: %s\n' "$plugin" >&2
+    exit 1
+  }
+  git -c advice.detachedHead=false clone --quiet --shared "$source_dir" "$TEST_XDG/data/nvim/lazy/$plugin"
+  git -c advice.detachedHead=false -C "$TEST_XDG/data/nvim/lazy/$plugin" switch --quiet --detach "$commit"
+done <<EOF
+$(sed -n 's/^[[:space:]]*"\([^"]*\)":.*"commit": "\([0-9a-f]*\)".*/\1 \2/p' "$PROJECT_ROOT/nvim/lazy-lock.json")
+EOF
+
+for parser in $ENTORNO_PARSERS; do
+  source_parser="$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION/data/nvim/site/parser/$parser.so"
+  [ -f "$source_parser" ] || {
+    printf 'Error: falta el parser local para la prueba aislada: %s\n' "$parser" >&2
+    exit 1
+  }
+  cp "$source_parser" "$TEST_XDG/data/nvim/site/parser/$parser.so"
+done
+
+HOME="$TEST_HOME" NVIM_XDG_ROOT="$TEST_XDG" \
+  "$PROJECT_ROOT/scripts/comprobar-requisitos.sh" >/dev/null
+
+HOME="$TEST_HOME" NVIM_XDG_ROOT="$TEST_XDG" \
+  "$PROJECT_ROOT/scripts/arrancar.sh" --headless \
+  "+lua local ok, err = pcall(dofile, '$PROJECT_ROOT/tests/comprobar_instalacion.lua'); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
+  "+qa"
+
+tmux -L "$TMUX_SOCKET" -f "$PROJECT_ROOT/tmux/tmux.conf" \
+  new-session -d -s instalacion -c "$PROJECT_ROOT"
+[ "$(tmux -L "$TMUX_SOCKET" show-options -gv prefix)" = C-b ]
+tmux -L "$TMUX_SOCKET" kill-server
+
+HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/markdown-pdf.sh" \
+  "$PROJECT_ROOT/examples/examen/examen2.md" "$TEST_ROOT/examen2.pdf" >/dev/null
+[ -s "$TEST_ROOT/examen2.pdf" ]
+
+printf '%s\n' "Comprobacion de instalacion aislada correcta."

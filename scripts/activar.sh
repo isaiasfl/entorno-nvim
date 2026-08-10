@@ -2,12 +2,13 @@
 set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib/versiones.sh"
 REPOSITORY=${ENTORNO_NVIM_REPOSITORY:-"$(dirname "$SCRIPT_DIR")"}
 USER_HOME=${ENTORNO_NVIM_HOME:-"$HOME"}
 CONFIG_PATH="$USER_HOME/.config/nvim"
 CONFIG_TARGET="$REPOSITORY/nvim"
 USER_BIN="$USER_HOME/.local/bin/nvim"
-NVIM_TARGET=${ENTORNO_NVIM_TARGET:-"$USER_HOME/.local/opt/nvim-0.12.4/bin/nvim"}
+NVIM_TARGET=${ENTORNO_NVIM_TARGET:-"$USER_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"}
 BACKUP_ROOT=${ENTORNO_NVIM_BACKUP_ROOT:-"$USER_HOME/copias-seguridad"}
 STATE_DIR=${ENTORNO_NVIM_STATE_DIR:-"$USER_HOME/.local/state/entorno-nvim"}
 TIMESTAMP=${ENTORNO_NVIM_ACTIVATION_TIMESTAMP:-"$(date +%Y%m%d-%H%M%S)"}

@@ -3,9 +3,10 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+. "$SCRIPT_DIR/lib/versiones.sh"
 TOOLS_DIR="$PROJECT_ROOT/tools/lsp-web"
 TAILWIND_FIXTURE_DIR="$PROJECT_ROOT/tests/fixtures/lsp-tailwind-v4"
-XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/0.12.4"}
+XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 
 case "$XDG_ROOT" in
   /*) ;;
@@ -29,9 +30,27 @@ mkdir -p "$COREPACK_HOME" "$PNPM_STORE_DIR"
 
 export COREPACK_HOME
 
-cd "$TOOLS_DIR"
-corepack pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
-corepack pnpm ignored-builds
+packages_match() {
+  package_dir=$1
+  node -e '
+    const fs = require("fs");
+    const path = require("path");
+    const dir = process.argv[1];
+    const manifest = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8"));
+    for (const [name, expected] of Object.entries(manifest.devDependencies || {})) {
+      const installed = JSON.parse(fs.readFileSync(path.join(dir, "node_modules", ...name.split("/"), "package.json"), "utf8"));
+      if (installed.version !== expected) process.exit(1);
+    }
+  ' "$package_dir" 2>/dev/null
+}
+
+if packages_match "$TOOLS_DIR"; then
+  printf '%s\n' "Servidores LSP web ya instalados con las versiones fijadas."
+else
+  cd "$TOOLS_DIR"
+  corepack "pnpm@$ENTORNO_PNPM_VERSION" install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+  corepack "pnpm@$ENTORNO_PNPM_VERSION" ignored-builds
+fi
 
 for executable in \
   tailwindcss-language-server \
@@ -46,9 +65,13 @@ do
   fi
 done
 
-cd "$TAILWIND_FIXTURE_DIR"
-corepack pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
-corepack pnpm ignored-builds
+if packages_match "$TAILWIND_FIXTURE_DIR"; then
+  printf '%s\n' "Fixture Tailwind v4 ya instalado con las versiones fijadas."
+else
+  cd "$TAILWIND_FIXTURE_DIR"
+  corepack "pnpm@$ENTORNO_PNPM_VERSION" install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+  corepack "pnpm@$ENTORNO_PNPM_VERSION" ignored-builds
+fi
 
 printf '%s\n' "Servidores LSP web instalados en $TOOLS_DIR/node_modules/.bin"
 printf '%s\n' "Fixture Tailwind v4 instalado en $TAILWIND_FIXTURE_DIR/node_modules"

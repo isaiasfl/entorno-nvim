@@ -13,3 +13,24 @@ tests/fixtures/lsp-tailwind-v4/node_modules/
 
 # PDF generados desde los ejemplos Markdown
 examples/**/*.pdf
+
+# Secretos y configuraciones privadas: nunca deben entrar en el repositorio.
+.env
+.env.*
+**/.env
+**/.env.*
+*.pem
+*.key
+*.p12
+**/.ssh/
+**/.gnupg/
+**/.password-store/
+**/.git-credentials
+**/.netrc
+**/.npmrc
+**/.pypirc
+**/.pgpass
+**/.my.cnf
+**/.s3cfg
+**/.kube/config
+**/.docker/config.json
