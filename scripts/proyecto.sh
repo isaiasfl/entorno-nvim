@@ -138,8 +138,6 @@ fi
 
 if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
   tmux_new_session -d -s "$session" -n work -c "$project"
-  tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
-  tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
   tmux_cmd split-window -v -p 25 -t "$editor_pane" -c "$project" >/dev/null
   agent_pane=$(tmux_cmd split-window -h -p 35 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
@@ -147,6 +145,16 @@ if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
   tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
   tmux_cmd select-pane -t "$editor_pane"
   start_editor "$editor_pane"
+fi
+
+tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
+tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
+tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_DEPTH "$MAX_DEPTH"
+if [ -n "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
+  tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_ROOTS "$ENTORNO_TMUX_PROJECT_ROOTS"
+fi
+if [ -n "${NVIM_BIN:-}" ]; then
+  tmux_cmd set-environment -t "=$session" NVIM_BIN "$NVIM_BIN"
 fi
 
 if [ "${ENTORNO_TMUX_NO_ATTACH:-0}" = "1" ]; then

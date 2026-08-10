@@ -68,6 +68,8 @@ git -C "$REPOSITORY" worktree add -q -b prueba-worktree "$WORKTREE"
 
 SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
   ENTORNO_TMUX_NO_ATTACH=1 \
+  ENTORNO_TMUX_PROJECT_ROOTS="$WORK_DIR" \
+  ENTORNO_TMUX_PROJECT_DEPTH=5 \
   NVIM_BIN="$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh" \
   "$PROJECT_ROOT/scripts/proyecto.sh" "$REPOSITORY")
 
@@ -87,6 +89,12 @@ EDITOR_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_r
   fail "la sesion no conserva el socket dedicado"
 [ "$(tmux_test show-environment -t "=$SESSION" ENTORNO_NVIM_ROOT)" = "ENTORNO_NVIM_ROOT=$PROJECT_ROOT" ] ||
   fail "la sesion no conserva la raiz de entorno-nvim"
+[ "$(tmux_test show-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS)" = "ENTORNO_TMUX_PROJECT_ROOTS=$WORK_DIR" ] ||
+  fail "la sesion no conserva las raices del selector"
+[ "$(tmux_test show-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_DEPTH)" = "ENTORNO_TMUX_PROJECT_DEPTH=5" ] ||
+  fail "la sesion no conserva la profundidad del selector"
+[ "$(tmux_test show-environment -t "=$SESSION" NVIM_BIN)" = "NVIM_BIN=$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh" ] ||
+  fail "la sesion no conserva el ejecutable de Neovim para crear otros proyectos"
 
 # El editor de prueba termina inmediatamente; el panel debe volver a su shell.
 EDITOR_SHELL=$(tmux_test display-message -p -t "$EDITOR_PANE" '#{pane_current_command}')
@@ -113,9 +121,19 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h j k l H J K L C-b; do
+for binding in h j k l H J K L C-b P; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
+POPUP_BINDING=$(tmux_test list-keys -T prefix P)
+printf '%s\n' "$POPUP_BINDING" | grep -q 'display-popup' || fail "Ctrl-b P no abre un popup"
+printf '%s\n' "$POPUP_BINDING" | grep -q 'proyecto\.sh' || fail "el popup no reutiliza proyecto.sh"
+printf '%s\n' "$POPUP_BINDING" | grep -q '#{pane_current_path}' || fail "el popup no conserva el cwd del panel"
+printf '%s\n' "$POPUP_BINDING" | grep -q '85%' || fail "el popup no tiene anchura suficiente"
+printf '%s\n' "$POPUP_BINDING" | grep -q '75%' || fail "el popup no tiene altura suficiente"
+printf '%s\n' "$POPUP_BINDING" | grep -q -- '-b simple' || fail "el popup no usa un borde ASCII portable"
+if printf '%s\n' "$POPUP_BINDING" | grep -Eq 'sesh|gum|fzf-tmux'; then
+  fail "el popup introdujo un sessionizer o selector adicional"
+fi
 [ "$(tmux_test show-options -gv mouse)" = "off" ] || fail "mouse debe estar desactivado"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
@@ -269,6 +287,17 @@ PANES_AFTER=$(tmux_test list-panes -t "=$SESSION:1" | wc -l)
 [ "$RECONNECTED" = "$SESSION" ] || fail "no se reutilizo la sesion existente"
 [ "$PANES_AFTER" -eq "$PANES_BEFORE" ] || fail "se reconstruyo el layout de una sesion existente"
 
+# El mismo selector que usa el popup debe reconectar proyectos con espacios.
+SELECTED_EXISTING=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
+  ENTORNO_TMUX_NO_ATTACH=1 \
+  ENTORNO_TMUX_PROJECT_ROOTS="$WORK_DIR" \
+  FZF_DEFAULT_OPTS='--filter=principal' \
+  NVIM_BIN="$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh" \
+  "$PROJECT_ROOT/scripts/proyecto.sh")
+[ "$SELECTED_EXISTING" = "$SESSION" ] || fail "el selector no reconecto la sesion del proyecto con espacios"
+[ "$(tmux_test list-panes -t "=$SESSION:1" | wc -l)" -eq "$PANES_BEFORE" ] ||
+  fail "el selector reconstruyo una sesion existente"
+
 # Fzf cancelado termina con exito y no crea sesiones parciales.
 SESSIONS_BEFORE=$(tmux_test list-sessions -F '#{session_name}' | wc -l)
 CANCELLED=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
@@ -280,6 +309,40 @@ CANCELLED=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
 [ -z "$CANCELLED" ] || fail "cancelar fzf produjo una salida inesperada"
 SESSIONS_AFTER=$(tmux_test list-sessions -F '#{session_name}' | wc -l)
 [ "$SESSIONS_AFTER" -eq "$SESSIONS_BEFORE" ] || fail "cancelar fzf creo una sesion parcial"
+
+# Esc y Ctrl-C abortan el fzf real con exito y sin crear sesiones parciales.
+CANCEL_PANE=$(tmux_test new-window -d -t "=$SESSION" -n cancelar-selector -c "$REPOSITORY" -P -F '#{pane_id}')
+quoted_project_script=$(printf '%s' "$PROJECT_ROOT/scripts/proyecto.sh" | sed "s/'/'\\''/g")
+quoted_work_dir=$(printf '%s' "$WORK_DIR" | sed "s/'/'\\''/g")
+for cancel_key in Escape C-c; do
+  CANCEL_RESULT="$WORK_DIR/cancel-$cancel_key"
+  quoted_cancel_result=$(printf '%s' "$CANCEL_RESULT" | sed "s/'/'\\''/g")
+  tmux_test send-keys -l -t "$CANCEL_PANE" \
+    "ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_TMUX_PROJECT_ROOTS='$quoted_work_dir' '$quoted_project_script'; printf '%s' \"\$?\" > '$quoted_cancel_result'"
+  tmux_test send-keys -t "$CANCEL_PANE" Enter
+  attempts=0
+  while ! tmux_test capture-pane -p -t "$CANCEL_PANE" | grep -q 'Proyecto>'; do
+    attempts=$((attempts + 1))
+    [ "$attempts" -lt 10 ] || fail "fzf no mostro el prompt del selector"
+    sleep 1
+  done
+  tmux_test send-keys -t "$CANCEL_PANE" "$cancel_key"
+  attempts=0
+  while [ ! -f "$CANCEL_RESULT" ] && [ "$attempts" -lt 10 ]; do
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+  [ -f "$CANCEL_RESULT" ] || fail "$cancel_key no cerro el selector"
+  [ "$(cat "$CANCEL_RESULT")" = "0" ] || fail "$cancel_key no cancelo limpiamente"
+  [ "$(tmux_test list-sessions -F '#{session_name}' | wc -l)" -eq "$SESSIONS_BEFORE" ] ||
+    fail "$cancel_key creo una sesion parcial"
+done
+tmux_test kill-window -t "$CANCEL_PANE"
+
+# En Debian se verifica realmente el fallback fdfind; en Arch/macOS puede existir fd.
+if ! command -v fd >/dev/null 2>&1; then
+  command -v fdfind >/dev/null 2>&1 || fail "sin fd, el selector no encontro fdfind"
+fi
 
 WORKTREE_SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
   ENTORNO_TMUX_NO_ATTACH=1 \

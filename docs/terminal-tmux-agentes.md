@@ -45,7 +45,9 @@ brew install tmux
 ```
 
 En macOS también debe comprobarse que el emulador de terminal conoce el tipo
-`tmux-256color`.
+`tmux-256color`. El selector emergente descrito abajo requiere que la versión
+de tmux incluya `display-popup`; se ha validado con tmux 3.5a en Debian. No se
+ha probado todavía en CachyOS ni macOS.
 
 ## Selección de proyectos
 
@@ -64,6 +66,21 @@ ruta concreta:
 ```sh
 ./scripts/proyecto.sh /ruta/al/proyecto
 ```
+
+Dentro de cualquier panel de una sesión gestionada por este entorno,
+`Ctrl-b P` abre el mismo selector en un popup centrado del 85% por 75%. El
+popup usa un borde ASCII sencillo, parte del directorio del panel actual y
+ejecuta directamente `scripts/proyecto.sh`: no existe un segundo sessionizer ni
+otra implementación del descubrimiento. `Esc` y `Ctrl-C` cancelan fzf, cierran
+el popup y no crean sesiones parciales.
+
+`ENTORNO_TMUX_PROJECT_ROOTS` debe estar exportada al iniciar o reconectar el
+proyecto. `proyecto.sh` conserva en la sesión los roots, la profundidad y el
+ejecutable de Neovim que recibió, para que el popup pueda crear otra sesión con
+las mismas reglas. La selección conecta con una sesión existente sin tocar su
+layout o crea el layout normal cuando todavía no existe. Todo ocurre en el
+socket indicado por `ENTORNO_TMUX_SOCKET`, que sigue siendo `entorno-nvim` por
+defecto.
 
 El nombre de sesión combina el nombre limpio del directorio con una suma de su
 ruta canónica. Esto evita colisiones sin dejar un guion bajo espurio al final.
@@ -87,6 +104,7 @@ El prefijo permanece en `Ctrl-b`.
 | `Ctrl-b H/J/K/L` | Redimensionar panel |
 | `Ctrl-b \|` / `Ctrl-b -` | Dividir a derecha / debajo |
 | `Ctrl-b c` | Crear una ventana |
+| `Ctrl-b P` | Seleccionar o crear una sesión de proyecto en un popup |
 | `Ctrl-b z` | Maximizar o restaurar el panel |
 | `Ctrl-b [` | Entrar en modo copia Vi |
 | `Ctrl-b s` | Elegir una sesión |
