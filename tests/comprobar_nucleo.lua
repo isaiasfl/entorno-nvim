@@ -25,6 +25,7 @@ assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
 assert(package.loaded["config.lazy"], "config.lazy no se cargo")
+assert(package.loaded["config.theme"], "config.theme no se cargo")
 assert(package.loaded["config.lsp"], "config.lsp no se cargo")
 assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(package.loaded["config.markdown_pdf"], "config.markdown_pdf no se cargo")
@@ -82,6 +83,10 @@ assert(vim.wo.list, "leader+ul no activa list")
 toggle_list.callback()
 assert(not vim.wo.list, "leader+ul no desactiva list")
 
+local theme_picker = mapping("n", " ut")
+assert(theme_picker.desc == "Seleccionar tema visual", "leader+ut no esta configurado")
+assert(type(theme_picker.callback) == "function", "leader+ut no usa vim.ui.select mediante callback")
+
 local listchars = vim.opt.listchars:get()
 assert(listchars.tab == "> ", "listchars.tab incorrecto")
 assert(listchars.trail == "-", "listchars.trail incorrecto")
@@ -133,6 +138,9 @@ end
 
 local lazy_config = require("lazy.core.config")
 assert(lazy_config.plugins["fzf-lua"], "fzf-lua no esta registrado")
+assert(lazy_config.plugins["catppuccin"], "catppuccin no esta registrado")
+assert(lazy_config.plugins["tokyonight.nvim"], "tokyonight.nvim no esta registrado")
+assert(lazy_config.plugins["kanagawa.nvim"], "kanagawa.nvim no esta registrado")
 local search_spec = require("plugins.search")[1]
 assert(search_spec.event == "VeryLazy", "fzf-lua debe registrarse durante VeryLazy")
 assert(lazy_config.plugins["nvim-tree.lua"], "nvim-tree.lua no esta registrado")

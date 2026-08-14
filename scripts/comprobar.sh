@@ -31,6 +31,8 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
   "+lua local ok, err = pcall(dofile, vim.env.ENTORNO_NVIM_DASHBOARD_TEST); if not ok then vim.api.nvim_err_writeln(err); vim.cmd('cquit 1') end" \
   "+qa"
 
+"$PROJECT_ROOT/tests/comprobar_temas.sh"
+
 "$PROJECT_ROOT/tests/comprobar_tmux.sh"
 "$PROJECT_ROOT/tests/comprobar_activacion.sh"
 "$PROJECT_ROOT/tests/comprobar_markdown_pdf.sh"
@@ -40,6 +42,9 @@ git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/catppuccin"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/tokyonight.nvim"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/kanagawa.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-tree.lua"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-web-devicons"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/nvim-lspconfig"

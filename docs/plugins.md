@@ -8,12 +8,15 @@ La configuración incorpora únicamente:
 - `fzf-lua`, método principal para buscar archivos, texto y buffers;
 - `nvim-tree.lua`, exploración jerárquica y operaciones sobre archivos;
 - `nvim-web-devicons`, iconos de tipo de archivo usados por nvim-tree;
+- `catppuccin/nvim`, Catppuccin Mocha y sus integraciones visuales;
+- `folke/tokyonight.nvim`, variante Tokyo Night `night`;
+- `rebelot/kanagawa.nvim`, variante Kanagawa `wave`;
 - `mini.pairs`, cierre automático mínimo de pares al escribir;
 - `nvim-ts-autotag`, autocierre y autorrenombrado de etiquetas HTML/JSX/TSX;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
 
-No incluye Mason, motores externos de completado, plugins Git o de IA,
-depuración ni temas. Tree-sitter y LSP se documentan por separado en
+No incluye Mason, motores externos de completado, plugins Git o de IA ni
+depuración. Tree-sitter y LSP se documentan por separado en
 [treesitter.md](treesitter.md) y [lsp.md](lsp.md).
 
 ## Dependencias
@@ -28,6 +31,9 @@ depuración ni temas. Tree-sitter y LSP se documentan por separado en
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
 | nvim-web-devicons | Directa de nvim-tree | Aporta glifos y colores por tipo de archivo |
+| catppuccin/nvim | Directa | Catppuccin Mocha con grupos TS/LSP e integraciones de plugins |
+| folke/tokyonight.nvim | Directa | Tokyo Night, variante `night` |
+| rebelot/kanagawa.nvim | Directa | Kanagawa, variante `wave` |
 | mini.nvim | Directa | Proporciona únicamente el módulo `mini.pairs` |
 | nvim-ts-autotag | Directa | Gestiona pares de etiquetas mediante Tree-sitter |
 | nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
@@ -37,6 +43,16 @@ glifos requieren una Nerd Font configurada en el terminal; si el módulo no pued
 cargarse, nvim-tree conserva su glifo genérico y sigue funcionando. Ninguno de
 estos plugins ejecuta un proceso de construcción; Git solo descarga sus
 repositorios.
+
+Los tres themes son dependencias directas y quedan fijados en `lazy-lock.json`.
+El Catppuccin incluido en Neovim 0.12 era la alternativa sin dependencia, pero
+no ofrece las integraciones específicas de `catppuccin/nvim`; tampoco cubre
+Tokyo Night ni Kanagawa. Se mantienen los plugins pequeños oficiales en lugar
+de introducir una distribución visual o un framework de interfaz.
+
+`<leader>ut` usa `vim.ui.select()`, cuyo backend ya es fzf-lua, para aplicar y
+guardar uno de los IDs `catppuccin`, `tokyo` o `kanagawa`. La elección reside en
+`$XDG_STATE_HOME/entorno-nvim/theme`, nunca en un archivo versionado.
 
 ## Atajos
 
