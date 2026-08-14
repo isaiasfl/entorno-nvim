@@ -10,13 +10,19 @@ Neovim | agente
      terminal
 ```
 
+`entorno-dev` usa de forma predeterminada el wrapper aislado
+`scripts/arrancar.sh`; no depende de `~/.config/nvim`. El panel de edición
+arranca Neovim sin argumentos y situado en la raíz del proyecto, por lo que
+muestra el dashboard IFL. Desde el dashboard, `e` abre el árbol de archivos;
+en cualquier buffer, `<leader>ee` lo abre o cierra.
+
 El flujo usa por defecto el servidor dedicado `entorno-nvim`, mediante
 `tmux -L entorno-nvim`. Así no carga opciones, atajos ni sesiones en el servidor
 tmux personal del usuario. Puede elegirse otro nombre antes de arrancar:
 
 ```sh
 export ENTORNO_TMUX_SOCKET=otro-entorno
-./scripts/proyecto.sh /ruta/al/proyecto
+entorno-dev /ruta/al/proyecto
 ```
 
 Para inspeccionar o recuperar el servidor predeterminado se usan, por ejemplo,
@@ -99,15 +105,17 @@ defecto.
 
 El nombre de sesión combina el nombre limpio del directorio con una suma de su
 ruta canónica. Esto evita colisiones sin dejar un guion bajo espurio al final.
-`NVIM_BIN` permite escoger Neovim o un wrapper; para esta configuración aislada:
+Por defecto se usa el wrapper aislado de este repositorio. `NVIM_BIN` permite
+anularlo explícitamente para pruebas o para escoger otro editor compatible:
 
 ```sh
-NVIM_BIN="$PWD/scripts/arrancar.sh" ./scripts/proyecto.sh "$PWD"
+NVIM_BIN=/ruta/a/otro/nvim entorno-dev /ruta/al/proyecto
 ```
 
 Al salir de Neovim, el panel de trabajo vuelve a su shell en vez de desaparecer.
-Puede abrirse de nuevo con `nvim .` o con el wrapper correspondiente. Volver a
-ejecutar `proyecto.sh` conecta con la sesión existente sin reconstruir el layout.
+Puede abrirse de nuevo con el wrapper para recuperar la configuración aislada.
+Volver a ejecutar `proyecto.sh` conecta con la sesión existente sin reconstruir
+el layout.
 
 ## Teclas y tmux anidado
 

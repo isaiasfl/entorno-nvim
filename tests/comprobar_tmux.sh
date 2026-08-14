@@ -7,6 +7,7 @@ SOCKET="entorno-nvim-test-$$"
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-tmux.XXXXXX")
 FALLBACK_HOME="$WORK_DIR-fallback casa con espacios"
 CONTEXT_DIR="$WORK_DIR/runtime/agent-context"
+NVIM_ARGS_FILE="$WORK_DIR/nvim-argc"
 
 tmux_test() {
   tmux -L "$SOCKET" "$@"
@@ -74,6 +75,8 @@ transport() {
 
 command -v tmux >/dev/null 2>&1 || fail "tmux no esta instalado"
 command -v fzf >/dev/null 2>&1 || fail "fzf no esta disponible"
+grep -Fq 'nvim_command=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}' "$PROJECT_ROOT/scripts/proyecto.sh" ||
+  fail "proyecto.sh no usa el wrapper aislado como editor predeterminado"
 
 REPOSITORY="$WORK_DIR/proyecto principal"
 WORKTREE="$WORK_DIR/proyecto-worktree"
@@ -90,6 +93,7 @@ git -C "$FALLBACK_REPOSITORY" init -q
 SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
   ENTORNO_NVIM_ROOT= \
   ENTORNO_TMUX_NO_ATTACH=1 \
+  ENTORNO_TMUX_TEST_NVIM_ARGS_FILE="$NVIM_ARGS_FILE" \
   ENTORNO_TMUX_PROJECT_ROOTS="$WORK_DIR" \
   ENTORNO_TMUX_PROJECT_DEPTH=5 \
   NVIM_BIN="$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh" \
@@ -107,6 +111,13 @@ EDITOR_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_r
 [ -n "$AGENT_PANE" ] || fail "falta el panel con rol agent"
 [ -n "$EDITOR_PANE" ] || fail "falta el panel con rol editor"
 [ "$(printf '%s\n' "$AGENT_PANE" | wc -l)" -eq 1 ] || fail "hay mas de un panel con rol agent"
+attempts=0
+while [ ! -f "$NVIM_ARGS_FILE" ] && [ "$attempts" -lt 20 ]; do
+  attempts=$((attempts + 1))
+  sleep 1
+done
+[ -f "$NVIM_ARGS_FILE" ] || fail "el editor de prueba no registro su arranque"
+[ "$(cat "$NVIM_ARGS_FILE")" = "0" ] || fail "Neovim debe arrancar sin argumentos para mostrar el dashboard"
 [ "$(tmux_test show-environment -t "=$SESSION" ENTORNO_TMUX_SOCKET)" = "ENTORNO_TMUX_SOCKET=$SOCKET" ] ||
   fail "la sesion no conserva el socket dedicado"
 [ "$(tmux_test show-environment -t "=$SESSION" ENTORNO_NVIM_ROOT)" = "ENTORNO_NVIM_ROOT=$PROJECT_ROOT" ] ||

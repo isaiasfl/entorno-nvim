@@ -66,12 +66,15 @@ backup registrado. El backup histórico se conserva. Véase
 ## Flujo diario
 
 ```sh
-export ENTORNO_TMUX_PROJECT_ROOTS="$HOME/Proyectos:$HOME/Projects"
-./scripts/proyecto.sh
+cd /ruta/al/proyecto
+entorno-dev
 ```
 
 La sesión contiene Neovim, un panel de agente y una shell para pruebas o
 servidores. La [chuleta diaria](docs/chuleta.md) resume los comandos habituales.
+El lanzador acepta otra ruta con `entorno-dev /ruta` y abre el selector con
+`entorno-dev --elegir`. `scripts/instalar.sh` lo enlaza automáticamente en
+`~/.local/bin`, que debe estar incluido en `PATH`.
 
 ## Neovim
 

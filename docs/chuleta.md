@@ -4,8 +4,9 @@
 
 | Acción | Comando o tecla |
 | --- | --- |
-| Abrir proyecto | `./scripts/proyecto.sh /ruta` |
-| Elegir proyecto | `./scripts/proyecto.sh` o `Ctrl-a P` |
+| Abrir proyecto actual | `entorno-dev` |
+| Abrir otra ruta | `entorno-dev /ruta` |
+| Elegir proyecto | `entorno-dev --elegir` o `Ctrl-a P` |
 | Moverse por paneles | `Ctrl-a h/j/k/l` |
 | Redimensionar | `Ctrl-a H/J/K/L` |
 | Dividir | `Ctrl-a \|` / `Ctrl-a -` |

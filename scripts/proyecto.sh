@@ -3,6 +3,7 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+DEFAULT_NVIM_BIN="$PROJECT_ROOT/scripts/arrancar.sh"
 
 tmux_session_environment() {
   tmux_environment_name=$1
@@ -158,15 +159,15 @@ session_name() {
 
 start_editor() {
   pane=$1
-  nvim_command=${NVIM_BIN:-nvim}
+  nvim_command=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}
   nvim_path=$(command -v "$nvim_command" 2>/dev/null || true)
-  [ -n "$nvim_path" ] && [ -x "$nvim_path" ] || fail "NVIM_BIN no es ejecutable: $nvim_command"
+  [ -n "$nvim_path" ] && [ -x "$nvim_path" ] || fail "el editor no es ejecutable: $nvim_command"
 
   quoted=$(printf '%s' "$nvim_path" | sed "s/'/'\\\\''/g")
   quoted_socket=$(printf '%s' "$TMUX_SOCKET" | sed "s/'/'\\\\''/g")
   quoted_root=$(printf '%s' "$PROJECT_ROOT" | sed "s/'/'\\\\''/g")
   tmux_cmd send-keys -l -t "$pane" \
-    "export ENTORNO_TMUX_SOCKET='$quoted_socket' ENTORNO_NVIM_ROOT='$quoted_root'; '$quoted' ."
+    "export ENTORNO_TMUX_SOCKET='$quoted_socket' ENTORNO_NVIM_ROOT='$quoted_root'; '$quoted'"
   tmux_cmd send-keys -t "$pane" Enter
 }
 
