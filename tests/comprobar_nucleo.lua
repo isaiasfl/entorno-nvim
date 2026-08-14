@@ -169,9 +169,25 @@ assert(vim.g.fzf_lua_server:find(vim.fn.stdpath("run"), 1, true) == 1, "servidor
 
 local config = require("fzf-lua.config")
 local fzf_config = config.setup_opts
-assert(fzf_config.files.cmd == "rg --files --hidden -g '!.git'", "comando de archivos fzf-lua incorrecto")
+local expected_files_command = "rg --files --hidden"
+  .. " -g '!**/.git/**'"
+  .. " -g '!**/node_modules/**'"
+  .. " -g '!**/.next/**'"
+  .. " -g '!**/dist/**'"
+  .. " -g '!**/build/**'"
+  .. " -g '!**/coverage/**'"
+  .. " -g '!**/.cache/**'"
+assert(fzf_config.files.cmd == expected_files_command, "comando de archivos fzf-lua incorrecto")
 assert(fzf_config.defaults.file_icons == false, "los iconos de archivo deben estar desactivados")
 assert(fzf_config.defaults.git_icons == false, "los iconos de Git deben estar desactivados")
+
+local image_extensions = assert(fzf_config.previewers.builtin.extensions, "falta la previsualizacion de imagenes")
+for _, extension in ipairs({ "avif", "gif", "jpeg", "jpg", "png", "svg", "webp" }) do
+  assert(
+    vim.deep_equal(image_extensions[extension], { "chafa", "{file}" }),
+    "previsualizador incorrecto para ." .. extension
+  )
+end
 
 local expected_keymaps = {
   ["ctrl-j"] = "down",

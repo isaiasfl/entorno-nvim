@@ -52,7 +52,27 @@ return {
           },
         },
         files = {
-          cmd = "rg --files --hidden -g '!.git'",
+          cmd = "rg --files --hidden"
+            .. " -g '!**/.git/**'"
+            .. " -g '!**/node_modules/**'"
+            .. " -g '!**/.next/**'"
+            .. " -g '!**/dist/**'"
+            .. " -g '!**/build/**'"
+            .. " -g '!**/coverage/**'"
+            .. " -g '!**/.cache/**'",
+        },
+        previewers = {
+          builtin = {
+            extensions = {
+              avif = { "chafa", "{file}" },
+              gif = { "chafa", "{file}" },
+              jpeg = { "chafa", "{file}" },
+              jpg = { "chafa", "{file}" },
+              png = { "chafa", "{file}" },
+              svg = { "chafa", "{file}" },
+              webp = { "chafa", "{file}" },
+            },
+          },
         },
       }
     end,

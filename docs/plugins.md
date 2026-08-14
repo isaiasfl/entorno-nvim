@@ -27,6 +27,7 @@ depuración. Tree-sitter y LSP se documentan por separado en
 | Git 2.47.3 | Existente | Descarga los repositorios de plugins |
 | fzf 0.60 | Existente | Filtra y presenta resultados interactivamente |
 | ripgrep 15.2 | Existente | Lista archivos y busca texto en el proyecto |
+| chafa | Externa opcional | Previsualiza imágenes desde fzf-lua |
 | lazy.nvim | Directa | Gestiona instalación, carga y lockfile |
 | fzf-lua | Directa | Proporciona los tres selectores |
 | nvim-tree.lua | Directa | Muestra el árbol y opera sobre archivos |
@@ -63,8 +64,25 @@ guardar uno de los IDs `catppuccin`, `tokyo` o `kanagawa`. La elección reside e
 | `<leader>fb` | Ver buffers abiertos | `buffers()` |
 
 La búsqueda de archivos ejecuta explícitamente `rg --files`, incluye archivos
-ocultos y excluye `.git`. La búsqueda de texto usa ripgrep y respeta sus reglas
-normales de exclusión, incluido `.gitignore`.
+ocultos y respeta `.gitignore`. Además excluye `.git`, `node_modules`, `.next`,
+`dist`, `build`, `coverage` y `.cache` aunque alguno haya dejado de estar
+ignorado en un proyecto. No oculta `.github`, `public` ni archivos de
+configuración. La búsqueda de texto usa ripgrep y respeta sus reglas normales
+de exclusión.
+
+Cuando `chafa` está disponible, el panel de `<leader>ff` previsualiza archivos
+AVIF, GIF, JPEG, PNG, SVG y WebP. Ghostty soporta el protocolo gráfico necesario
+en macOS y Linux; `chafa` también puede degradar la imagen a símbolos del
+terminal. No se añade otro plugin de Neovim y, si falta el ejecutable, la
+búsqueda y apertura de archivos siguen funcionando.
+
+La dependencia puede instalarse manualmente según el sistema:
+
+```sh
+brew install chafa             # macOS
+sudo apt install chafa         # Debian/Ubuntu
+sudo pacman -S chafa           # Arch/CachyOS
+```
 
 ## Controles dentro de fzf-lua
 
