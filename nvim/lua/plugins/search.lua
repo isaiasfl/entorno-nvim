@@ -1,6 +1,7 @@
 return {
   {
     "ibhagwan/fzf-lua",
+    event = "VeryLazy",
     cmd = "FzfLua",
     keys = {
       {
@@ -29,6 +30,7 @@ return {
       local actions = require("fzf-lua.actions")
 
       return {
+        ui_select = {},
         defaults = {
           file_icons = false,
           git_icons = false,

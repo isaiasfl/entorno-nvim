@@ -133,6 +133,8 @@ end
 
 local lazy_config = require("lazy.core.config")
 assert(lazy_config.plugins["fzf-lua"], "fzf-lua no esta registrado")
+local search_spec = require("plugins.search")[1]
+assert(search_spec.event == "VeryLazy", "fzf-lua debe registrarse durante VeryLazy")
 assert(lazy_config.plugins["nvim-tree.lua"], "nvim-tree.lua no esta registrado")
 local devicons_plugin = assert(lazy_config.plugins["nvim-web-devicons"], "nvim-web-devicons no esta registrado")
 assert(devicons_plugin.commit == "2ae6958df7ced50baac5035cec0c15799eedfbf7", "nvim-web-devicons no fija la revision esperada")
@@ -151,6 +153,9 @@ end
 
 require("lazy").load({ plugins = { "fzf-lua" } })
 assert(package.loaded["fzf-lua"], "fzf-lua no se pudo cargar")
+local ui_select = require("fzf-lua.providers.ui_select")
+assert(ui_select.is_registered(), "fzf-lua no reemplazo vim.ui.select")
+assert(vim.ui.select == ui_select.ui_select, "vim.ui.select no usa el selector de fzf-lua")
 assert(type(vim.g.fzf_lua_server) == "string", "fzf-lua no inicio su servidor local")
 assert(vim.g.fzf_lua_server:find(vim.fn.stdpath("run"), 1, true) == 1, "servidor fzf-lua fuera del runtime XDG")
 
