@@ -200,10 +200,13 @@ elementos esenciales es preferible usar texto o una imagen versionada.
 
 ## Dependencias y portabilidad
 
-Las dependencias directas son Pandoc y Chromium o Google Chrome. `pdfinfo` y
+Las dependencias directas son Pandoc y un navegador Chromium compatible:
+Chromium, Google Chrome o Brave. `pdfinfo` y
 `pdftotext` mejoran la prueba, pero son opcionales durante el uso normal. El
 navegador se detecta por nombre; en macOS se buscan además las aplicaciones
-habituales. `CHROMIUM_BIN` permite indicar otro ejecutable.
+habituales. En macOS se prioriza Chrome sobre Brave porque Brave 149 se bloqueó
+en la prueba headless de Apple Silicon sin generar el PDF. `CHROMIUM_BIN`
+permite indicar expresamente otro ejecutable.
 
 Las cajas de margen `@page`, las cabeceras y pies y los contadores
 `counter(page)` y `counter(pages)` se han validado con Chromium
@@ -221,7 +224,7 @@ no sustituye una prueba real en CachyOS o macOS, que sigue pendiente.
 Antes de instalar nada en otro equipo, se puede diagnosticar con:
 
 ```sh
-command -v pandoc chromium google-chrome pdfinfo pdftotext
+command -v pandoc chromium google-chrome brave-browser pdfinfo pdftotext
 ```
 
 ## Modelo de seguridad

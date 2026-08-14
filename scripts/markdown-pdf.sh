@@ -76,20 +76,38 @@ elif command -v chromium >/dev/null 2>&1; then
   BROWSER=$(command -v chromium)
 elif command -v google-chrome >/dev/null 2>&1; then
   BROWSER=$(command -v google-chrome)
+elif command -v brave-browser >/dev/null 2>&1; then
+  BROWSER=$(command -v brave-browser)
 elif [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
   BROWSER="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 elif [ -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then
   BROWSER="/Applications/Chromium.app/Contents/MacOS/Chromium"
+elif [ -x "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ]; then
+  BROWSER="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
 else
-  printf '%s\n' "Error: falta Chromium o Google Chrome para imprimir el HTML." >&2
+  printf '%s\n' "Error: falta Chromium, Google Chrome o Brave para imprimir el HTML." >&2
   exit 127
 fi
 
 TMP_BASE=${TMPDIR:-/tmp}
 TMP_DIR=$(mktemp -d "$TMP_BASE/entorno-nvim-mdpdf.XXXXXX")
-trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
+browser_pid=
+cleanup() {
+  if [ -n "$browser_pid" ] && kill -0 "$browser_pid" 2>/dev/null; then
+    kill "$browser_pid" 2>/dev/null || true
+    wait "$browser_pid" 2>/dev/null || true
+  fi
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT HUP INT TERM
 HTML="$TMP_DIR/documento.html"
 BROWSER_LOG="$TMP_DIR/chromium.log"
+GENERATED_PDF="$TMP_DIR/documento.pdf"
+
+HIGHLIGHT_OPTION=--highlight-style
+if pandoc --help 2>/dev/null | grep -q -- '--syntax-highlighting'; then
+  HIGHLIGHT_OPTION=--syntax-highlighting
+fi
 
 pandoc "$INPUT" \
   --from=markdown+fenced_divs \
@@ -100,25 +118,50 @@ pandoc "$INPUT" \
   --lua-filter="$METADATA_FILTER" \
   --template="$TEMPLATE" \
   --css="$STYLE" \
-  --highlight-style=tango \
+  "$HIGHLIGHT_OPTION=tango" \
   --output="$HTML"
 
-if ! "$BROWSER" \
+"$BROWSER" \
   --headless \
   --disable-gpu \
+  --disable-background-networking \
+  --disable-default-apps \
+  --disable-extensions \
+  --use-mock-keychain \
+  --no-first-run \
   --no-pdf-header-footer \
   --allow-file-access-from-files \
   --user-data-dir="$TMP_DIR/browser-profile" \
-  --print-to-pdf="$OUTPUT" \
-  "file://$HTML" >"$BROWSER_LOG" 2>&1; then
-  printf '%s\n' "Error: Chromium no pudo generar el PDF:" >&2
-  sed -n '1,80p' "$BROWSER_LOG" >&2
-  exit 1
-fi
+  --print-to-pdf="$GENERATED_PDF" \
+  "file://$HTML" >"$BROWSER_LOG" 2>&1 &
+browser_pid=$!
 
-if [ ! -s "$OUTPUT" ]; then
-  printf 'Error: el PDF no se creó o está vacío: %s\n' "$OUTPUT" >&2
-  exit 1
+attempts=0
+while [ ! -s "$GENERATED_PDF" ]; do
+  if ! kill -0 "$browser_pid" 2>/dev/null; then
+    wait "$browser_pid" 2>/dev/null || true
+    browser_pid=
+    printf '%s\n' "Error: el navegador Chromium compatible no pudo generar el PDF:" >&2
+    sed -n '1,80p' "$BROWSER_LOG" >&2
+    exit 1
+  fi
+  attempts=$((attempts + 1))
+  if [ "$attempts" -ge 60 ]; then
+    printf '%s\n' "Error: el navegador no genero el PDF en 60 segundos:" >&2
+    sed -n '1,80p' "$BROWSER_LOG" >&2
+    exit 1
+  fi
+  sleep 1
+done
+
+# Chrome y Brave pueden conservar procesos auxiliares en macOS incluso despues
+# de escribir el PDF. Se termina solo el proceso lanzado por este script.
+sleep 1
+if kill -0 "$browser_pid" 2>/dev/null; then
+  kill "$browser_pid" 2>/dev/null || true
 fi
+wait "$browser_pid" 2>/dev/null || true
+browser_pid=
+mv "$GENERATED_PDF" "$OUTPUT"
 
 printf 'PDF generado: %s\n' "$OUTPUT"

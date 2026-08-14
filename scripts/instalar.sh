@@ -49,6 +49,8 @@ for dependency in git tmux fzf rg lazygit node corepack pandoc curl tar unzip; d
 done
 if ! command -v fd >/dev/null 2>&1 && ! command -v fdfind >/dev/null 2>&1; then missing="$missing fd/fdfind"; fi
 if ! command -v chromium >/dev/null 2>&1 && ! command -v google-chrome >/dev/null 2>&1 \
+  && ! command -v brave-browser >/dev/null 2>&1 \
+  && [ ! -x "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ] \
   && [ ! -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
   && [ ! -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then missing="$missing Chromium/Chrome"; fi
 if ! command -v cc >/dev/null 2>&1 && ! command -v clang >/dev/null 2>&1 && ! command -v gcc >/dev/null 2>&1; then missing="$missing compilador"; fi

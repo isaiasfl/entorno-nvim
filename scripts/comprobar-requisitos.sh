@@ -85,11 +85,14 @@ if command -v chromium >/dev/null 2>&1; then
   ok navegador "$(command -v chromium)"
 elif command -v google-chrome >/dev/null 2>&1; then
   ok navegador "$(command -v google-chrome)"
-elif [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
+elif command -v brave-browser >/dev/null 2>&1; then
+  ok navegador "$(command -v brave-browser)"
+elif [ -x "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ] \
+  || [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
   || [ -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then
   ok navegador "aplicacion macOS detectada"
 else
-  falta navegador "Chromium o Google Chrome no encontrado"
+  falta navegador "Chromium, Google Chrome o Brave no encontrado"
 fi
 command_required curl curl
 command_required tar tar
