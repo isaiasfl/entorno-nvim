@@ -224,3 +224,10 @@ El panel de Neovim conserva una shell al cerrar el editor y las reconexiones no
 reconstruyen layouts existentes. La compatibilidad se revisó con sintaxis POSIX
 y alternativas GNU/BSD, pero la ejecución real solo se validó en Debian 13; las
 pruebas en CachyOS y macOS siguen pendientes.
+
+## Node 24 LTS
+
+La instalación vigente usa Node `>=24 <25`, en lugar de conservar el límite
+histórico de Node 22. Las herramientas LSP no requieren la rama anterior y Node
+24 ofrece una base LTS más actual para máquinas nuevas. pnpm continúa fijado por
+`packageManager` y los lockfiles; no se instala globalmente.

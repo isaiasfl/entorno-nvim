@@ -94,7 +94,7 @@ command_optional "visor PDF" xdg-open open
 
 if command -v node >/dev/null 2>&1; then
   compatible=$(node -p "const [a,b]=process.versions.node.split('.').map(Number); Number(a === $ENTORNO_NODE_MAJOR && b >= $ENTORNO_NODE_MIN_MINOR)" 2>/dev/null || printf 0)
-  if [ "$compatible" = 1 ]; then ok "Node compatible" "$(node --version)"; else falta "Node compatible" "se requiere >=22.13 <23"; fi
+  if [ "$compatible" = 1 ]; then ok "Node compatible" "$(node --version)"; else falta "Node compatible" "se requiere >=24 <25"; fi
 fi
 if command -v corepack >/dev/null 2>&1; then
   ok pnpm "v$ENTORNO_PNPM_VERSION fijado por packageManager; no se requiere global"

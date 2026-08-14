@@ -272,7 +272,8 @@ Node 22.23.2 y Corepack 0.34.6 ya estaban instalados. No se ejecuta
 ```
 
 En otra máquina, después de clonar el repositorio y comprobar que existen Node
-`>=22.13 <23` y Corepack, el comando exacto para recrear esta subfase es:
+La configuración vigente adopta Node `>=24 <25` LTS y Corepack. El comando para
+recrear esta subfase es:
 
 ```sh
 cd /ruta/al/entorno-nvim

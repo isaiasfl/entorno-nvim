@@ -14,13 +14,13 @@ case "$XDG_ROOT" in
 esac
 
 if ! command -v node >/dev/null 2>&1 || ! command -v corepack >/dev/null 2>&1; then
-  printf '%s\n' "Error: se requieren Node 22 y Corepack." >&2
+  printf '%s\n' "Error: se requieren Node 24 LTS y Corepack." >&2
   exit 1
 fi
 
-NODE_COMPATIBLE=$(node -p "const [major, minor] = process.versions.node.split('.').map(Number); Number(major === 22 && minor >= 13)")
+NODE_COMPATIBLE=$(node -p "const major = Number(process.versions.node.split('.')[0]); Number(major === 24)")
 if [ "$NODE_COMPATIBLE" != "1" ]; then
-  printf '%s\n' "Error: se requiere Node >=22.13 <23; version encontrada: $(node --version)" >&2
+  printf '%s\n' "Error: se requiere Node >=24 <25; version encontrada: $(node --version)" >&2
   exit 1
 fi
 

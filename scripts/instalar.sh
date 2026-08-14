@@ -20,22 +20,22 @@ case "$system" in
     case "$distro" in
       debian | ubuntu)
         hint="sudo apt install git tmux fzf fd-find ripgrep lazygit pandoc chromium poppler-utils curl unzip build-essential"
-        node_hint="Node >=22.13 <23 y Corepack deben proceder de una fuente aprobada; no se instala Node mediante un script remoto"
+        node_hint="Node >=24 <25 y Corepack deben proceder de una fuente aprobada; no se instala Node mediante un script remoto"
         ;;
       arch | cachyos)
         hint="sudo pacman -S git tmux fzf fd ripgrep lazygit nodejs corepack pandoc-cli chromium poppler curl unzip base-devel"
-        node_hint="Node >=22.13 <23 y Corepack"
+        node_hint="Node >=24 <25 y Corepack"
         ;;
       *)
         hint="instala Git, tmux, fzf, fd, ripgrep, lazygit, Pandoc, Chromium, curl, unzip y un compilador"
-        node_hint="Node >=22.13 <23 y Corepack"
+        node_hint="Node >=24 <25 y Corepack"
         ;;
     esac
     ;;
   Darwin)
     distro=macos
-    hint="brew install git tmux fzf fd ripgrep lazygit node@22 corepack pandoc poppler; brew install --cask chromium"
-    node_hint="Node >=22.13 <23 y Corepack"
+    hint="brew install git tmux fzf fd ripgrep lazygit node@24 corepack pandoc poppler; instala Chromium, Chrome o Brave si no dispones ya de uno"
+    node_hint="Node >=24 <25 y Corepack"
     ;;
   *)
     printf 'Error: sistema no contemplado: %s\n' "$system" >&2
