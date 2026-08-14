@@ -43,7 +43,10 @@ for _, case in ipairs({
 end
 
 local ts_buf, ts_client = open_with_client("src/main.ts", "typescript", "ts_ls")
-assert(ts_client.root_dir == fixture, "ts_ls no uso el package.json del proyecto como raiz")
+assert(
+  ts_client.root_dir == fixture,
+  "ts_ls no uso el package.json del proyecto como raiz: " .. vim.inspect(ts_client.root_dir)
+)
 local symbol = position_params(ts_buf, 0, 10)
 local definition = request(ts_client, ts_buf, "textDocument/definition", symbol)
 assert(definition and definition[1], "TypeScript no devolvio la definicion")

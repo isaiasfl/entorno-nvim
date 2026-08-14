@@ -159,7 +159,16 @@ end
 
 local function typescript_root(bufnr, on_dir)
   local lockfiles = { "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb", "bun.lock" }
-  local project_root = vim.fs.root(bufnr, { lockfiles, { "package.json" }, { ".git" } })
+  local project_markers = vim.list_extend(vim.deepcopy(lockfiles), { "package.json", ".git" })
+  local project_marker_set = {}
+  for _, marker in ipairs(project_markers) do
+    project_marker_set[marker] = true
+  end
+  -- Elegir el marcador mas cercano. Los grupos anidados priorizaban cualquier
+  -- lockfile superior (incluso en HOME) sobre el package.json del proyecto.
+  local project_root = vim.fs.root(bufnr, function(name)
+    return project_marker_set[name] == true
+  end)
   local deno_root = vim.fs.root(bufnr, { "deno.json", "deno.jsonc" })
   local deno_lock_root = vim.fs.root(bufnr, { "deno.lock" })
 
