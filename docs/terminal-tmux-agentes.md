@@ -149,11 +149,47 @@ externa. En una sesión SSH con tmux remoto, `Ctrl-a Ctrl-a` envía el prefijo a
 servidor remoto. Esta política mínima evita anidamientos locales ambiguos; el
 flujo SSH real aún no se ha probado en este equipo.
 
+## Selector del panel de agente
+
+El panel derecho conserva `@entorno_role=agent` y arranca un selector propio al
+crear una sesión nueva. Si fzf está disponible usa una interfaz filtrable; si
+falta, ofrece un menú textual numerado. No depende de TPM ni de plugins tmux y
+no instala, autentica ni configura clientes.
+
+Las opciones estables son Codex, OpenCode, Pi, Shell y Salir. Un agente solo
+aparece en fzf cuando su ejecutable está disponible; el menú textual muestra
+las posiciones estables y avisa sin cerrarse si se elige uno ausente. Para
+forzar el fallback, por ejemplo en una sesión SSH limitada:
+
+```sh
+export ENTORNO_AGENT_SELECTOR_USE_FZF=0
+```
+
+Cada agente se arranca obligatoriamente mediante `scripts/agente.sh`. Mientras
+la selección está activa, el panel publica una segunda opción para futuras
+integraciones visuales:
+
+```text
+@entorno_agent=codex
+@entorno_agent=opencode
+@entorno_agent=pi
+@entorno_agent=shell
+```
+
+Al abandonar normalmente el agente o ejecutar `exit` en la shell elegida se
+vuelve al selector y se limpia `@entorno_agent`, sin alterar
+`@entorno_role=agent`. Cancelar el selector devuelve el panel a su shell base.
+La detección normal distingue ejecutables nativos de wrappers con shebang Node.
+Si un empaquetado particular expone otro proceso, puede declararse sin ampliar
+la allowlist mediante `ENTORNO_AGENT_CODEX_PROCESS`,
+`ENTORNO_AGENT_OPENCODE_PROCESS` o `ENTORNO_AGENT_PI_PROCESS`.
+
 ## Destino seguro para el contexto
 
-El panel derecho se marca con `@entorno_role=agent`, pero comienza como una
-shell. Antes de pegar, el transporte consulta su `pane_current_command` y exige
-exactamente un panel con ese rol.
+El panel derecho se marca con `@entorno_role=agent` y comienza en el selector.
+Mientras no haya un agente activo, cancelar a la shell tampoco convierte el
+panel en un destino válido. Antes de pegar, el transporte consulta su
+`pane_current_command` y exige exactamente un panel con ese rol.
 
 Las shells `bash`, `sh`, `dash`, `zsh`, `fish`, `ksh`, `tcsh` y `nu` se deniegan
 siempre. Un proceso desconocido también se deniega por defecto y el error indica
@@ -231,7 +267,7 @@ el contexto y no seleccionar secretos.
 ## Flujo y recuperación
 
 1. Ejecutar `scripts/proyecto.sh` y escoger el repositorio.
-2. Arrancar en el panel derecho el agente directamente o con `scripts/agente.sh`.
+2. Elegir Codex, OpenCode o Pi en el selector del panel derecho.
 3. Trabajar en Neovim y usar `<leader>ac` en modo normal o visual.
 4. Revisar el contexto pegado en el agente y pulsar Enter manualmente.
 5. Usar el panel inferior para pruebas y servidores.

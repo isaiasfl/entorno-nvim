@@ -55,6 +55,19 @@ wait_for_shell() {
   fail "el panel $pane no volvio a una shell; proceso actual: $actual"
 }
 
+wait_for_output() {
+  expected=$1
+  pane=$2
+  attempts=0
+  while [ "$attempts" -lt 20 ]; do
+    tmux_test capture-pane -p -J -t "$pane" | grep -Fq "$expected" && return 0
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+  pane_output=$(tmux_test capture-pane -p -J -S - -t "$pane" | tail -n 30 | tr '\n' ' ')
+  fail "el panel $pane no mostro: $expected; salida: $pane_output"
+}
+
 make_context() {
   suffix=$1
   payload=$2
@@ -111,6 +124,11 @@ EDITOR_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_r
 [ -n "$AGENT_PANE" ] || fail "falta el panel con rol agent"
 [ -n "$EDITOR_PANE" ] || fail "falta el panel con rol editor"
 [ "$(printf '%s\n' "$AGENT_PANE" | wc -l)" -eq 1 ] || fail "hay mas de un panel con rol agent"
+wait_for_output "Agente>" "$AGENT_PANE"
+[ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
+  fail "el selector sin eleccion declaro un agente activo"
+tmux_test send-keys -t "$AGENT_PANE" Escape
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 attempts=0
 while [ ! -f "$NVIM_ARGS_FILE" ] && [ "$attempts" -lt 20 ]; do
   attempts=$((attempts + 1))
@@ -155,6 +173,9 @@ SHELL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_ro
   awk 'NF == 1 { print $1 }')
 [ -n "$SHELL_PANE" ] || fail "falta el panel shell para reproducir el entorno ausente"
 wait_for_shell "$SHELL_PANE" >/dev/null
+# tmux puede informar el proceso de la shell antes de que su prompt acepte
+# entrada, especialmente mientras arrancan en paralelo editor y selector.
+sleep 1
 SHELL_ROOT_FILE="$WORK_DIR/shell-root"
 SHELL_TMUX_FILE="$WORK_DIR/shell-tmux"
 quoted_shell_root_file=$(printf '%s' "$SHELL_ROOT_FILE" | sed "s/'/'\\''/g")
@@ -258,6 +279,101 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv mode-keys)" = "vi" ] || fail "copy mode debe usar teclas Vi"
 [ "$(tmux_test show-options -gv focus-events)" = "on" ] || fail "focus-events debe estar activo"
+
+# El selector usa fzf cuando existe y conserva el rol del panel.
+SELECTOR="$PROJECT_ROOT/scripts/selector-agente.sh"
+[ -x "$SELECTOR" ] || fail "falta el selector de agentes ejecutable"
+FAKE_FZF_BIN="$WORK_DIR/fake-fzf-bin"
+mkdir -p "$FAKE_FZF_BIN"
+ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-fzf.sh" "$FAKE_FZF_BIN/fzf"
+FZF_MARKER="$WORK_DIR/fzf-usado"
+quoted_selector=$(printf '%s' "$SELECTOR" | sed "s/'/'\\''/g")
+quoted_fake_fzf_bin=$(printf '%s' "$FAKE_FZF_BIN" | sed "s/'/'\\''/g")
+quoted_fzf_marker=$(printf '%s' "$FZF_MARKER" | sed "s/'/'\\''/g")
+tmux_test send-keys -l -t "$AGENT_PANE" \
+  "PATH='$quoted_fake_fzf_bin':\$PATH ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_TMUX_TEST_FZF_MARKER='$quoted_fzf_marker' ENTORNO_TMUX_TEST_FZF_CHOICE=exit '$quoted_selector'"
+tmux_test send-keys -t "$AGENT_PANE" Enter
+attempts=0
+while [ ! -f "$FZF_MARKER" ]; do
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "el selector no uso fzf"
+  sleep 1
+done
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_role)" = agent ] ||
+  fail "el selector altero @entorno_role=agent"
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
+[ "$(wc -l < "$FZF_MARKER" | tr -d ' ')" -eq 1 ] || fail "fzf se ejecuto un numero inesperado de veces"
+[ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
+  fail "el selector no limpio @entorno_agent al salir"
+
+# Sin fzf se ofrece el menu textual. El agente se lanza siempre a traves de
+# agente.sh, publica ambos estados y al terminar regresa al selector.
+TEXT_BIN="$WORK_DIR/text-selector-bin"
+mkdir -p "$TEXT_BIN"
+ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-agent.sh" "$TEXT_BIN/codex"
+AGENT_STARTED="$TEXT_BIN/agent-started"
+AGENT_RECEIVED="$TEXT_BIN/agent-received"
+quoted_text_bin=$(printf '%s' "$TEXT_BIN" | sed "s/'/'\\''/g")
+tmux_test send-keys -l -t "$AGENT_PANE" \
+  "PATH='$quoted_text_bin':\$PATH SHELL=/bin/sh ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_AGENT_SELECTOR_USE_FZF=0 ENTORNO_AGENT_CODEX_PROCESS=tee '$quoted_selector'"
+tmux_test send-keys -t "$AGENT_PANE" Enter
+wait_for_output "Selecciona agente:" "$AGENT_PANE"
+tmux_test send-keys -l -t "$AGENT_PANE" codex
+tmux_test send-keys -t "$AGENT_PANE" Enter
+attempts=0
+while [ ! -f "$AGENT_STARTED" ]; do
+  attempts=$((attempts + 1))
+  if [ "$attempts" -ge 20 ]; then
+    pane_output=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | tail -n 30 | tr '\n' ' ')
+    fail "el fallback no ejecuto el agente simulado; salida: $pane_output"
+  fi
+  sleep 1
+done
+wait_for_process tee "$AGENT_PANE"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = codex ] ||
+  fail "el selector no declaro @entorno_agent=codex"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_command)" = codex ] ||
+  fail "el selector no uso scripts/agente.sh"
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+tmux_test send-keys -t "$AGENT_PANE" C-d
+attempts=0
+while :; do
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  state_now=$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)
+  [ "$menus_now" -gt "$MENUS_BEFORE" ] && [ -z "$state_now" ] && break
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "el fallback no volvio al selector tras salir del agente"
+  sleep 1
+done
+tmux_test send-keys -l -t "$AGENT_PANE" shell
+tmux_test send-keys -t "$AGENT_PANE" Enter
+attempts=0
+while [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" != shell ]; do
+  attempts=$((attempts + 1))
+  if [ "$attempts" -ge 20 ]; then
+    pane_output=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | tail -n 30 | tr '\n' ' ')
+    fail "el fallback no declaro @entorno_agent=shell; salida: $pane_output"
+  fi
+  sleep 1
+done
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+tmux_test send-keys -l -t "$AGENT_PANE" exit
+tmux_test send-keys -t "$AGENT_PANE" Enter
+attempts=0
+while :; do
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  [ "$menus_now" -gt "$MENUS_BEFORE" ] && break
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "el fallback no volvio al selector tras salir de la shell"
+  sleep 1
+done
+tmux_test send-keys -l -t "$AGENT_PANE" exit
+tmux_test send-keys -t "$AGENT_PANE" Enter
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
+[ "$(tmux_test list-panes -t "=$SESSION" | wc -l)" -eq 3 ] || fail "el selector altero la geometria"
+if tmux_test list-buffers -F '#{buffer_name}' 2>/dev/null | grep -q '^entorno-agent-selector-'; then
+  fail "el selector dejo un buffer auxiliar de tmux"
+fi
 
 # Una shell, incluso dentro del panel marcado, nunca es un destino valido.
 # En macOS el proceso inicial puede aparecer brevemente como sh antes de que la

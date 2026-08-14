@@ -171,6 +171,17 @@ start_editor() {
   tmux_cmd send-keys -t "$pane" Enter
 }
 
+start_agent_selector() {
+  pane=$1
+  selector="$PROJECT_ROOT/scripts/selector-agente.sh"
+  [ -x "$selector" ] || fail "el selector de agentes no es ejecutable: $selector"
+
+  quoted=$(printf '%s' "$selector" | sed "s/'/'\\\\''/g")
+  quoted_socket=$(printf '%s' "$TMUX_SOCKET" | sed "s/'/'\\\\''/g")
+  tmux_cmd send-keys -l -t "$pane" "export ENTORNO_TMUX_SOCKET='$quoted_socket'; '$quoted'"
+  tmux_cmd send-keys -t "$pane" Enter
+}
+
 [ "$#" -le 1 ] || fail "uso: scripts/proyecto.sh [ruta]"
 command -v tmux >/dev/null 2>&1 || fail "tmux no esta instalado"
 command -v git >/dev/null 2>&1 || fail "Git no esta disponible"
@@ -200,6 +211,7 @@ if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
   agent_pane=$(tmux_cmd split-window -h -p 35 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
   tmux_cmd set-option -p -t "$editor_pane" @entorno_role editor
   tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
+  start_agent_selector "$agent_pane"
   tmux_cmd select-pane -t "$editor_pane"
   start_editor "$editor_pane"
 fi
