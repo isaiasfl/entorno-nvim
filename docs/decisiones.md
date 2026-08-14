@@ -226,6 +226,19 @@ y alternativas GNU/BSD. La suite tmux se validó después también con tmux 3.6b
 en macOS Apple Silicon; CachyOS y la suite completa de Neovim en macOS siguen
 pendientes.
 
+## Tmux diario: prefijo, ratón y estado
+
+La fase posterior adopta `Ctrl-a` como prefijo por ergonomía y conserva una vía
+explícita para enviar la tecla literal mediante `Ctrl-a Ctrl-a`. Se acepta que
+esta combinación sustituye temporalmente el «principio de línea» de Readline y
+otras acciones propias de aplicaciones mientras tmux espera una orden.
+
+El ratón se activa como apoyo para selección, ventanas, redimensionado y scroll,
+sin reemplazar los bindings `h/j/k/l`. La barra de estado muestra únicamente la
+sesión, las ventanas y el nombre corto del directorio activo. No se incorporan
+TPM, SessionX, Resurrect, Continuum ni integración automática de portapapeles en
+esta fase.
+
 ## Node 24 LTS
 
 La instalación vigente usa Node `>=24 <25`, en lugar de conservar el límite

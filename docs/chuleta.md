@@ -5,11 +5,37 @@
 | Acción | Comando o tecla |
 | --- | --- |
 | Abrir proyecto | `./scripts/proyecto.sh /ruta` |
-| Elegir proyecto | `./scripts/proyecto.sh` o `Ctrl-b P` |
-| Moverse por paneles | `Ctrl-b h/j/k/l` |
-| Redimensionar | `Ctrl-b H/J/K/L` |
-| Dividir | `Ctrl-b \|` / `Ctrl-b -` |
-| Separarse sin cerrar | `Ctrl-b d` |
+| Elegir proyecto | `./scripts/proyecto.sh` o `Ctrl-a P` |
+| Moverse por paneles | `Ctrl-a h/j/k/l` |
+| Redimensionar | `Ctrl-a H/J/K/L` |
+| Dividir | `Ctrl-a \|` / `Ctrl-a -` |
+| Crear ventana | `Ctrl-a c` |
+| Ventana siguiente/anterior | `Ctrl-a n` / `Ctrl-a p` |
+| Maximizar/restaurar panel | `Ctrl-a z` |
+| Entrar en copy-mode | `Ctrl-a [` |
+| Seleccionar/copiar en copy-mode | `v` / `y` |
+| Elegir sesión | `Ctrl-a s` |
+| Separarse sin cerrar | `Ctrl-a d` |
+| Enviar `Ctrl-a` literal | `Ctrl-a Ctrl-a` |
+
+El ratón también permite seleccionar paneles y ventanas, redimensionar y hacer
+scroll. Muchos terminales requieren mantener `Shift` para seleccionar texto
+directamente con el emulador en vez de con tmux.
+
+### Sesiones en el socket dedicado
+
+La vía normal para cumplir «un proyecto = una sesión» es `proyecto.sh`. Para
+aprender y administrar el servidor directamente:
+
+```sh
+tmux -L entorno-nvim list-sessions
+tmux -L entorno-nvim attach-session -t nombre
+tmux -L entorno-nvim switch-client -t nombre
+tmux -L entorno-nvim kill-session -t nombre
+```
+
+Cerrar SSH o separarse conserva las sesiones y sus procesos. Reiniciar la
+máquina no: la persistencia tras reinicios queda aplazada.
 
 ## NEOVIM
 

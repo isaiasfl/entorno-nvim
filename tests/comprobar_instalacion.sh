@@ -80,7 +80,8 @@ HOME="$TEST_HOME" NVIM_XDG_ROOT="$TEST_XDG" \
 
 tmux -L "$TMUX_SOCKET" -f "$PROJECT_ROOT/tmux/tmux.conf" \
   new-session -d -s instalacion -c "$PROJECT_ROOT"
-[ "$(tmux -L "$TMUX_SOCKET" show-options -gv prefix)" = C-b ]
+[ "$(tmux -L "$TMUX_SOCKET" show-options -gv prefix)" = C-a ]
+[ "$(tmux -L "$TMUX_SOCKET" show-options -gv mouse)" = on ]
 tmux -L "$TMUX_SOCKET" kill-server
 
 HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/markdown-pdf.sh" \

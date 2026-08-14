@@ -82,7 +82,8 @@ simbólico reversible. [Arquitectura aislada](docs/entorno-aislado.md).
 ## tmux
 
 El flujo usa `tmux -L entorno-nvim` y no carga ni altera `~/.tmux.conf`.
-`Ctrl-b P` abre el selector de proyectos en un popup. Más detalles en
+`Ctrl-a P` abre el selector de proyectos en un popup; el ratón queda disponible
+como apoyo y la navegación principal sigue siendo por teclado. Más detalles en
 [terminal y tmux](docs/terminal-tmux-agentes.md).
 
 ## Agentes
@@ -113,8 +114,8 @@ aislada, sin Mason ni npm global. BashLS sigue aplazado. Véase
 | `<leader>ac` | Pegar contexto revisable en el agente |
 | `gd`, `grr`, `grn`, `K` | Definición, referencias, rename y hover LSP |
 | `Ctrl-h/j/k/l` | Navegar splits de Neovim |
-| `Ctrl-b h/j/k/l` | Navegar paneles tmux |
-| `Ctrl-b P` | Selector de proyectos tmux |
+| `Ctrl-a h/j/k/l` | Navegar paneles tmux |
+| `Ctrl-a P` | Selector de proyectos tmux |
 
 ## Portabilidad
 

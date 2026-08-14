@@ -166,11 +166,14 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h j k l H J K L C-b P r; do
+for binding in h j k l H J K L C-a P r c d n p s w z '[' '|' '-'; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
+if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
+  fail "Ctrl-b no debe conservar un binding de prefijo"
+fi
 POPUP_BINDING=$(tmux_test list-keys -T prefix P)
-printf '%s\n' "$POPUP_BINDING" | grep -q 'popup-proyecto\.sh' || fail "Ctrl-b P no usa el lanzador del popup"
+printf '%s\n' "$POPUP_BINDING" | grep -q 'popup-proyecto\.sh' || fail "Ctrl-a P no usa el lanzador del popup"
 printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment -t.*ENTORNO_NVIM_ROOT' ||
   fail "el popup no obtiene la raiz desde el entorno de sesion"
 if printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment ENTORNO_NVIM_ROOT'; then
@@ -192,9 +195,9 @@ if printf '%s\n' "$POPUP_BINDING" | grep -Eq 'sesh|gum|fzf-tmux' ||
   fail "el popup introdujo un sessionizer o selector adicional"
 fi
 REFRESH_BINDING=$(tmux_test list-keys -T prefix r)
-printf '%s\n' "$REFRESH_BINDING" | grep -q 'refresh-client' || fail "Ctrl-b r dejo de refrescar el cliente"
+printf '%s\n' "$REFRESH_BINDING" | grep -q 'refresh-client' || fail "Ctrl-a r dejo de refrescar el cliente"
 if printf '%s\n' "$REFRESH_BINDING" | grep -q 'ENTORNO_'; then
-  fail "Ctrl-b r depende indebidamente del entorno de entorno-nvim"
+  fail "Ctrl-a r depende indebidamente del entorno de entorno-nvim"
 fi
 
 # Regresion exacta: la shell no tiene la raiz, tmux si; ademas existe otra
@@ -236,7 +239,10 @@ tmux_test has-session -t "=$FALLBACK_SELECTED"
 [ "$(tmux_test show-environment -t "=$FALLBACK_SELECTED" ENTORNO_TMUX_PROJECT_ROOTS)" = "ENTORNO_TMUX_PROJECT_ROOTS=$FALLBACK_HOME/Proyectos" ] ||
   fail "el fallback de roots no quedo limitado a HOME/Proyectos"
 tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
-[ "$(tmux_test show-options -gv mouse)" = "off" ] || fail "mouse debe estar desactivado"
+[ "$(tmux_test show-options -gv prefix)" = "C-a" ] || fail "el prefijo tmux debe ser Ctrl-a"
+[ "$(tmux_test show-options -gv mouse)" = "on" ] || fail "mouse debe estar activado"
+[ "$(tmux_test show-options -gv status-left)" = " #[bold]#S #[default]" ] || fail "status-left no muestra la sesion"
+[ "$(tmux_test show-options -gv status-right)" = " #{b:pane_current_path} " ] || fail "status-right no muestra el proyecto"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv mode-keys)" = "vi" ] || fail "copy mode debe usar teclas Vi"

@@ -72,7 +72,7 @@ ruta concreta:
 ```
 
 Dentro de cualquier panel de una sesión gestionada por este entorno,
-`Ctrl-b P` abre el mismo selector en un popup centrado del 85% por 75%. El
+`Ctrl-a P` abre el mismo selector en un popup centrado del 85% por 75%. El
 popup usa un borde ASCII sencillo y parte del directorio del panel actual. El
 lanzador `scripts/popup-proyecto.sh` solo conserva el cliente, panel y sesión de
 origen; delega en `scripts/proyecto.sh`, por lo que no existe un segundo
@@ -85,7 +85,7 @@ necesariamente `TMUX_PANE`. Por ello, el binding resuelve primero el
 identificador de su sesión y lo pasa explícitamente al popup. Tanto el popup
 como `proyecto.sh` usan ese destino con `tmux show-environment -t` para recuperar
 la raíz, el socket, los roots, la profundidad y `NVIM_BIN` que falten. No se usa
-el entorno global del servidor —que podría mezclar sesiones— y `Ctrl-b P` no
+el entorno global del servidor —que podría mezclar sesiones— y `Ctrl-a P` no
 depende de que la raíz esté exportada en la shell del panel.
 
 Si se define `ENTORNO_TMUX_PROJECT_ROOTS`, debe exportarse al iniciar o
@@ -111,28 +111,33 @@ ejecutar `proyecto.sh` conecta con la sesión existente sin reconstruir el layou
 
 ## Teclas y tmux anidado
 
-El prefijo permanece en `Ctrl-b`.
+El prefijo es `Ctrl-a`. Como esa tecla significa «principio de línea» en shells
+con edición Emacs y tiene acciones propias en algunas aplicaciones, `Ctrl-a
+Ctrl-a` envía un `Ctrl-a` literal al panel. El ratón está activo como segunda
+vía para seleccionar paneles y ventanas, redimensionar y recorrer el historial;
+los bindings de teclado siguen siendo el flujo principal.
 
 | Tecla | Acción |
 | --- | --- |
-| `Ctrl-b h/j/k/l` | Cambiar de panel |
-| `Ctrl-b H/J/K/L` | Redimensionar panel |
-| `Ctrl-b \|` / `Ctrl-b -` | Dividir a derecha / debajo |
-| `Ctrl-b c` | Crear una ventana |
-| `Ctrl-b P` | Seleccionar o crear una sesión de proyecto en un popup |
-| `Ctrl-b z` | Maximizar o restaurar el panel |
-| `Ctrl-b [` | Entrar en modo copia Vi |
-| `Ctrl-b s` | Elegir una sesión |
-| `Ctrl-b d` | Separarse sin detenerla |
-| `Ctrl-b Ctrl-b` | Enviar el prefijo a un tmux remoto |
+| `Ctrl-a h/j/k/l` | Cambiar de panel |
+| `Ctrl-a H/J/K/L` | Redimensionar panel |
+| `Ctrl-a \|` / `Ctrl-a -` | Dividir a derecha / debajo |
+| `Ctrl-a c` | Crear una ventana |
+| `Ctrl-a n/p` | Ventana siguiente / anterior |
+| `Ctrl-a P` | Seleccionar o crear una sesión de proyecto en un popup |
+| `Ctrl-a z` | Maximizar o restaurar el panel |
+| `Ctrl-a [` | Entrar en modo copia Vi |
+| `Ctrl-a s` | Elegir una sesión |
+| `Ctrl-a d` | Separarse sin detenerla |
+| `Ctrl-a Ctrl-a` | Enviar `Ctrl-a` literal o el prefijo a un tmux remoto |
 
 Dentro de Neovim, `Ctrl-h/j/k/l` sigue navegando entre splits. Para cruzar a
-tmux se pulsa primero `Ctrl-b`.
+tmux se pulsa primero `Ctrl-a`.
 
 Ejecutar `proyecto.sh` desde el mismo servidor dedicado cambia de cliente sin
 anidar tmux. Si se detecta que la terminal ya pertenece a otro socket, el script
 se detiene con un mensaje claro: hay que separarse y lanzarlo desde una terminal
-externa. En una sesión SSH con tmux remoto, `Ctrl-b Ctrl-b` envía el prefijo al
+externa. En una sesión SSH con tmux remoto, `Ctrl-a Ctrl-a` envía el prefijo al
 servidor remoto. Esta política mínima evita anidamientos locales ambiguos; el
 flujo SSH real aún no se ha probado en este equipo.
 
@@ -222,7 +227,7 @@ el contexto y no seleccionar secretos.
 3. Trabajar en Neovim y usar `<leader>ac` en modo normal o visual.
 4. Revisar el contexto pegado en el agente y pulsar Enter manualmente.
 5. Usar el panel inferior para pruebas y servidores.
-6. Separarse con `Ctrl-b d`; `proyecto.sh` recupera después la misma sesión.
+6. Separarse con `Ctrl-a d`; `proyecto.sh` recupera después la misma sesión.
 
 Un reinicio elimina los procesos de tmux; el script recrea el layout, pero no
 las conversaciones. Su reanudación corresponde a cada cliente. OpenCode,
