@@ -90,6 +90,7 @@ fi
 "$SCRIPT_DIR/instalar-plugins.sh"
 "$SCRIPT_DIR/instalar-parsers.sh"
 "$SCRIPT_DIR/comprobar-requisitos.sh"
+"$SCRIPT_DIR/instalar-entorno-dev.sh"
 
 printf '\n%s\n' "Instalacion de usuario preparada. No se ha activado ~/.config/nvim."
 printf '%s\n' "Prueba con ./scripts/arrancar.sh y activa despues con ./scripts/activar.sh."

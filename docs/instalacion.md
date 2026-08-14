@@ -4,13 +4,20 @@
 
 `scripts/instalar.sh` coordina las instalaciones de usuario, lockfiles y
 comprobaciones. No activa `~/.config/nvim`, no ejecuta `sudo`, no toca la
-configuración tmux personal y no instala agentes CLI.
+configuración tmux personal y no instala agentes CLI. También crea de forma
+idempotente `~/.local/bin/entorno-dev` como enlace al lanzador del repositorio.
+Si ese destino ya existe y no pertenece al proyecto, se detiene sin
+sobrescribirlo.
 
 ```sh
 ./scripts/comprobar-requisitos.sh
 ./scripts/instalar.sh
 ./scripts/arrancar.sh
 ```
+
+Para ejecutar `entorno-dev` desde cualquier directorio, `~/.local/bin` debe
+estar incluido en `PATH`. Muchas distribuciones lo añaden al iniciar sesión;
+puede comprobarse con `command -v entorno-dev`.
 
 El comprobador nunca modifica la máquina. El instalador se puede repetir: una
 instalación correcta se verifica y se conserva; un destino existente pero
@@ -40,6 +47,7 @@ su ejecución separadamente; el script nunca lo ejecuta.
 5. plugins mediante `:Lazy restore`, respetando `lazy-lock.json`.
 6. parsers Tree-sitter enumerados explícitamente y compilados en la raíz XDG.
 7. comprobación final de requisitos.
+8. enlace seguro del lanzador `entorno-dev` bajo `~/.local/bin`.
 
 No se usa Mason, npm global, TPM, `curl | sh` ni instalación automática al
 arrancar Neovim. Las descargas directas usan HTTPS, staging temporal y

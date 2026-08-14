@@ -20,6 +20,30 @@ trap cleanup EXIT HUP INT TERM
 
 mkdir -p "$TEST_HOME/.local/opt" "$TEST_XDG/data/nvim/lazy" "$TEST_XDG/data/nvim/site/parser"
 
+HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null
+[ -L "$TEST_HOME/.local/bin/entorno-dev" ]
+[ "$(readlink "$TEST_HOME/.local/bin/entorno-dev")" = "$PROJECT_ROOT/bin/entorno-dev" ]
+HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null
+[ "$(readlink "$TEST_HOME/.local/bin/entorno-dev")" = "$PROJECT_ROOT/bin/entorno-dev" ]
+
+COLLISION_HOME="$TEST_ROOT/home-colision"
+mkdir -p "$COLLISION_HOME/.local/bin"
+printf '%s\n' "lanzador ajeno" >"$COLLISION_HOME/.local/bin/entorno-dev"
+if HOME="$COLLISION_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null 2>&1; then
+  printf '%s\n' "Error: el instalador sobrescribiria un lanzador ajeno." >&2
+  exit 1
+fi
+[ "$(sed -n '1p' "$COLLISION_HOME/.local/bin/entorno-dev")" = "lanzador ajeno" ]
+
+FOREIGN_LINK_HOME="$TEST_ROOT/home-enlace-ajeno"
+mkdir -p "$FOREIGN_LINK_HOME/.local/bin"
+ln -s "$TEST_ROOT/lanzador-ajeno" "$FOREIGN_LINK_HOME/.local/bin/entorno-dev"
+if HOME="$FOREIGN_LINK_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null 2>&1; then
+  printf '%s\n' "Error: el instalador sobrescribiria un enlace ajeno." >&2
+  exit 1
+fi
+[ "$(readlink "$FOREIGN_LINK_HOME/.local/bin/entorno-dev")" = "$TEST_ROOT/lanzador-ajeno" ]
+
 for directory in "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION"; do
   [ -d "$REAL_HOME/.local/opt/$directory" ] || {
     printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
