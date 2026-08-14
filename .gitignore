@@ -50,5 +50,6 @@ credentials.json
 /.claude/
 /.opencode/
 /.jarvis/
+/lazygit/
 /.config/opencode/
 /.config/jarvis/
