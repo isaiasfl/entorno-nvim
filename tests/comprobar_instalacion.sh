@@ -6,6 +6,7 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$PROJECT_ROOT/scripts/lib/versiones.sh"
 
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-instalacion.XXXXXX")
+TEST_ROOT=$(CDPATH= cd "$TEST_ROOT" && pwd -P)
 TEST_HOME="$TEST_ROOT/home"
 TEST_XDG="$TEST_ROOT/xdg"
 REAL_HOME=$HOME
@@ -19,17 +20,33 @@ trap cleanup EXIT HUP INT TERM
 
 mkdir -p "$TEST_HOME/.local/opt" "$TEST_XDG/data/nvim/lazy" "$TEST_XDG/data/nvim/site/parser"
 
-for directory in \
-  "nvim-$ENTORNO_NVIM_VERSION" \
-  "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION" \
-  "lua-language-server-$ENTORNO_LUALS_VERSION"
-do
+for directory in "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION"; do
   [ -d "$REAL_HOME/.local/opt/$directory" ] || {
     printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
     exit 1
   }
   ln -s "$REAL_HOME/.local/opt/$directory" "$TEST_HOME/.local/opt/$directory"
 done
+
+if [ "$(uname -s)" = Darwin ]; then
+  mkdir -p \
+    "$TEST_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin" \
+    "$TEST_HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin"
+  ln -s "$(command -v nvim)" "$TEST_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
+  ln -s "$(command -v lua-language-server)" \
+    "$TEST_HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
+else
+  for directory in \
+    "nvim-$ENTORNO_NVIM_VERSION" \
+    "lua-language-server-$ENTORNO_LUALS_VERSION"
+  do
+    [ -d "$REAL_HOME/.local/opt/$directory" ] || {
+      printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
+      exit 1
+    }
+    ln -s "$REAL_HOME/.local/opt/$directory" "$TEST_HOME/.local/opt/$directory"
+  done
+fi
 
 while IFS=' ' read -r plugin commit; do
   [ -n "$plugin" ] || continue

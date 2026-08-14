@@ -68,9 +68,10 @@ compatible=$(node -p "const [a,b]=process.versions.node.split('.').map(Number); 
 }
 
 if [ "$system" = Darwin ]; then
-  printf '%s\n' "Aviso: macOS es un objetivo no probado; Neovim y LuaLS deben prepararse externamente con version exacta." >&2
-  : "${NVIM_BIN:?En macOS define NVIM_BIN apuntando a Neovim $ENTORNO_NVIM_VERSION}"
-  : "${LUALS_BIN:?En macOS define LUALS_BIN apuntando a LuaLS $ENTORNO_LUALS_VERSION}"
+  NVIM_BIN=${NVIM_BIN:-"$(command -v nvim 2>/dev/null || true)"}
+  LUALS_BIN=${LUALS_BIN:-"$(command -v lua-language-server 2>/dev/null || true)"}
+  [ -n "$NVIM_BIN" ] || { printf '%s\n' "Error: Neovim no esta disponible en PATH." >&2; exit 1; }
+  [ -n "$LUALS_BIN" ] || { printf '%s\n' "Error: LuaLS no esta disponible en PATH." >&2; exit 1; }
   [ -x "$NVIM_BIN" ] && [ "$("$NVIM_BIN" --version | sed -n '1s/^NVIM v//p')" = "$ENTORNO_NVIM_VERSION" ] || {
     printf 'Error: NVIM_BIN no corresponde a Neovim %s.\n' "$ENTORNO_NVIM_VERSION" >&2; exit 1;
   }

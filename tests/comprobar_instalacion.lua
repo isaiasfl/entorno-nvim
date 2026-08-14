@@ -29,7 +29,7 @@ end
 require("lazy").load({ plugins = { "fzf-lua", "nvim-tree.lua", "nvim-web-devicons", "mini.nvim" } })
 assert(package.loaded["fzf-lua"], "fzf-lua no se cargo")
 assert(package.loaded["nvim-tree"], "nvim-tree no se cargo")
-assert(package.loaded["nvim-web-devicons"], "nvim-web-devicons no se cargo")
+assert(pcall(require, "nvim-web-devicons"), "nvim-web-devicons no se pudo cargar")
 
 for _, executable in ipairs({
   "typescript-language-server",

@@ -4,12 +4,20 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
-NVIM_BIN=${NVIM_BIN:-"$HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"}
+DEFAULT_NVIM_BIN="$HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
+if [ ! -x "$DEFAULT_NVIM_BIN" ] && [ "$(uname -s)" = Darwin ]; then
+  DEFAULT_NVIM_BIN=$(command -v nvim 2>/dev/null || printf '%s' "$DEFAULT_NVIM_BIN")
+fi
+NVIM_BIN=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$HOME/.local/opt/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter"}
 LSP_WEB_BIN=${LSP_WEB_BIN:-"$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"}
 LSP_PYTHON_BIN=${LSP_PYTHON_BIN:-"$PROJECT_ROOT/tools/lsp-python/node_modules/.bin"}
-LUALS_BIN=${LUALS_BIN:-"$HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"}
+DEFAULT_LUALS_BIN="$HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
+if [ ! -x "$DEFAULT_LUALS_BIN" ] && [ "$(uname -s)" = Darwin ]; then
+  DEFAULT_LUALS_BIN=$(command -v lua-language-server 2>/dev/null || printf '%s' "$DEFAULT_LUALS_BIN")
+fi
+LUALS_BIN=${LUALS_BIN:-"$DEFAULT_LUALS_BIN"}
 
 case "$XDG_ROOT" in
   /*) ;;

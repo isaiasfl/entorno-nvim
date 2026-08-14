@@ -24,10 +24,10 @@ Para inspeccionar o recuperar el servidor predeterminado se usan, por ejemplo,
 `proyecto.sh` solo crea el layout cuando la sesión no existe: al reconectar
 conserva paneles, procesos, tamaños y ventanas.
 
-La configuración versionada está en `tmux/tmux.conf`. Se validó con tmux 3.5a
-en Debian 13 y no usa TPM, plugins, `tmux-resurrect` ni
-`vim-tmux-navigator`. CachyOS y macOS necesitan una versión moderna de tmux,
-pero la ejecución real en esos sistemas todavía no se ha verificado.
+La configuración versionada está en `tmux/tmux.conf`. La suite tmux se validó
+con tmux 3.5a en Debian 13 y 3.6b en macOS Apple Silicon. No usa TPM, plugins,
+`tmux-resurrect` ni `vim-tmux-navigator`. CachyOS sigue pendiente de una
+ejecución real y la validación completa de Neovim en macOS es independiente.
 
 tmux es la única dependencia específica de esta fase. Estos comandos son solo
 referencias para una instalación aprobada expresamente en cada sistema; esta

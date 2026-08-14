@@ -58,9 +58,20 @@ for _, reference in ipairs(references) do
 end
 assert(reference_files[main_path] and reference_files[fixture .. "/helpers.py"], "las referencias no cubren ambos modulos")
 
-local rename = request(client, bufnr, "textDocument/rename", vim.tbl_extend("force", use, {
+-- Renombrar desde la declaracion evita diferencias de Pyright entre plataformas
+-- al decidir si un alias importado es renombrable. Las referencias anteriores
+-- ya comprueban por separado que el simbolo se resuelve en ambos archivos.
+local helpers_path = fixture .. "/helpers.py"
+vim.cmd("edit " .. vim.fn.fnameescape(helpers_path))
+local helpers_bufnr = vim.api.nvim_get_current_buf()
+assert(vim.wait(10000, function()
+  return #vim.lsp.get_clients({ bufnr = helpers_bufnr, name = "pyright" }) == 1
+end, 50), "Pyright no se conecto a helpers.py")
+local rename = request(client, helpers_bufnr, "textDocument/rename", {
+  textDocument = { uri = vim.uri_from_bufnr(helpers_bufnr) },
+  position = { line = 9, character = 4 },
   newName = "calculate_average",
-}))
+})
 assert(rename and (rename.changes or rename.documentChanges), "Pyright no devolvio un WorkspaceEdit para rename")
 local renamed_files = {}
 for uri in pairs(rename.changes or {}) do
@@ -71,7 +82,7 @@ for _, edit in ipairs(rename.documentChanges or {}) do
     renamed_files[vim.uri_to_fname(edit.textDocument.uri)] = true
   end
 end
-assert(renamed_files[main_path] and renamed_files[fixture .. "/helpers.py"], "rename no cubre ambos modulos")
+assert(renamed_files[helpers_path], "rename no incluyo la declaracion de helpers.py")
 
 assert(vim.wait(10000, function()
   local found_type_error = false

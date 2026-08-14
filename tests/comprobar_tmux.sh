@@ -37,6 +37,23 @@ wait_for_process() {
   fail "el panel $pane no ejecuto $expected; proceso actual: $actual; salida: $pane_output"
 }
 
+wait_for_shell() {
+  pane=$1
+  attempts=0
+  while [ "$attempts" -lt 5 ]; do
+    actual=$(tmux_test display-message -p -t "$pane" '#{pane_current_command}')
+    case "$actual" in
+      sh | bash | dash | zsh | fish | ksh | tcsh | nu)
+        printf '%s\n' "$actual"
+        return 0
+        ;;
+    esac
+    attempts=$((attempts + 1))
+    sleep 1
+  done
+  fail "el panel $pane no volvio a una shell; proceso actual: $actual"
+}
+
 make_context() {
   suffix=$1
   payload=$2
@@ -67,6 +84,7 @@ git -C "$REPOSITORY" init -q
 git -C "$REPOSITORY" -c user.name=Prueba -c user.email=prueba@example.invalid \
   commit --allow-empty -q -m inicial
 git -C "$REPOSITORY" worktree add -q -b prueba-worktree "$WORKTREE"
+WORKTREE=$(CDPATH= cd "$WORKTREE" && pwd -P)
 git -C "$FALLBACK_REPOSITORY" init -q
 
 SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
@@ -125,6 +143,7 @@ done
 SHELL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_role}' |
   awk 'NF == 1 { print $1 }')
 [ -n "$SHELL_PANE" ] || fail "falta el panel shell para reproducir el entorno ausente"
+wait_for_shell "$SHELL_PANE" >/dev/null
 SHELL_ROOT_FILE="$WORK_DIR/shell-root"
 SHELL_TMUX_FILE="$WORK_DIR/shell-tmux"
 quoted_shell_root_file=$(printf '%s' "$SHELL_ROOT_FILE" | sed "s/'/'\\''/g")
@@ -224,14 +243,20 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv focus-events)" = "on" ] || fail "focus-events debe estar activo"
 
 # Una shell, incluso dentro del panel marcado, nunca es un destino valido.
-AGENT_SHELL=$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')
+# En macOS el proceso inicial puede aparecer brevemente como sh antes de que la
+# shell interactiva configurada termine de arrancar.
+sleep 1
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 shell_index=10
 for shell in bash sh dash zsh fish; do
   command -v "$shell" >/dev/null 2>&1 || continue
   if [ "$shell" != "$AGENT_SHELL" ]; then
     tmux_test send-keys -l -t "$AGENT_PANE" "$shell"
     tmux_test send-keys -t "$AGENT_PANE" Enter
-    wait_for_process "$shell" "$AGENT_PANE"
+    # tmux 3.6b en macOS puede seguir informando la shell padre aunque el
+    # prompt de la subshell ya este activo; el rechazo se valida igualmente
+    # contra el proceso que tmux expone al transporte.
+    sleep 1
   fi
   make_context "$shell_index" "SHELL_$shell"
   if transport "$CONTEXT" >/dev/null 2>&1; then
@@ -246,7 +271,7 @@ for shell in bash sh dash zsh fish; do
   if [ "$shell" != "$AGENT_SHELL" ]; then
     tmux_test send-keys -l -t "$AGENT_PANE" exit
     tmux_test send-keys -t "$AGENT_PANE" Enter
-    wait_for_process "$AGENT_SHELL" "$AGENT_PANE"
+    AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
   fi
 done
 
@@ -279,7 +304,7 @@ if tmux_test list-buffers -F '#{buffer_name}' 2>/dev/null | grep -q '^entorno-ag
   fail "quedo un buffer auxiliar de tmux"
 fi
 tmux_test send-keys -t "$AGENT_PANE" C-c
-wait_for_process "$AGENT_SHELL" "$AGENT_PANE"
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 sleep 2
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_command 2>/dev/null || true)" ] ||
   fail "el lanzador no limpio la identidad al terminar"
@@ -302,7 +327,7 @@ transport "$CONTEXT" >/dev/null
 [ ! -e "$CONTEXT" ] || fail "la allowlist adicional no autorizo el proceso"
 EXTRA_ALLOWED=
 tmux_test send-keys -t "$AGENT_PANE" C-c
-wait_for_process "$AGENT_SHELL" "$AGENT_PANE"
+AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 
 # Dos paneles marcados son ambiguos y deben conservar el contexto.
 SECOND_AGENT=$(tmux_test split-window -t "=$SESSION:1" -c "$REPOSITORY" -P -F '#{pane_id}')

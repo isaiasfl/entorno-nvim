@@ -222,8 +222,9 @@ sensibles comunes se bloquean como medida preventiva.
 
 El panel de Neovim conserva una shell al cerrar el editor y las reconexiones no
 reconstruyen layouts existentes. La compatibilidad se revisó con sintaxis POSIX
-y alternativas GNU/BSD, pero la ejecución real solo se validó en Debian 13; las
-pruebas en CachyOS y macOS siguen pendientes.
+y alternativas GNU/BSD. La suite tmux se validó después también con tmux 3.6b
+en macOS Apple Silicon; CachyOS y la suite completa de Neovim en macOS siguen
+pendientes.
 
 ## Node 24 LTS
 
