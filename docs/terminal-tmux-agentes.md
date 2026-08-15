@@ -169,6 +169,7 @@ navegación sigue funcionando aunque el layout cambie:
 | `Ctrl-a \|` / `Ctrl-a -` | Dividir a derecha / debajo |
 | `Ctrl-a c` | Crear una ventana |
 | `Ctrl-a g` | Abrir o recuperar lazygit en una ventana dedicada |
+| `Ctrl-a ?` | Abrir la ayuda contextual del entorno |
 | `Ctrl-a p` | Ventana anterior |
 | `Ctrl-a P` | Seleccionar o crear una sesión de proyecto en un popup |
 | `Ctrl-a z` | Maximizar o restaurar el panel |
@@ -186,6 +187,13 @@ renombrada; si no existe, crea una ventana en `@entorno_project_root` y ejecuta
 `lazygit` directamente. Si el ejecutable no está instalado muestra un error en
 tmux y no crea ninguna ventana. La ventana desaparece normalmente al salir de
 lazygit y se vuelve a crear la próxima vez que se use el atajo.
+
+`Ctrl-a ?` abre una ayuda ASCII compacta con los accesos globales y un grupo
+específico para el contexto actual. La ventana `git` se reconoce mediante
+`@entorno_window_role=git`; editor, agente y terminal se reconocen mediante
+`@entorno_role`. El popup muestra el proyecto, el contexto detectado y solo
+atajos del entorno, Neovim, IA o Git. `q` y Esc lo cierran sin ejecutar ninguna
+acción.
 
 Ejecutar `proyecto.sh` desde el mismo servidor dedicado cambia de cliente sin
 anidar tmux. Si se detecta que la terminal ya pertenece a otro socket, el script

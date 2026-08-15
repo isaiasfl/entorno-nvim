@@ -230,9 +230,46 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h i j k l H J K L C-a P r c d g n a t p s w z '[' '|' '-'; do
+for binding in h i j k l H J K L C-a P r c d g n a t p s w z '?' '[' '|' '-'; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
+
+HELP_SCRIPT="$PROJECT_ROOT/scripts/tmux-ayuda.sh"
+[ -x "$HELP_SCRIPT" ] || fail "falta el helper ejecutable de ayuda contextual"
+HELP_BINDING=$(tmux_test list-keys -T prefix '?')
+printf '%s\n' "$HELP_BINDING" | grep -q 'tmux-ayuda\.sh' ||
+  fail "Ctrl-a ? no abre la ayuda contextual"
+printf '%s\n' "$HELP_BINDING" | grep -q '#{client_name}' ||
+  fail "Ctrl-a ? no conserva el cliente de origen"
+grep -q 'display-popup.*-w 50 -h 18' "$HELP_SCRIPT" ||
+  fail "la ayuda no usa un popup compacto de 50x18"
+grep -q -- '-b simple' "$HELP_SCRIPT" || fail "la ayuda no usa borde ASCII"
+grep -q 'q | "$escape"' "$HELP_SCRIPT" || fail "la ayuda no cierra con q y Esc"
+for help_context in editor agent terminal git; do
+  HELP_OUTPUT=$(ENTORNO_HELP_PROJECT='proyecto con espacios' \
+    ENTORNO_HELP_CONTEXT="$help_context" "$HELP_SCRIPT" --render)
+  printf '%s\n' "$HELP_OUTPUT" | grep -q '^Proyecto: proyecto con espacios$' ||
+    fail "la ayuda no muestra el proyecto en contexto $help_context"
+  printf '%s\n' "$HELP_OUTPUT" | grep -q "^Contexto: $help_context$" ||
+    fail "la ayuda no muestra el contexto $help_context"
+  printf '%s\n' "$HELP_OUTPUT" | grep -q '^TMUX$' || fail "la ayuda no incluye el grupo tmux"
+  if printf '%s\n' "$HELP_OUTPUT" | grep -q 'Salir'; then
+    fail "la ayuda incluye una opcion Salir"
+  fi
+  [ "$(printf '%s\n' "$HELP_OUTPUT" | wc -l | tr -d ' ')" -le 16 ] ||
+    fail "la ayuda $help_context no cabe en el popup"
+  printf '%s\n' "$HELP_OUTPUT" | awk 'length($0) > 48 { exit 1 }' ||
+    fail "la ayuda $help_context excede el ancho interior"
+done
+printf '%s\n' "$HELP_OUTPUT" >/dev/null
+ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=editor "$HELP_SCRIPT" --render |
+  grep -q '<leader>ac  enviar contexto IA' || fail "la ayuda editor omite el transporte IA"
+ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=agent "$HELP_SCRIPT" --render |
+  grep -q 'Ctrl-a i  selector IA' || fail "la ayuda agente omite el selector IA"
+ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=terminal "$HELP_SCRIPT" --render |
+  grep -q 'Ctrl-a g  lazygit' || fail "la ayuda terminal omite lazygit"
+ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=git "$HELP_SCRIPT" --render |
+  grep -q 'ayuda de lazygit' || fail "la ayuda git omite sus acciones"
 
 POPUP_AGENT_SCRIPT="$PROJECT_ROOT/scripts/popup-agente.sh"
 [ -x "$POPUP_AGENT_SCRIPT" ] || fail "falta el popup ejecutable del selector IA"
@@ -282,6 +319,12 @@ for role_binding in 'n editor' 'a agent' 't terminal'; do
 done
 
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
+[ "$(TMUX="$TMUX_TEST_ENV" "$HELP_SCRIPT" --context "$EDITOR_PANE")" = editor ] ||
+  fail "la ayuda no detecto el panel editor"
+[ "$(TMUX="$TMUX_TEST_ENV" "$HELP_SCRIPT" --context "$AGENT_PANE")" = agent ] ||
+  fail "la ayuda no detecto el panel agente"
+[ "$(TMUX="$TMUX_TEST_ENV" "$HELP_SCRIPT" --context "$TERMINAL_PANE")" = terminal ] ||
+  fail "la ayuda no detecto el panel terminal"
 if ! TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
   "$POPUP_AGENT_SCRIPT" cliente-inexistente "$EDITOR_PANE"; then
   fail "Ctrl-a i trato como error un panel sin selector esperando"
@@ -324,6 +367,9 @@ done
 GIT_WINDOW=$(tmux_test list-windows -t "=$SESSION" -F '#{window_id} #{@entorno_window_role}' |
   awk '$2 == "git" { print $1 }')
 [ -n "$GIT_WINDOW" ] || fail "la ventana lazygit no publico @entorno_window_role=git"
+GIT_PANE=$(tmux_test list-panes -t "$GIT_WINDOW" -F '#{pane_id}')
+[ "$(TMUX="$TMUX_TEST_ENV" "$HELP_SCRIPT" --context "$GIT_PANE")" = git ] ||
+  fail "la ayuda no priorizo el rol de ventana git"
 [ "$(tmux_test list-panes -t "$GIT_WINDOW" -F '#{pane_start_command}')" = "$LAZYGIT_BIN/lazygit" ] ||
   fail "lazygit no se ejecuto directamente"
 tmux_test rename-window -t "$GIT_WINDOW" interfaz-git

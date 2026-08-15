@@ -86,7 +86,8 @@ simbólico reversible. [Arquitectura aislada](docs/entorno-aislado.md).
 
 El flujo usa `tmux -L entorno-nvim` y no carga ni altera `~/.tmux.conf`.
 `Ctrl-a P` abre el selector de proyectos en un popup; el ratón queda disponible
-como apoyo y la navegación principal sigue siendo por teclado. Más detalles en
+como apoyo y la navegación principal sigue siendo por teclado. `Ctrl-a ?` abre
+la ayuda contextual con los grupos tmux, Neovim, IA y Git. Más detalles en
 [terminal y tmux](docs/terminal-tmux-agentes.md).
 
 ## Agentes
