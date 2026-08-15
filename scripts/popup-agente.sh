@@ -47,7 +47,6 @@ restore_agent_style() {
 trap 'restore_agent_style' EXIT HUP INT TERM
 tmux select-pane -t "$agent_pane" -P 'fg=colour0,bg=colour0'
 
-popup_status=0
 tmux display-popup -E -b simple -w 30 -h 11 \
   -c "$target_client" \
   -t "$origin_pane" \
@@ -67,8 +66,11 @@ tmux display-popup -E -b simple -w 30 -h 11 \
   esac
   tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" C-u
   tmux send-keys -l -t "$ENTORNO_AGENT_TARGET_PANE" "$input"
-  tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" Enter' || popup_status=$?
+  tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" Enter' 2>/dev/null || :
 
 trap - EXIT HUP INT TERM
 restore_agent_style
-exit "$popup_status"
+# Esc, el cierre del cliente y una segunda invocacion mientras el popup sigue
+# activo pueden hacer que display-popup devuelva 1. Tras superar las
+# validaciones anteriores son cierres normales de UX, no errores de run-shell.
+exit 0

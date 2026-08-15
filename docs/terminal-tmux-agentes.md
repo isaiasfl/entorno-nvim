@@ -258,6 +258,8 @@ activos, el atajo muestra un aviso y `Ctrl-a a` vuelve a ese panel sin enviarle
 teclas accidentalmente. Mientras el popup está abierto, el contenido del panel
 agente se oculta con un estilo tmux temporal y se restaura siempre al cerrarlo.
 El borde ASCII permanece continuo y el título aparece una sola vez dentro.
+Cerrar con Esc, perder el cliente o repetir el atajo mientras el popup anterior
+termina se consideran cierres normales y no generan errores de `run-shell`.
 
 ## Destino seguro para el contexto
 

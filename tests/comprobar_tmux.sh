@@ -626,6 +626,22 @@ while :; do
 done
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
   fail "el retorno automatico no restauro el estado del selector"
+
+# Regresion del ciclo Ctrl-a i: tras seleccionar y cerrar un agente, cancelar
+# o repetir el popup no debe propagar el estado 1 a run-shell. Un cliente
+# inexistente reproduce de forma determinista el retorno 1 de display-popup sin
+# alterar el selector que acaba de restaurarse.
+for popup_attempt in 1 2; do
+  STYLE_BEFORE=$(tmux_test select-pane -g -t "$AGENT_PANE")
+  if ! TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
+    "$POPUP_AGENT_SCRIPT" "cliente-popup-cerrado-$popup_attempt" "$EDITOR_PANE"; then
+    fail "Ctrl-a i propago un error al reabrir el popup tras cerrar el agente"
+  fi
+  [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
+    fail "reabrir el popup altero el estado del selector"
+  [ "$(tmux_test select-pane -g -t "$AGENT_PANE")" = "$STYLE_BEFORE" ] ||
+    fail "reabrir el popup no restauro el estilo del panel agente"
+done
 tmux_test send-keys -l -t "$AGENT_PANE" shell
 tmux_test send-keys -t "$AGENT_PANE" Enter
 attempts=0
