@@ -52,7 +52,7 @@ restore_agent_style() {
 trap 'restore_agent_style' EXIT HUP INT TERM
 tmux select-pane -t "$agent_pane" -P 'fg=colour0,bg=colour0'
 
-tmux display-popup -E -b simple -w 30 -h 11 \
+tmux display-popup -E -b rounded -w 30 -h 11 \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_AGENT_TARGET_PANE=$agent_pane" \

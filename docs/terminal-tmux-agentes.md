@@ -188,7 +188,8 @@ renombrada; si no existe, crea una ventana en `@entorno_project_root` y ejecuta
 tmux y no crea ninguna ventana. La ventana desaparece normalmente al salir de
 lazygit y se vuelve a crear la próxima vez que se use el atajo.
 
-`Ctrl-a ?` abre una ayuda interactiva por capas dentro de un popup ASCII. El
+`Ctrl-a ?` abre una ayuda interactiva por capas dentro de un popup con borde
+redondeado de caracteres Unicode estándar, sin depender de Nerd Fonts. El
 primer nivel ordena las categorías Neovim, movimiento, tmux, IA, Git y terminal
 según el contexto actual; Enter muestra sus acciones con las teclas completas y
 Esc vuelve al primer nivel. `q`, o Esc desde la raíz, cierra sin ejecutar
@@ -262,14 +263,15 @@ No se aplica a la opción Shell ni cambia el ciclo selector → shell → agente
 
 El selector embebido sigue arrancando dentro del panel para que las sesiones
 puedan crearse sin un cliente tmux conectado. Cuando está esperando una
-elección, `Ctrl-a i` ofrece una segunda interfaz en un popup ASCII centrado.
+elección, `Ctrl-a i` ofrece una segunda interfaz en un popup centrado con el
+mismo borde redondeado que la ayuda contextual.
 La elección se entrega al selector original, que conserva en exclusiva el
 lanzamiento, la metadata y el retorno automático. Si hay un agente o una shell
 activos, el atajo muestra un aviso y `Ctrl-a a` vuelve a ese panel sin enviarle
 teclas accidentalmente ni generar un error de `run-shell`. Mientras el popup
 está abierto, el contenido del panel agente se oculta con un estilo tmux
 temporal y se restaura siempre al cerrarlo.
-El borde ASCII permanece continuo y el título aparece una sola vez dentro.
+El borde permanece continuo y el título aparece una sola vez dentro.
 Cerrar con Esc, perder el cliente o repetir el atajo mientras el popup anterior
 termina se consideran cierres normales y no generan errores de `run-shell`.
 

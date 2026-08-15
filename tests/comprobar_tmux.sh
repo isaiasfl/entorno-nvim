@@ -243,7 +243,7 @@ printf '%s\n' "$HELP_BINDING" | grep -q '#{client_name}' ||
   fail "Ctrl-a ? no conserva el cliente de origen"
 grep -q 'display-popup.*-w 58 -h 18' "$HELP_SCRIPT" ||
   fail "la ayuda no usa un popup compacto de 58x18"
-grep -q -- '-b simple' "$HELP_SCRIPT" || fail "la ayuda no usa borde ASCII"
+grep -q -- '-b rounded' "$HELP_SCRIPT" || fail "la ayuda no usa borde redondeado"
 grep -q 'command -v fzf' "$HELP_SCRIPT" || fail "la ayuda no usa fzf como interfaz principal"
 grep -q 'run_posix' "$HELP_SCRIPT" || fail "la ayuda no conserva fallback POSIX"
 grep -q "q:print(__quit__)+accept" "$HELP_SCRIPT" || fail "q no cierra la ayuda interactiva"
@@ -295,6 +295,7 @@ if printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q '#{session_id}'; then
   fail "Ctrl-a i expone session_id a una segunda expansion del shell"
 fi
 grep -q 'display-popup' "$POPUP_AGENT_SCRIPT" || fail "el selector IA no usa un popup tmux"
+grep -q -- '-b rounded' "$POPUP_AGENT_SCRIPT" || fail "el selector IA no usa borde redondeado"
 grep -q '@entorno_role=agent' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no localiza el panel por rol"
 grep -q '@entorno_selector_state' "$POPUP_AGENT_SCRIPT" ||

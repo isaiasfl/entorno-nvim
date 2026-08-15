@@ -216,7 +216,7 @@ case "$root_entry" in
 esac
 [ -x "$project_root/scripts/tmux-ayuda.sh" ] || fail "no se encuentra el helper de ayuda"
 
-tmux display-popup -E -b simple -w 58 -h 18 \
+tmux display-popup -E -b rounded -w 58 -h 18 \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_HELP_PROJECT=$(clean_label "$project")" \
