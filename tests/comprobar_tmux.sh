@@ -141,7 +141,7 @@ TERMINAL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno
 [ "$(tmux_test list-panes -s -t "=$SESSION" -F '#{@entorno_role}' |
   awk '$0 == "editor" || $0 == "agent" || $0 == "terminal" { count++ } END { print count + 0 }')" -eq 3 ] ||
   fail "el layout no tiene exactamente los tres roles esperados"
-wait_for_output "Enter elegir | Esc cerrar >" "$AGENT_PANE"
+wait_for_output "Enter elegir  Esc salir" "$AGENT_PANE"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector sin eleccion declaro un agente activo"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
@@ -249,13 +249,17 @@ grep -q '@entorno_role=agent' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no localiza el panel por rol"
 grep -q '@entorno_selector_state' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no comprueba que el selector espera entrada"
-grep -q 'exit) input=Salir' "$POPUP_AGENT_SCRIPT" ||
-  fail "el popup IA no traduce la salida al nombre visible del selector"
+grep -q 'exit) exit 0' "$POPUP_AGENT_SCRIPT" ||
+  fail "cerrar el popup IA altera el selector embebido"
 if grep -q -- '-T.*Entorno IA' "$POPUP_AGENT_SCRIPT"; then
   fail "el popup IA duplica el titulo en el borde"
 fi
 grep -q 'restore_agent_style' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no restaura el aspecto del panel agente"
+grep -q -- '-w 30 -h 11' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no usa dimensiones compactas"
+grep -q 'ENTORNO_AGENT_SELECTOR_POPUP=1' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no activa su composicion visual propia"
 grep -q '\[ -t 2 \]' "$PROJECT_ROOT/scripts/selector-agente.sh" ||
   fail "el selector IA no detecta el TTY conservado por el popup"
 if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
@@ -501,6 +505,15 @@ SELECTOR="$PROJECT_ROOT/scripts/selector-agente.sh"
 [ -x "$SELECTOR" ] || fail "falta el selector de agentes ejecutable"
 CHOOSE_ONLY=$(printf '3\n' | ENTORNO_AGENT_SELECTOR_USE_FZF=0 "$SELECTOR" --choose-only 2>/dev/null)
 [ "$CHOOSE_ONLY" = claude ] || fail "el popup no reutiliza la seleccion del menu textual"
+POPUP_MENU="$WORK_DIR/popup-menu"
+POPUP_CHOICE=$(printf 'Codex\n' | ENTORNO_AGENT_SELECTOR_USE_FZF=0 \
+  ENTORNO_AGENT_SELECTOR_POPUP=1 "$SELECTOR" --choose-only 2> "$POPUP_MENU")
+[ "$POPUP_CHOICE" = codex ] || fail "el fallback del popup no acepta nombres"
+grep -q '^Entorno IA$' "$POPUP_MENU" || fail "el titulo del popup no aparece arriba"
+grep -q '^  Codex *\[OK\]$' "$POPUP_MENU" || fail "el popup no alinea nombre y estado"
+if grep -Eq 'Salir|^[[:space:]]*[0-9]+\)' "$POPUP_MENU"; then
+  fail "el popup muestra Salir o numeros"
+fi
 FAKE_FZF_BIN="$WORK_DIR/fake-fzf-bin"
 mkdir -p "$FAKE_FZF_BIN"
 ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-fzf.sh" "$FAKE_FZF_BIN/fzf"

@@ -208,6 +208,11 @@ su derecha indican si el ejecutable está disponible. fzf recuerda las acciones
 Enter y Esc; el fallback POSIX muestra Enter y `0` para cerrar, sin depender de
 símbolos Unicode.
 
+En el popup, el catálogo se limita a Codex, OpenCode, Claude, Pi y Shell: no
+incluye números ni una fila Salir porque Esc ya cancela fzf. El fallback pide
+escribir el nombre y acepta una entrada vacía para cerrar. El selector embebido
+conserva su opción Salir y su comportamiento anterior.
+
 Elegir uno ausente muestra un aviso claro y vuelve al menú sin cerrar el panel
 ni publicar metadata de agente. Para forzar el fallback, por ejemplo en una
 sesión SSH limitada:

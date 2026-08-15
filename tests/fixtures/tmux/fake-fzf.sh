@@ -1,6 +1,13 @@
 #!/bin/sh
 set -eu
 
+for argument in "$@"; do
+  if [ "$argument" = --help ]; then
+    printf '%s\n' '  --footer=STR'
+    exit 0
+  fi
+done
+
 [ -n "${ENTORNO_TMUX_TEST_FZF_MARKER:-}" ] || exit 2
 if [ -e "$ENTORNO_TMUX_TEST_FZF_MARKER" ]; then
   printf '%s\n' repetido >> "$ENTORNO_TMUX_TEST_FZF_MARKER"

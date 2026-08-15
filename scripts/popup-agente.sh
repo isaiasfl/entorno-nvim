@@ -48,10 +48,11 @@ trap 'restore_agent_style' EXIT HUP INT TERM
 tmux select-pane -t "$agent_pane" -P 'fg=colour0,bg=colour0'
 
 popup_status=0
-tmux display-popup -E -b simple -w 48 -h 16 \
+tmux display-popup -E -b simple -w 30 -h 11 \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_AGENT_TARGET_PANE=$agent_pane" \
+  -e "ENTORNO_AGENT_SELECTOR_POPUP=1" \
   -e "ENTORNO_NVIM_ROOT=$project_root" \
   'choice=$("$ENTORNO_NVIM_ROOT/scripts/selector-agente.sh" --choose-only) || exit 0
   [ -n "$choice" ] || exit 0
@@ -61,7 +62,7 @@ tmux display-popup -E -b simple -w 48 -h 16 \
     claude) input=Claude ;;
     pi) input=Pi ;;
     shell) input=Shell ;;
-    exit) input=Salir ;;
+    exit) exit 0 ;;
     *) exit 1 ;;
   esac
   tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" C-u

@@ -107,23 +107,39 @@ available_choices() {
     fi
     printf '%-11s %s\t%s\n' "$label" "$marker" "$agent_id"
   done
-  printf '%-11s [OK]\tshell\n%-11s [OK]\texit\n' Shell Salir
+  printf '%-11s [OK]\tshell\n' Shell
+  if [ "${ENTORNO_AGENT_SELECTOR_POPUP:-0}" != 1 ]; then
+    printf '%-11s [OK]\texit\n' Salir
+  fi
 }
 
 select_with_fzf() {
-  selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 \
-    --header='Entorno IA' --pointer='>' --prompt='Enter elegir | Esc cerrar > ') || return 1
+  if fzf --help 2>/dev/null | grep -q -- '--footer='; then
+    selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 \
+      --layout=reverse --header='Entorno IA' --header-first \
+      --footer='Enter elegir  Esc salir' --footer-border=none \
+      --info=hidden --no-separator --no-scrollbar --gutter=' ' \
+      --pointer='>' --prompt='') || return 1
+  else
+    selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 \
+      --header='Entorno IA' --pointer='>' --prompt='Elegir> ') || return 1
+  fi
   printf '%s\n' "${selected#*	}"
 }
 
 select_with_text_menu() {
   printf '%s\n\n' "Entorno IA" >&2
-  available_choices | awk -F '\t' '
-    $2 == "exit" { number = 0 }
-    $2 != "exit" { number++ }
-    { printf "  %s) %s\n", number, $1 }
-  ' >&2
-  printf '\n%s\n%s\n' "Enter: elegir" "0: cerrar" >&2
+  if [ "${ENTORNO_AGENT_SELECTOR_POPUP:-0}" = 1 ]; then
+    available_choices | awk -F '\t' '{ printf "  %s\n", $1 }' >&2
+    printf '\n%s\n' "Escribe nombre  |  vacio cierra" >&2
+  else
+    available_choices | awk -F '\t' '
+      $2 == "exit" { number = 0 }
+      $2 != "exit" { number++ }
+      { printf "  %s) %s\n", number, $1 }
+    ' >&2
+    printf '\n%s\n%s\n' "Enter: elegir" "0: cerrar" >&2
+  fi
   printf '%s' "> " >&2
   IFS= read -r selected || return 1
   case "$selected" in
