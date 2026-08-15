@@ -141,7 +141,7 @@ TERMINAL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno
 [ "$(tmux_test list-panes -s -t "=$SESSION" -F '#{@entorno_role}' |
   awk '$0 == "editor" || $0 == "agent" || $0 == "terminal" { count++ } END { print count + 0 }')" -eq 3 ] ||
   fail "el layout no tiene exactamente los tres roles esperados"
-wait_for_output "Agente>" "$AGENT_PANE"
+wait_for_output "Seleccionar>" "$AGENT_PANE"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector sin eleccion declaro un agente activo"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
@@ -516,7 +516,7 @@ AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 [ "$(cut -f 2 "$FZF_INPUT" | paste -sd ' ' -)" = "codex opencode claude pi shell exit" ] ||
   fail "fzf no mostro las seis opciones en orden estable"
 awk -F '\t' '
-  $1 !~ /^\[[+-]\] (Codex|OpenCode|Claude|Pi|Shell|Salir)$/ { exit 1 }
+  $1 !~ /^(Codex|OpenCode|Claude|Pi|Shell|Salir) +\[[+-]\]$/ { exit 1 }
 ' "$FZF_INPUT" || fail "fzf no mostro etiquetas ASCII de disponibilidad"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector no limpio @entorno_agent al salir"
@@ -533,18 +533,20 @@ quoted_text_bin=$(printf '%s' "$TEXT_BIN" | sed "s/'/'\\''/g")
 tmux_test send-keys -l -t "$AGENT_PANE" \
   "PATH='$quoted_text_bin':/usr/bin:/bin SHELL=/bin/sh ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_AGENT_SELECTOR_USE_FZF=0 ENTORNO_AGENT_CLAUDE_PROCESS=tee '$quoted_selector'"
 tmux_test send-keys -t "$AGENT_PANE" Enter
-wait_for_output "Selecciona agente:" "$AGENT_PANE"
+wait_for_output "Entorno IA" "$AGENT_PANE"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
   fail "el fallback no publico su estado de espera"
-wait_for_output "1) [-] Codex" "$AGENT_PANE"
-wait_for_output "3) [+] Claude" "$AGENT_PANE"
-MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+wait_for_output "1) Codex       [-]" "$AGENT_PANE"
+wait_for_output "3) Claude      [+]" "$AGENT_PANE"
+wait_for_output "Enter: seleccionar" "$AGENT_PANE"
+wait_for_output "0: salir" "$AGENT_PANE"
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
 tmux_test send-keys -l -t "$AGENT_PANE" opencode
 tmux_test send-keys -t "$AGENT_PANE" Enter
 wait_for_output "Agente no disponible: OpenCode (ejecutable: opencode)" "$AGENT_PANE"
 attempts=0
 while :; do
-  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
   [ "$menus_now" -gt "$MENUS_BEFORE" ] && break
   attempts=$((attempts + 1))
   [ "$attempts" -lt 20 ] || fail "el agente ausente no devolvio el control al selector"
@@ -578,7 +580,7 @@ attempts=0
 while :; do
   AGENT_CAPTURE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE")
   if ! printf '%s\n' "$AGENT_CAPTURE" |
-    grep -Eq 'Selecciona agente:|ENTORNO_AGENT_SELECTOR_USE_FZF=0|scripts/agente\.sh'; then
+    grep -Eq 'Entorno IA|ENTORNO_AGENT_SELECTOR_USE_FZF=0|scripts/agente\.sh'; then
     break
   fi
   attempts=$((attempts + 1))
@@ -588,11 +590,11 @@ while :; do
   fi
   sleep 1
 done
-MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
 tmux_test send-keys -t "$AGENT_PANE" C-d
 attempts=0
 while :; do
-  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
   state_now=$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)
   [ "$menus_now" -gt "$MENUS_BEFORE" ] && [ -z "$state_now" ] && break
   attempts=$((attempts + 1))
@@ -612,12 +614,12 @@ while [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/nu
   fi
   sleep 1
 done
-MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
 tmux_test send-keys -l -t "$AGENT_PANE" exit
 tmux_test send-keys -t "$AGENT_PANE" Enter
 attempts=0
 while :; do
-  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
   [ "$menus_now" -gt "$MENUS_BEFORE" ] && break
   attempts=$((attempts + 1))
   [ "$attempts" -lt 20 ] || fail "el fallback no volvio al selector tras salir de la shell"

@@ -105,23 +105,25 @@ available_choices() {
     else
       marker='[-]'
     fi
-    printf '%s %s\t%s\n' "$marker" "$label" "$agent_id"
+    printf '%-11s %s\t%s\n' "$label" "$marker" "$agent_id"
   done
-  printf '[+] Shell\tshell\n[+] Salir\texit\n'
+  printf '%-11s [+]\tshell\n%-11s [+]\texit\n' Shell Salir
 }
 
 select_with_fzf() {
-  selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 --prompt='Agente> ') || return 1
+  selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 \
+    --header='Enter: seleccionar | Esc: salir' --prompt='Seleccionar> ') || return 1
   printf '%s\n' "${selected#*	}"
 }
 
 select_with_text_menu() {
-  printf '%s\n' "Selecciona agente:" >&2
+  printf '%s\n\n' "Entorno IA" >&2
   available_choices | awk -F '\t' '
     $2 == "exit" { number = 0 }
     $2 != "exit" { number++ }
     { printf "  %s) %s\n", number, $1 }
   ' >&2
+  printf '\n%s\n%s\n' "Enter: seleccionar" "0: salir" >&2
   printf '%s' "> " >&2
   IFS= read -r selected || return 1
   case "$selected" in

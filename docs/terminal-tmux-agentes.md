@@ -203,7 +203,11 @@ no instala, autentica ni configura clientes.
 
 Las opciones estables son Codex, OpenCode, Claude, Pi, Shell y Salir. Tanto fzf
 como el menú textual muestran siempre el catálogo completo y conservan su
-orden. Las marcas ASCII `[+]` y `[-]` indican si el ejecutable está disponible.
+orden. El nombre aparece primero y las marcas ASCII `[+]` y `[-]` alineadas a
+su derecha indican si el ejecutable está disponible. fzf recuerda las acciones
+Enter y Esc; el fallback POSIX muestra Enter y `0` para salir, sin depender de
+símbolos Unicode.
+
 Elegir uno ausente muestra un aviso claro y vuelve al menú sin cerrar el panel
 ni publicar metadata de agente. Para forzar el fallback, por ejemplo en una
 sesión SSH limitada:
