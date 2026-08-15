@@ -205,10 +205,10 @@ if tmux_cmd list-sessions >/dev/null 2>&1; then
 fi
 
 if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
-  tmux_new_session -d -s "$session" -n work -c "$project"
+  tmux_new_session -d -s "$session" -n code -c "$project"
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
-  terminal_pane=$(tmux_cmd split-window -v -p 25 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
-  agent_pane=$(tmux_cmd split-window -h -p 35 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+  terminal_pane=$(tmux_cmd split-window -v -p 15 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+  agent_pane=$(tmux_cmd split-window -h -p 30 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
   tmux_cmd set-option -p -t "$editor_pane" @entorno_role editor
   tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
   tmux_cmd set-option -p -t "$terminal_pane" @entorno_role terminal

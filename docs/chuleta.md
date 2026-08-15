@@ -11,7 +11,8 @@
 | Redimensionar | `Ctrl-a H/J/K/L` |
 | Dividir | `Ctrl-a \|` / `Ctrl-a -` |
 | Crear ventana | `Ctrl-a c` |
-| Ventana siguiente/anterior | `Ctrl-a n` / `Ctrl-a p` |
+| Ir al editor | `Ctrl-a n` |
+| Ventana anterior | `Ctrl-a p` |
 | Maximizar/restaurar panel | `Ctrl-a z` |
 | Entrar en copy-mode | `Ctrl-a [` |
 | Seleccionar/copiar en copy-mode | `v` / `y` |

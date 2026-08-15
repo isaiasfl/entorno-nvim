@@ -2,12 +2,13 @@
 
 ## Arquitectura aislada
 
-Cada proyecto usa una sesión tmux independiente con este layout inicial:
+Cada proyecto usa una sesión tmux independiente con una ventana inicial `code`
+y este layout:
 
 ```text
-Neovim | agente
-----------------
-     terminal
+       Neovim (70%) | agente (30%)
+----------------------------------
+        terminal (15% de altura)
 ```
 
 `entorno-dev` usa de forma predeterminada el wrapper aislado

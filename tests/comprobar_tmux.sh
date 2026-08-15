@@ -114,6 +114,8 @@ SESSION=$(ENTORNO_TMUX_SOCKET="$SOCKET" \
 
 tmux_test has-session -t "=$SESSION"
 [ "$(tmux_test list-panes -t "=$SESSION" | wc -l)" -eq 3 ] || fail "el layout inicial no tiene tres paneles"
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{window_name}')" = code ] ||
+  fail "la ventana inicial no se llama code"
 session_prefix=${SESSION%-*}
 [ "$session_prefix" = "proyecto_principal" ] || fail "nombre de sesion inesperado o con sufijo espurio: $SESSION"
 
@@ -200,6 +202,15 @@ done
   fail "el formato tmux no resolvio ENTORNO_NVIM_ROOT desde la sesion"
 
 WINDOW_WIDTH=$(tmux_test display-message -p -t "=$SESSION:1" '#{window_width}')
+WINDOW_HEIGHT=$(tmux_test display-message -p -t "=$SESSION:1" '#{window_height}')
+TERMINAL_HEIGHT=$(tmux_test display-message -p -t "$TERMINAL_PANE" '#{pane_height}')
+AGENT_WIDTH=$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_width}')
+TERMINAL_PERCENT=$((TERMINAL_HEIGHT * 100 / WINDOW_HEIGHT))
+AGENT_PERCENT=$((AGENT_WIDTH * 100 / WINDOW_WIDTH))
+[ "$TERMINAL_PERCENT" -ge 12 ] && [ "$TERMINAL_PERCENT" -le 18 ] ||
+  fail "el panel terminal ocupa ${TERMINAL_PERCENT}% de la altura; se esperaba aproximadamente 12-18%"
+[ "$AGENT_PERCENT" -ge 25 ] && [ "$AGENT_PERCENT" -le 35 ] ||
+  fail "el panel agent ocupa ${AGENT_PERCENT}% del ancho; se esperaba aproximadamente 25-35%"
 BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_width}' |
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
