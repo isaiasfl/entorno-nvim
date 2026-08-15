@@ -1,19 +1,23 @@
 #!/bin/sh
 set -eu
 
-if [ "$#" -ne 3 ]; then
-  printf '%s\n' "Uso: $0 ROL SESION PANEL_ORIGEN" >&2
+if [ "$#" -ne 2 ]; then
+  printf '%s\n' "Uso: $0 ROL PANEL_ORIGEN" >&2
   exit 2
 fi
 
 role=$1
-session=$2
-origin_pane=$3
+origin_pane=$2
 
 show_error() {
   message=$1
   tmux display-message -t "$origin_pane" "$message" 2>/dev/null || :
   printf '%s\n' "$message" >&2
+}
+
+session=$(tmux display-message -p -t "$origin_pane" '#{session_id}') || {
+  show_error "Error: no se pudo identificar la sesion del panel de origen"
+  exit 1
 }
 
 panes=$(tmux list-panes -s -t "$session" -F '#{pane_id} #{@entorno_role}') || {

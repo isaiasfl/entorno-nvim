@@ -221,9 +221,11 @@ for role_binding in 'n editor' 'a agent' 't terminal'; do
     fail "Ctrl-a $binding no usa el selector por rol"
   printf '%s\n' "$binding_definition" | grep -q " $role " ||
     fail "Ctrl-a $binding no selecciona el rol $role"
+  if printf '%s\n' "$binding_definition" | grep -q '\$0'; then
+    fail "Ctrl-a $binding expone session_id a una segunda expansion del shell"
+  fi
 done
 
-SESSION_ID=$(tmux_test display-message -p -t "=$SESSION" '#{session_id}')
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
 active_pane() {
   tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{pane_active}' |
@@ -233,7 +235,7 @@ active_pane() {
 }
 select_role() {
   TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
-    "$ROLE_SCRIPT" "$1" "$SESSION_ID" "$EDITOR_PANE"
+    "$ROLE_SCRIPT" "$1" "$EDITOR_PANE"
 }
 
 select_role editor
