@@ -359,16 +359,22 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv prefix)" = "C-a" ] || fail "el prefijo tmux debe ser Ctrl-a"
 [ "$(tmux_test show-options -gv mouse)" = "on" ] || fail "mouse debe estar activado"
 [ "$(tmux_test show-options -gv status-interval)" = 15 ] || fail "status-interval no es razonable"
-[ "$(tmux_test show-options -gv status-style)" = "fg=default,bg=default" ] || fail "status-style no usa la base portable"
-[ "$(tmux_test show-options -gv status-left)" = ' #[bold]#{?#{@entorno_project_name},#{@entorno_project_name},#S}#[default] |' ] ||
+[ "$(tmux_test show-options -gv status-style)" = "fg=colour7,bg=colour0" ] || fail "status-style no usa colores ANSI"
+[ "$(tmux_test show-options -gv status-left-style)" = "fg=colour6,bg=colour0,bold" ] ||
+  fail "status-left no destaca el proyecto"
+[ "$(tmux_test show-options -gv status-right-style)" = "fg=colour7,bg=colour0" ] ||
+  fail "status-right no conserva contraste ANSI"
+[ "$(tmux_test show-options -gv status-left)" = ' #{?#{@entorno_project_name},#{@entorno_project_name},#S} |' ] ||
   fail "status-left no muestra el nombre legible del proyecto"
-[ "$(tmux_test show-window-options -gv window-status-format)" = " #W |" ] ||
-  fail "las ventanas inactivas no usan el formato limpio"
-[ "$(tmux_test show-window-options -gv window-status-current-format)" = " #W |" ] ||
-  fail "la ventana activa no usa el formato limpio"
-[ "$(tmux_test show-window-options -gv window-status-current-style)" = bold ] ||
+[ "$(tmux_test show-window-options -gv window-status-format)" = " #I:#W |" ] ||
+  fail "las ventanas inactivas no muestran indice y nombre"
+[ "$(tmux_test show-window-options -gv window-status-current-format)" = " #I:#W |" ] ||
+  fail "la ventana activa no muestra indice y nombre"
+[ "$(tmux_test show-window-options -gv window-status-style)" = "fg=colour8,bg=colour0" ] ||
+  fail "las ventanas inactivas no usan el estilo ANSI"
+[ "$(tmux_test show-window-options -gv window-status-current-style)" = "fg=colour0,bg=colour6,bold" ] ||
   fail "la ventana activa no esta diferenciada"
-[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " #[bold]proyecto principal#[default] |" ] ||
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " proyecto principal |" ] ||
   fail "status-left no oculta el checksum de la sesion"
 STATUS_RIGHT=$(tmux_test show-options -gv status-right)
 printf '%s\n' "$STATUS_RIGHT" | grep -q 'tmux-status\.sh' || fail "status-right no usa el helper"

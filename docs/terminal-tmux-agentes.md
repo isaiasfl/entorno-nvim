@@ -49,14 +49,17 @@ en archivos versionados. Para evitar recorridos costosos, los archivos nuevos
 sin seguimiento no se incluyen en este indicador.
 
 ```text
-entorno-nvim | code | git:main * | AI:Codex | 10:35
+entorno-nvim | 1:code | git:main * | AI:Codex | 10:35
 ```
 
 La raíz canónica se conserva en la opción de sesión
 `@entorno_project_root`, por lo que Git no depende del directorio del panel
 activo. Si no hay agente muestra `AI:none`; los valores conocidos son Codex,
 OpenCode, Pi y Shell. La salida usa ASCII y funciona sin Nerd Font, TPM ni
-plugins tmux.
+plugins tmux. La paleta se limita a los 16 colores ANSI: el proyecto aparece en
+cian, las ventanas inactivas en gris y la ventana activa usa fondo cian, texto
+negro y negrita. Los índices permiten saltar directamente a futuras ventanas
+como `2:git`, `3:server` o `4:logs`, sin crearlas automáticamente.
 
 tmux es la única dependencia específica de esta fase. Estos comandos son solo
 referencias para una instalación aprobada expresamente en cada sistema; esta

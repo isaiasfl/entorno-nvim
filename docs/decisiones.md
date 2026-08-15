@@ -246,8 +246,9 @@ versionados de Git y localiza el agente por `@entorno_role`, no por la posición
 del panel. El intervalo de 15 segundos y `--untracked-files=no` limitan el coste
 en repositorios grandes a cambio de no señalar archivos nuevos sin seguimiento.
 La presentación usa el nombre base del proyecto sin alterar el identificador
-real de la sesión, omite los índices de ventana y diferencia la ventana activa
-con negrita. Los separadores y el estado `AI:none` permanecen en ASCII.
+real de la sesión y diferencia la ventana activa con una paleta limitada a los
+16 colores ANSI. Los índices de ventana facilitan futuros espacios `git`,
+`server` o `logs`; los separadores y el estado `AI:none` permanecen en ASCII.
 
 ## Node 24 LTS
 
