@@ -72,6 +72,29 @@ tmux_new_session() {
   command tmux -L "$TMUX_SOCKET" -f "$TMUX_CONFIG" new-session "$@"
 }
 
+initial_client_size() {
+  initial_size=
+  if [ -n "${ENTORNO_SOURCE_CLIENT:-}" ]; then
+    initial_size=$(tmux_cmd display-message -p -c "$ENTORNO_SOURCE_CLIENT" '#{client_height} #{client_width}' 2>/dev/null) ||
+      initial_size=
+  elif [ -t 0 ]; then
+    initial_size=$(stty size 2>/dev/null) || initial_size=
+  elif [ -n "${LINES:-}" ] && [ -n "${COLUMNS:-}" ]; then
+    initial_size=$LINES' '$COLUMNS
+  fi
+
+  case "$initial_size" in
+    *' '[0-9]*) ;;
+    *) return 1 ;;
+  esac
+  initial_lines=${initial_size%% *}
+  initial_columns=${initial_size#* }
+  case "$initial_lines:$initial_columns" in
+    *[!0-9:]* | 0:* | *:0) return 1 ;;
+  esac
+  printf '%s %s\n' "$initial_columns" "$initial_lines"
+}
+
 fail() {
   printf '%s\n' "Error: $*" >&2
   exit 1
@@ -205,7 +228,14 @@ if tmux_cmd list-sessions >/dev/null 2>&1; then
 fi
 
 if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
-  tmux_new_session -d -s "$session" -n code -c "$project"
+  client_size=$(initial_client_size) || client_size=
+  if [ -n "$client_size" ]; then
+    client_width=${client_size%% *}
+    client_height=${client_size#* }
+    tmux_new_session -d -x "$client_width" -y "$client_height" -s "$session" -n code -c "$project"
+  else
+    tmux_new_session -d -s "$session" -n code -c "$project"
+  fi
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
   terminal_pane=$(tmux_cmd split-window -v -p 15 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
   agent_pane=$(tmux_cmd split-window -h -p 30 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')

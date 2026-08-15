@@ -30,6 +30,9 @@ Para inspeccionar o recuperar el servidor predeterminado se usan, por ejemplo,
 `tmux -L entorno-nvim list-sessions` y `tmux -L entorno-nvim attach`.
 `proyecto.sh` solo crea el layout cuando la sesión no existe: al reconectar
 conserva paneles, procesos, tamaños y ventanas.
+Al crear una sesión desconectada usa las dimensiones del terminal que la lanza;
+desde el selector emergente toma las del cliente tmux de origen. Así los
+porcentajes iniciales no se deforman al conectar una terminal grande.
 
 La configuración versionada está en `tmux/tmux.conf`. La suite tmux se validó
 con tmux 3.5a en Debian 13 y 3.6b en macOS Apple Silicon. No usa TPM, plugins,

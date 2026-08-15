@@ -32,6 +32,7 @@ exec tmux display-popup -E -b simple -T " Proyectos " -w 85% -h 75% \
   -c "$target_client" \
   -t "$target_pane" \
   -d "$pane_directory" \
+  -e "ENTORNO_SOURCE_CLIENT=$target_client" \
   -e "ENTORNO_SOURCE_SESSION=$target_session" \
   -e "ENTORNO_NVIM_ROOT=$project_root" \
   'exec "$ENTORNO_NVIM_ROOT/scripts/proyecto.sh"'
