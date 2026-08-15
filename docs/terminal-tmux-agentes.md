@@ -39,6 +39,25 @@ con tmux 3.5a en Debian 13 y 3.6b en macOS Apple Silicon. No usa TPM, plugins,
 `tmux-resurrect` ni `vim-tmux-navigator`. CachyOS sigue pendiente de una
 ejecución real y la validación completa de Neovim en macOS es independiente.
 
+## Barra de estado
+
+La barra ASCII muestra la sesión y las ventanas mediante formatos nativos de
+tmux. A la derecha, `scripts/tmux-status.sh` consulta cada 15 segundos la rama
+Git y el agente del panel marcado con `@entorno_role=agent`; la hora la formatea
+tmux sin lanzar otro proceso. Un asterisco tras la rama indica cambios staged o
+en archivos versionados. Para evitar recorridos costosos, los archivos nuevos
+sin seguimiento no se incluyen en este indicador.
+
+```text
+entorno-nvim | 1:code | git:main * | AI:Codex | 10:35
+```
+
+La raíz canónica se conserva en la opción de sesión
+`@entorno_project_root`, por lo que Git no depende del directorio del panel
+activo. Si no hay agente muestra `AI:-`; los valores conocidos son Codex,
+OpenCode, Pi y Shell. La salida usa ASCII y funciona sin Nerd Font, TPM ni
+plugins tmux.
+
 tmux es la única dependencia específica de esta fase. Estos comandos son solo
 referencias para una instalación aprobada expresamente en cada sistema; esta
 revisión no instaló paquetes:

@@ -95,6 +95,7 @@ REPOSITORY="$WORK_DIR/proyecto principal"
 WORKTREE="$WORK_DIR/proyecto-worktree"
 FALLBACK_REPOSITORY="$FALLBACK_HOME/Proyectos/proyecto fallback"
 mkdir -p "$REPOSITORY" "$FALLBACK_REPOSITORY" "$CONTEXT_DIR"
+REPOSITORY=$(CDPATH= cd "$REPOSITORY" && pwd -P)
 chmod 700 "$CONTEXT_DIR"
 git -C "$REPOSITORY" init -q
 git -C "$REPOSITORY" -c user.name=Prueba -c user.email=prueba@example.invalid \
@@ -118,6 +119,8 @@ tmux_test has-session -t "=$SESSION"
 [ "$(tmux_test list-panes -t "=$SESSION" | wc -l)" -eq 3 ] || fail "el layout inicial no tiene tres paneles"
 [ "$(tmux_test display-message -p -t "=$SESSION:1" '#{window_name}')" = code ] ||
   fail "la ventana inicial no se llama code"
+[ "$(tmux_test show-option -v -t "$SESSION" @entorno_project_root)" = "$REPOSITORY" ] ||
+  fail "la sesion no conserva la raiz del proyecto con espacios"
 session_prefix=${SESSION%-*}
 [ "$session_prefix" = "proyecto_principal" ] || fail "nombre de sesion inesperado o con sufijo espurio: $SESSION"
 
@@ -353,12 +356,34 @@ tmux_test has-session -t "=$FALLBACK_SELECTED"
 tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv prefix)" = "C-a" ] || fail "el prefijo tmux debe ser Ctrl-a"
 [ "$(tmux_test show-options -gv mouse)" = "on" ] || fail "mouse debe estar activado"
-[ "$(tmux_test show-options -gv status-left)" = " #[bold]#S #[default]" ] || fail "status-left no muestra la sesion"
-[ "$(tmux_test show-options -gv status-right)" = " #{b:pane_current_path} " ] || fail "status-right no muestra el proyecto"
+[ "$(tmux_test show-options -gv status-interval)" = 15 ] || fail "status-interval no es razonable"
+[ "$(tmux_test show-options -gv status-style)" = "fg=default,bg=default" ] || fail "status-style no usa la base portable"
+[ "$(tmux_test show-options -gv status-left)" = " #[bold]#S#[default] |" ] || fail "status-left no muestra la sesion"
+STATUS_RIGHT=$(tmux_test show-options -gv status-right)
+printf '%s\n' "$STATUS_RIGHT" | grep -q 'tmux-status\.sh' || fail "status-right no usa el helper"
+printf '%s\n' "$STATUS_RIGHT" | grep -q '%H:%M' || fail "status-right no muestra la hora"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv mode-keys)" = "vi" ] || fail "copy mode debe usar teclas Vi"
 [ "$(tmux_test show-options -gv focus-events)" = "on" ] || fail "focus-events debe estar activo"
+
+STATUS_SCRIPT="$PROJECT_ROOT/scripts/tmux-status.sh"
+[ -x "$STATUS_SCRIPT" ] || fail "falta el helper ejecutable de la barra tmux"
+STATUS_TMUX=$(tmux_test display-message -p -t "$EDITOR_PANE" '#{socket_path},#{pid},0')
+status_output() {
+  TMUX="$STATUS_TMUX" TMUX_PANE="$EDITOR_PANE" "$STATUS_SCRIPT" "$SESSION"
+}
+EXPECTED_BRANCH=$(git -C "$REPOSITORY" symbolic-ref --quiet --short HEAD)
+[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:-" ] ||
+  fail "la barra no muestra Git limpio y agente ausente"
+printf '%s\n' modificado > "$REPOSITORY/estado-barra.txt"
+git -C "$REPOSITORY" add estado-barra.txt
+[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:-" ] ||
+  fail "la barra no muestra el repositorio modificado"
+tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent codex
+[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Codex" ] ||
+  fail "la barra no muestra el agente Codex"
+tmux_test set-option -p -u -t "$AGENT_PANE" @entorno_agent
 
 # El selector usa fzf cuando existe y conserva el rol del panel.
 SELECTOR="$PROJECT_ROOT/scripts/selector-agente.sh"

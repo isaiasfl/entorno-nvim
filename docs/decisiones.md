@@ -239,6 +239,13 @@ sesión, las ventanas y el nombre corto del directorio activo. No se incorporan
 TPM, SessionX, Resurrect, Continuum ni integración automática de portapapeles en
 esta fase.
 
+Una fase posterior amplía esa base con una barra ASCII propia, todavía sin TPM
+ni plugins. `proyecto.sh` registra la raíz canónica en
+`@entorno_project_root`; un helper POSIX obtiene desde ella la rama y los cambios
+versionados de Git y localiza el agente por `@entorno_role`, no por la posición
+del panel. El intervalo de 15 segundos y `--untracked-files=no` limitan el coste
+en repositorios grandes a cambio de no señalar archivos nuevos sin seguimiento.
+
 ## Node 24 LTS
 
 La instalación vigente usa Node `>=24 <25`, en lugar de conservar el límite
