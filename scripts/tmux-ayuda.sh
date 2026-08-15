@@ -33,86 +33,171 @@ detect_context() {
   esac
 }
 
-render_help() {
-  project=$(clean_label "${ENTORNO_HELP_PROJECT:-sin proyecto}")
-  context=${ENTORNO_HELP_CONTEXT:-general}
-
-  printf '%s\n' \
-    'ENTORNO-NVIM' \
-    "Proyecto: $project" \
-    "Contexto: $context" \
-    '' \
-    'TMUX' \
-    '  a agente   i selector IA   n editor' \
-    '  t terminal g lazygit       s sesiones' \
-    ''
-
-  case "$context" in
-    editor)
-      printf '%s\n' \
-        'NEOVIM' \
-        '  <leader>ff  buscar archivos' \
-        '  <leader>fg  buscar texto' \
-        '  <leader>gg  abrir lazygit' \
-        '  <leader>ac  enviar contexto IA'
-      ;;
-    agent*)
-      printf '%s\n' \
-        'IA' \
-        '  Ctrl-a i  selector IA' \
-        '  Ctrl-a n  volver al editor' \
-        '  Ctrl-a a  volver al agente activo'
-      ;;
-    terminal)
-      printf '%s\n' \
-        'TERMINAL' \
-        '  Ctrl-a n  editor     Ctrl-a a  agente' \
-        '  Ctrl-a g  lazygit    Ctrl-a i  selector IA'
-      ;;
-    git)
-      printf '%s\n' \
-        'GIT' \
-        '  q          cerrar lazygit' \
-        '  ?          ayuda de lazygit' \
-        '  Ctrl-a n   editor    Ctrl-a t  terminal'
-      ;;
-    *)
-      printf '%s\n' \
-        'GENERAL' \
-        '  Ctrl-a n  editor     Ctrl-a a  agente' \
-        '  Ctrl-a t  terminal   Ctrl-a g  lazygit'
-      ;;
+category_rows() {
+  case "${ENTORNO_HELP_CONTEXT:-general}" in
+    editor) first=NEOVIM ;;
+    agent*) first=IA ;;
+    terminal) first=TERMINAL ;;
+    git) first=GIT ;;
+    *) first=TMUX ;;
   esac
-
-  printf '\n%s\n' 'Esc/q cerrar'
+  for category in "$first" NEOVIM MOVIMIENTO TMUX IA GIT TERMINAL; do
+    case " ${seen:-} " in *" $category "*) continue ;; esac
+    seen="${seen:-} $category"
+    case "$category" in
+      NEOVIM) description='Edicion, busqueda y temas' ;;
+      MOVIMIENTO) description='Paneles, splits y tamanos' ;;
+      TMUX) description='Ventanas y sesiones' ;;
+      IA) description='Agentes y contexto' ;;
+      GIT) description='Lazygit' ;;
+      TERMINAL) description='Acceso al terminal' ;;
+    esac
+    printf '%-12s %s\t%s\n' "$category" "$description" "$category"
+  done
 }
 
-wait_to_close() {
-  [ -t 0 ] && [ -t 1 ] || return 0
-  saved_stty=$(stty -g 2>/dev/null || true)
-  [ -n "$saved_stty" ] || return 0
-  trap 'stty "$saved_stty" 2>/dev/null || :; exit 0' HUP INT TERM
-  stty -echo -icanon min 1 time 0
+action_rows() {
+  case "$1" in
+    TMUX)
+      printf '%s\n' \
+        'CTRL-A a     Ir al panel agente' \
+        'CTRL-A i     Abrir selector IA' \
+        'CTRL-A n     Ir a Neovim' \
+        'CTRL-A t     Ir al terminal' \
+        'CTRL-A g     Abrir lazygit' \
+        'CTRL-A s     Gestionar sesiones' \
+        'CTRL-A ?     Abrir esta ayuda'
+      ;;
+    NEOVIM)
+      printf '%s\n' \
+        'SPACE ff     Buscar archivos' \
+        'SPACE fg     Buscar texto' \
+        'SPACE gg     Abrir lazygit' \
+        'SPACE ac     Enviar contexto a IA' \
+        'SPACE ut     Elegir tema visual' \
+        '             Catppuccin / Tokyo Night / Kanagawa'
+      ;;
+    IA)
+      printf '%s\n' \
+        'CTRL-A a     Volver al agente activo' \
+        'CTRL-A i     Abrir selector IA' \
+        'CTRL-A n     Volver a Neovim' \
+        'SPACE ac     Enviar contexto desde Neovim'
+      ;;
+    GIT)
+      printf '%s\n' \
+        'CTRL-A g     Abrir o volver a lazygit' \
+        'SPACE gg     Abrir lazygit desde Neovim' \
+        'q            Cerrar lazygit' \
+        '?            Ayuda propia de lazygit'
+      ;;
+    TERMINAL)
+      printf '%s\n' \
+        'CTRL-A t     Ir al terminal' \
+        'CTRL-A n     Ir a Neovim' \
+        'CTRL-A a     Ir al agente' \
+        'CTRL-A g     Abrir lazygit' \
+        'CTRL-A |     Dividir horizontalmente' \
+        'CTRL-A -     Dividir verticalmente'
+      ;;
+    MOVIMIENTO)
+      printf '%s\n' \
+        'CTRL-A h/j/k/l  Navegar paneles tmux' \
+        'CTRL-A H/J/K/L  Redimensionar paneles' \
+        'CTRL-h/j/k/l    Navegar splits de Neovim' \
+        'CTRL-A z        Maximizar o restaurar panel'
+      ;;
+    *) return 1 ;;
+  esac
+}
+
+header() {
+  printf 'ENTORNO-NVIM\nProyecto: %s\nContexto: %s' \
+    "$(clean_label "${ENTORNO_HELP_PROJECT:-sin proyecto}")" \
+    "${ENTORNO_HELP_CONTEXT:-general}"
+}
+
+fzf_select() {
+  prompt=$1
+  help_text=$2
+  level=${3:-root}
+  bindings='q:print(__quit__)+accept'
+  [ "$level" = actions ] && bindings='q:print(__quit__)+accept,enter:ignore'
+  if fzf --help 2>/dev/null | grep -q -- '--footer='; then
+    fzf --no-sort --layout=reverse --delimiter='\t' --with-nth=1 \
+      --header="$(header)" --header-first --footer="$help_text" \
+      --footer-border=none --info=hidden --no-separator --no-scrollbar \
+      --gutter=' ' --pointer='>' --prompt="$prompt" \
+      --bind="$bindings"
+  else
+    fallback_header=$(printf '%s\n\n%s' "$(header)" "$help_text")
+    fzf --no-sort --layout=reverse --delimiter='\t' --with-nth=1 \
+      --header="$fallback_header" --info=hidden \
+      --pointer='>' --prompt="$prompt" --bind="$bindings"
+  fi
+}
+
+run_fzf() {
+  while :; do
+    selected=$(category_rows | fzf_select 'Categoria> ' 'Enter abrir   Esc/q cerrar') || return 0
+    [ "$selected" = __quit__ ] && return 0
+    category=${selected#*	}
+    selected=$(action_rows "$category" | sed 's/$/\tinfo/' |
+      fzf_select "$category> " 'Esc volver   q cerrar' actions) || continue
+    [ "$selected" = __quit__ ] && return 0
+  done
+}
+
+run_posix() {
   escape=$(printf '\033')
   while :; do
-    key=$(dd bs=1 count=1 2>/dev/null || true)
-    case "$key" in
-      q | "$escape") break ;;
+    clear 2>/dev/null || printf '\033[2J\033[H'
+    header
+    printf '\n\nCATEGORIAS\n\n'
+    category_rows | awk -F '\t' '{ printf "  %s\n", $1 }'
+    printf '\n[n] Neovim [m] Movimiento [t] tmux [i] IA [g] Git [e] Terminal\n'
+    printf 'Pulsa categoria; Esc/q cierra: '
+    choice=$(read_key) || return 0
+    case "$choice" in
+      n | N) category=NEOVIM ;; m | M) category=MOVIMIENTO ;;
+      t | T) category=TMUX ;; i | I) category=IA ;;
+      g | G) category=GIT ;; e | E) category=TERMINAL ;;
+      q | Q | "$escape") return 0 ;; *) continue ;;
     esac
+    clear 2>/dev/null || printf '\033[2J\033[H'
+    printf 'ENTORNO-NVIM > %s\nProyecto: %s\n\n' "$category" \
+      "$(clean_label "${ENTORNO_HELP_PROJECT:-sin proyecto}")"
+    action_rows "$category"
+    printf '\nEnter/Esc volver; q cerrar'
+    choice=$(read_key) || return 0
+    case "$choice" in q | Q) return 0 ;; esac
   done
-  stty "$saved_stty"
-  trap - HUP INT TERM
 }
 
-if [ "$#" -eq 1 ] && [ "$1" = --render ]; then
-  render_help
-  wait_to_close
-  exit 0
-fi
-if [ "$#" -eq 2 ] && [ "$1" = --context ]; then
-  detect_context "$2"
-  exit $?
-fi
+read_key() {
+  saved_stty=$(stty -g 2>/dev/null) || return 1
+  trap 'stty "$saved_stty" 2>/dev/null || :; exit 0' HUP INT TERM
+  stty -echo -icanon min 1 time 0
+  key=$(dd bs=1 count=1 2>/dev/null) || key=
+  stty "$saved_stty"
+  trap - HUP INT TERM
+  printf '%s' "$key"
+}
+
+run_interface() {
+  if command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ -t 2 ]; then
+    run_fzf
+  else
+    run_posix
+  fi
+}
+
+case "${1:-}" in
+  --categories) category_rows; exit 0 ;;
+  --actions) [ "$#" -eq 2 ] || exit 2; action_rows "$2"; exit $? ;;
+  --interface) [ "$#" -eq 1 ] || exit 2; run_interface; exit 0 ;;
+  --context) [ "$#" -eq 2 ] || exit 2; detect_context "$2"; exit $? ;;
+esac
 
 [ "$#" -eq 2 ] || fail "uso interno: tmux-ayuda.sh cliente pane"
 target_client=$1
@@ -131,11 +216,11 @@ case "$root_entry" in
 esac
 [ -x "$project_root/scripts/tmux-ayuda.sh" ] || fail "no se encuentra el helper de ayuda"
 
-tmux display-popup -E -b simple -w 50 -h 18 \
+tmux display-popup -E -b simple -w 58 -h 18 \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_HELP_PROJECT=$(clean_label "$project")" \
   -e "ENTORNO_HELP_CONTEXT=$context" \
   -e "ENTORNO_NVIM_ROOT=$project_root" \
-  'exec "$ENTORNO_NVIM_ROOT/scripts/tmux-ayuda.sh" --render' 2>/dev/null || :
+  'exec "$ENTORNO_NVIM_ROOT/scripts/tmux-ayuda.sh" --interface' 2>/dev/null || :
 exit 0

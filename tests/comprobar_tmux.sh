@@ -241,35 +241,48 @@ printf '%s\n' "$HELP_BINDING" | grep -q 'tmux-ayuda\.sh' ||
   fail "Ctrl-a ? no abre la ayuda contextual"
 printf '%s\n' "$HELP_BINDING" | grep -q '#{client_name}' ||
   fail "Ctrl-a ? no conserva el cliente de origen"
-grep -q 'display-popup.*-w 50 -h 18' "$HELP_SCRIPT" ||
-  fail "la ayuda no usa un popup compacto de 50x18"
+grep -q 'display-popup.*-w 58 -h 18' "$HELP_SCRIPT" ||
+  fail "la ayuda no usa un popup compacto de 58x18"
 grep -q -- '-b simple' "$HELP_SCRIPT" || fail "la ayuda no usa borde ASCII"
-grep -q 'q | "$escape"' "$HELP_SCRIPT" || fail "la ayuda no cierra con q y Esc"
-for help_context in editor agent terminal git; do
-  HELP_OUTPUT=$(ENTORNO_HELP_PROJECT='proyecto con espacios' \
-    ENTORNO_HELP_CONTEXT="$help_context" "$HELP_SCRIPT" --render)
-  printf '%s\n' "$HELP_OUTPUT" | grep -q '^Proyecto: proyecto con espacios$' ||
-    fail "la ayuda no muestra el proyecto en contexto $help_context"
-  printf '%s\n' "$HELP_OUTPUT" | grep -q "^Contexto: $help_context$" ||
-    fail "la ayuda no muestra el contexto $help_context"
-  printf '%s\n' "$HELP_OUTPUT" | grep -q '^TMUX$' || fail "la ayuda no incluye el grupo tmux"
-  if printf '%s\n' "$HELP_OUTPUT" | grep -q 'Salir'; then
-    fail "la ayuda incluye una opcion Salir"
-  fi
-  [ "$(printf '%s\n' "$HELP_OUTPUT" | wc -l | tr -d ' ')" -le 16 ] ||
-    fail "la ayuda $help_context no cabe en el popup"
-  printf '%s\n' "$HELP_OUTPUT" | awk 'length($0) > 48 { exit 1 }' ||
-    fail "la ayuda $help_context excede el ancho interior"
+grep -q 'command -v fzf' "$HELP_SCRIPT" || fail "la ayuda no usa fzf como interfaz principal"
+grep -q 'run_posix' "$HELP_SCRIPT" || fail "la ayuda no conserva fallback POSIX"
+grep -q "q:print(__quit__)+accept" "$HELP_SCRIPT" || fail "q no cierra la ayuda interactiva"
+grep -q 'Esc volver' "$HELP_SCRIPT" || fail "la ayuda no permite volver con Esc"
+
+for help_context in editor agent/codex terminal git general; do
+  HELP_CATEGORIES=$(ENTORNO_HELP_PROJECT='proyecto con espacios' \
+    ENTORNO_HELP_CONTEXT="$help_context" "$HELP_SCRIPT" --categories)
+  [ "$(printf '%s\n' "$HELP_CATEGORIES" | wc -l | tr -d ' ')" -eq 6 ] ||
+    fail "la ayuda no muestra seis categorias unicas en contexto $help_context"
+  for category in NEOVIM MOVIMIENTO TMUX IA GIT TERMINAL; do
+    printf '%s\n' "$HELP_CATEGORIES" | grep -q "^$category" ||
+      fail "falta la categoria $category en contexto $help_context"
+  done
 done
-printf '%s\n' "$HELP_OUTPUT" >/dev/null
-ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=editor "$HELP_SCRIPT" --render |
-  grep -q '<leader>ac  enviar contexto IA' || fail "la ayuda editor omite el transporte IA"
-ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=agent "$HELP_SCRIPT" --render |
-  grep -q 'Ctrl-a i  selector IA' || fail "la ayuda agente omite el selector IA"
-ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=terminal "$HELP_SCRIPT" --render |
-  grep -q 'Ctrl-a g  lazygit' || fail "la ayuda terminal omite lazygit"
-ENTORNO_HELP_PROJECT=proyecto ENTORNO_HELP_CONTEXT=git "$HELP_SCRIPT" --render |
-  grep -q 'ayuda de lazygit' || fail "la ayuda git omite sus acciones"
+[ "$(ENTORNO_HELP_CONTEXT=editor "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = NEOVIM ] ||
+  fail "NEOVIM no tiene prioridad en el editor"
+[ "$(ENTORNO_HELP_CONTEXT=agent/codex "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = IA ] ||
+  fail "IA no tiene prioridad en el panel agente"
+[ "$(ENTORNO_HELP_CONTEXT=terminal "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = TERMINAL ] ||
+  fail "TERMINAL no tiene prioridad en su panel"
+[ "$(ENTORNO_HELP_CONTEXT=git "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = GIT ] ||
+  fail "GIT no tiene prioridad en su ventana"
+
+HELP_NEOVIM=$("$HELP_SCRIPT" --actions NEOVIM)
+printf '%s\n' "$HELP_NEOVIM" | grep -q '^SPACE ac.*Enviar contexto' ||
+  fail "la ayuda Neovim omite el transporte IA"
+printf '%s\n' "$HELP_NEOVIM" | grep -q '^SPACE ut.*tema visual' ||
+  fail "la ayuda Neovim omite el selector de temas"
+printf '%s\n' "$HELP_NEOVIM" | grep -q 'Catppuccin / Tokyo Night / Kanagawa' ||
+  fail "la ayuda Neovim no muestra los tres temas"
+"$HELP_SCRIPT" --actions TMUX | grep -q '^CTRL-A i.*selector IA' ||
+  fail "la ayuda tmux omite el selector IA"
+"$HELP_SCRIPT" --actions MOVIMIENTO | grep -q '^CTRL-A h/j/k/l.*paneles tmux' ||
+  fail "la ayuda omite la navegacion entre paneles"
+"$HELP_SCRIPT" --actions TERMINAL | grep -q '^CTRL-A g.*lazygit' ||
+  fail "la ayuda terminal omite lazygit"
+"$HELP_SCRIPT" --actions GIT | grep -q 'Ayuda propia de lazygit' ||
+  fail "la ayuda Git omite las acciones de lazygit"
 
 POPUP_AGENT_SCRIPT="$PROJECT_ROOT/scripts/popup-agente.sh"
 [ -x "$POPUP_AGENT_SCRIPT" ] || fail "falta el popup ejecutable del selector IA"

@@ -28,6 +28,9 @@ El ratón también permite seleccionar paneles y ventanas, redimensionar y hacer
 scroll. Muchos terminales requieren mantener `Shift` para seleccionar texto
 directamente con el emulador en vez de con tmux.
 
+La ayuda `Ctrl-a ?` usa categorías navegables. Enter abre una categoría, Esc
+vuelve o cierra desde la raíz y `q` cierra desde cualquier nivel.
+
 ### Sesiones en el socket dedicado
 
 La vía normal para cumplir «un proyecto = una sesión» es `proyecto.sh`. Para

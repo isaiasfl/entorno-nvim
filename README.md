@@ -87,7 +87,8 @@ simbólico reversible. [Arquitectura aislada](docs/entorno-aislado.md).
 El flujo usa `tmux -L entorno-nvim` y no carga ni altera `~/.tmux.conf`.
 `Ctrl-a P` abre el selector de proyectos en un popup; el ratón queda disponible
 como apoyo y la navegación principal sigue siendo por teclado. `Ctrl-a ?` abre
-la ayuda contextual con los grupos tmux, Neovim, IA y Git. Más detalles en
+una ayuda interactiva por categorías para tmux, Neovim, movimiento, IA, Git y
+terminal. Más detalles en
 [terminal y tmux](docs/terminal-tmux-agentes.md).
 
 ## Agentes
@@ -116,6 +117,7 @@ aislada, sin Mason ni npm global. BashLS sigue aplazado. Véase
 | `<leader>gg` | Lazygit |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y visualizar |
 | `<leader>ac` | Pegar contexto revisable en el agente |
+| `<leader>ut` | Elegir Catppuccin, Tokyo Night o Kanagawa |
 | `gd`, `grr`, `grn`, `K` | Definición, referencias, rename y hover LSP |
 | `Ctrl-h/j/k/l` | Navegar splits de Neovim |
 | `Ctrl-a h/j/k/l` | Navegar paneles tmux |

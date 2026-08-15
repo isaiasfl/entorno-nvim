@@ -188,12 +188,15 @@ renombrada; si no existe, crea una ventana en `@entorno_project_root` y ejecuta
 tmux y no crea ninguna ventana. La ventana desaparece normalmente al salir de
 lazygit y se vuelve a crear la próxima vez que se use el atajo.
 
-`Ctrl-a ?` abre una ayuda ASCII compacta con los accesos globales y un grupo
-específico para el contexto actual. La ventana `git` se reconoce mediante
-`@entorno_window_role=git`; editor, agente y terminal se reconocen mediante
-`@entorno_role`. El popup muestra el proyecto, el contexto detectado y solo
-atajos del entorno, Neovim, IA o Git. `q` y Esc lo cierran sin ejecutar ninguna
-acción.
+`Ctrl-a ?` abre una ayuda interactiva por capas dentro de un popup ASCII. El
+primer nivel ordena las categorías Neovim, movimiento, tmux, IA, Git y terminal
+según el contexto actual; Enter muestra sus acciones con las teclas completas y
+Esc vuelve al primer nivel. `q`, o Esc desde la raíz, cierra sin ejecutar
+acciones. La interfaz principal usa fzf y conserva un menú POSIX cuando falta.
+
+La ventana `git` se reconoce mediante `@entorno_window_role=git`; editor, agente
+y terminal se reconocen mediante `@entorno_role`. La categoría Neovim también
+documenta `Espacio u t`, el selector de Catppuccin, Tokyo Night y Kanagawa.
 
 Ejecutar `proyecto.sh` desde el mismo servidor dedicado cambia de cliente sin
 anidar tmux. Si se detecta que la terminal ya pertenece a otro socket, el script
