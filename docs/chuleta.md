@@ -11,6 +11,7 @@
 | Redimensionar | `Ctrl-a H/J/K/L` |
 | Dividir | `Ctrl-a \|` / `Ctrl-a -` |
 | Crear ventana | `Ctrl-a c` |
+| Abrir/reutilizar lazygit | `Ctrl-a g` |
 | Ir al editor | `Ctrl-a n` |
 | Ventana anterior | `Ctrl-a p` |
 | Maximizar/restaurar panel | `Ctrl-a z` |
@@ -64,7 +65,7 @@ El transporte rechaza shells y procesos desconocidos; no envía Enter.
 
 | Acción | Comando o tecla |
 | --- | --- |
-| Abrir lazygit | `<leader>gg` |
+| Abrir lazygit | `Ctrl-a g` (tmux) / `<leader>gg` (Neovim) |
 | Estado rápido | `git status --short` |
 | Revisar cambios | `git diff` |
 | Revisar espacios | `git diff --check` |

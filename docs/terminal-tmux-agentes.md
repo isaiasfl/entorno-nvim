@@ -167,6 +167,7 @@ navegación sigue funcionando aunque el layout cambie:
 | `Ctrl-a H/J/K/L` | Redimensionar panel |
 | `Ctrl-a \|` / `Ctrl-a -` | Dividir a derecha / debajo |
 | `Ctrl-a c` | Crear una ventana |
+| `Ctrl-a g` | Abrir o recuperar lazygit en una ventana dedicada |
 | `Ctrl-a p` | Ventana anterior |
 | `Ctrl-a P` | Seleccionar o crear una sesión de proyecto en un popup |
 | `Ctrl-a z` | Maximizar o restaurar el panel |
@@ -177,6 +178,13 @@ navegación sigue funcionando aunque el layout cambie:
 
 Dentro de Neovim, `Ctrl-h/j/k/l` sigue navegando entre splits. Para cruzar a
 tmux se pulsa primero `Ctrl-a`.
+
+`Ctrl-a g` busca en la sesión una ventana marcada con
+`@entorno_window_role=git`. Si existe la selecciona, aunque haya sido
+renombrada; si no existe, crea una ventana en `@entorno_project_root` y ejecuta
+`lazygit` directamente. Si el ejecutable no está instalado muestra un error en
+tmux y no crea ninguna ventana. La ventana desaparece normalmente al salir de
+lazygit y se vuelve a crear la próxima vez que se use el atajo.
 
 Ejecutar `proyecto.sh` desde el mismo servidor dedicado cambia de cliente sin
 anidar tmux. Si se detecta que la terminal ya pertenece a otro socket, el script

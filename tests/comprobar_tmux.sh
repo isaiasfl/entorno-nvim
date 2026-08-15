@@ -222,7 +222,7 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h j k l H J K L C-a P r c d n a t p s w z '[' '|' '-'; do
+for binding in h j k l H J K L C-a P r c d g n a t p s w z '[' '|' '-'; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
 if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
@@ -245,6 +245,57 @@ for role_binding in 'n editor' 'a agent' 't terminal'; do
 done
 
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
+
+# Ctrl-a g crea lazygit bajo demanda y reutiliza la ventana por metadata.
+LAZYGIT_SCRIPT="$PROJECT_ROOT/scripts/tmux-lazygit.sh"
+[ -x "$LAZYGIT_SCRIPT" ] || fail "falta el helper ejecutable de lazygit"
+LAZYGIT_BINDING=$(tmux_test list-keys -T prefix g)
+printf '%s\n' "$LAZYGIT_BINDING" | grep -q 'tmux-lazygit\.sh' ||
+  fail "Ctrl-a g no usa el helper de lazygit"
+LAZYGIT_BIN="$WORK_DIR/lazygit-bin"
+mkdir -p "$LAZYGIT_BIN"
+ln -s "$(command -v tmux)" "$LAZYGIT_BIN/tmux"
+WINDOWS_BEFORE=$(tmux_test list-windows -t "=$SESSION" | wc -l | tr -d ' ')
+if TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" PATH="$LAZYGIT_BIN" \
+  "$LAZYGIT_SCRIPT" "$EDITOR_PANE"; then
+  fail "el helper acepto lazygit ausente"
+fi
+[ "$(tmux_test list-windows -t "=$SESSION" | wc -l | tr -d ' ')" -eq "$WINDOWS_BEFORE" ] ||
+  fail "se creo una ventana aunque lazygit no estaba disponible"
+grep -q 'tmux display-message' "$LAZYGIT_SCRIPT" ||
+  fail "el helper no comunica los errores mediante tmux display-message"
+grep -q 'lazygit no esta instalado' "$LAZYGIT_SCRIPT" ||
+  fail "el helper no explica que lazygit esta ausente"
+
+ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-lazygit.sh" "$LAZYGIT_BIN/lazygit"
+LAZYGIT_CWD="$WORK_DIR/lazygit-cwd"
+tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_TEST_LAZYGIT_CWD "$LAZYGIT_CWD"
+TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" PATH="$LAZYGIT_BIN" \
+  "$LAZYGIT_SCRIPT" "$EDITOR_PANE"
+attempts=0
+while [ ! -f "$LAZYGIT_CWD" ]; do
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "lazygit no arranco en la ventana dedicada"
+  sleep 1
+done
+[ "$(cat "$LAZYGIT_CWD")" = "$REPOSITORY" ] ||
+  fail "lazygit no uso @entorno_project_root como cwd"
+GIT_WINDOW=$(tmux_test list-windows -t "=$SESSION" -F '#{window_id} #{@entorno_window_role}' |
+  awk '$2 == "git" { print $1 }')
+[ -n "$GIT_WINDOW" ] || fail "la ventana lazygit no publico @entorno_window_role=git"
+[ "$(tmux_test list-panes -t "$GIT_WINDOW" -F '#{pane_start_command}')" = "$LAZYGIT_BIN/lazygit" ] ||
+  fail "lazygit no se ejecuto directamente"
+tmux_test rename-window -t "$GIT_WINDOW" interfaz-git
+tmux_test select-window -t "=$SESSION:1"
+TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" PATH="$LAZYGIT_BIN" \
+  "$LAZYGIT_SCRIPT" "$EDITOR_PANE"
+[ "$(tmux_test list-windows -t "=$SESSION" | wc -l | tr -d ' ')" -eq $((WINDOWS_BEFORE + 1)) ] ||
+  fail "Ctrl-a g duplico la ventana git existente"
+[ "$(tmux_test display-message -p -t "$GIT_WINDOW" '#{window_active}')" = 1 ] ||
+  fail "Ctrl-a g no selecciono la ventana git existente por metadata"
+tmux_test kill-window -t "$GIT_WINDOW"
+tmux_test set-environment -u -t "=$SESSION" ENTORNO_TMUX_TEST_LAZYGIT_CWD
+
 active_pane() {
   tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{pane_active}' |
     while IFS=' ' read -r pane active; do
