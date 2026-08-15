@@ -364,21 +364,24 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
   fail "status-left no destaca el proyecto"
 [ "$(tmux_test show-options -gv status-right-style)" = "fg=colour7,bg=colour0" ] ||
   fail "status-right no conserva contraste ANSI"
-[ "$(tmux_test show-options -gv status-left)" = ' #{?#{@entorno_project_name},#{@entorno_project_name},#S} |' ] ||
+[ "$(tmux_test show-options -gv status-left)" = ' #{?#{@entorno_project_name},#{@entorno_project_name},#S} #[fg=colour8,bg=colour0,nobold]|' ] ||
   fail "status-left no muestra el nombre legible del proyecto"
-[ "$(tmux_test show-window-options -gv window-status-format)" = " #I:#W |" ] ||
+[ "$(tmux_test show-options -gv window-status-separator)" = "" ] ||
+  fail "tmux anade separacion fuera de los formatos controlados"
+[ "$(tmux_test show-window-options -gv window-status-format)" = " #I:#W #[fg=colour8,bg=colour0]|" ] ||
   fail "las ventanas inactivas no muestran indice y nombre"
-[ "$(tmux_test show-window-options -gv window-status-current-format)" = " #I:#W |" ] ||
-  fail "la ventana activa no muestra indice y nombre"
-[ "$(tmux_test show-window-options -gv window-status-style)" = "fg=colour8,bg=colour0" ] ||
+[ "$(tmux_test show-window-options -gv window-status-current-format)" = " [#I:#W] #[fg=colour8,bg=colour0,nobold]|" ] ||
+  fail "la ventana activa no usa corchetes ASCII"
+[ "$(tmux_test show-window-options -gv window-status-style)" = "fg=colour7,bg=colour0" ] ||
   fail "las ventanas inactivas no usan el estilo ANSI"
 [ "$(tmux_test show-window-options -gv window-status-current-style)" = "fg=colour0,bg=colour6,bold" ] ||
   fail "la ventana activa no esta diferenciada"
-[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " proyecto principal |" ] ||
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " proyecto principal #[fg=colour8,bg=colour0,nobold]|" ] ||
   fail "status-left no oculta el checksum de la sesion"
 STATUS_RIGHT=$(tmux_test show-options -gv status-right)
 printf '%s\n' "$STATUS_RIGHT" | grep -q 'tmux-status\.sh' || fail "status-right no usa el helper"
 printf '%s\n' "$STATUS_RIGHT" | grep -q '%H:%M' || fail "status-right no muestra la hora"
+printf '%s\n' "$STATUS_RIGHT" | grep -Fq '#[fg=colour6,bold]%H:%M' || fail "status-right no destaca la hora"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv mode-keys)" = "vi" ] || fail "copy mode debe usar teclas Vi"

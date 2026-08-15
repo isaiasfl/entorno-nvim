@@ -249,6 +249,9 @@ La presentación usa el nombre base del proyecto sin alterar el identificador
 real de la sesión y diferencia la ventana activa con una paleta limitada a los
 16 colores ANSI. Los índices de ventana facilitan futuros espacios `git`,
 `server` o `logs`; los separadores y el estado `AI:-` permanecen en ASCII.
+La revisión visual posterior añade corchetes a la ventana activa como fallback
+sin color, controla explícitamente los separadores y destaca la hora, sin mover
+presentación al helper ni introducir una fuente especial.
 
 ## Node 24 LTS
 
