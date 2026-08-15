@@ -192,10 +192,12 @@ crear una sesión nueva. Si fzf está disponible usa una interfaz filtrable; si
 falta, ofrece un menú textual numerado. No depende de TPM ni de plugins tmux y
 no instala, autentica ni configura clientes.
 
-Las opciones estables son Codex, OpenCode, Pi, Shell y Salir. Un agente solo
-aparece en fzf cuando su ejecutable está disponible; el menú textual muestra
-las posiciones estables y avisa sin cerrarse si se elige uno ausente. Para
-forzar el fallback, por ejemplo en una sesión SSH limitada:
+Las opciones estables son Codex, OpenCode, Claude, Pi, Shell y Salir. Tanto fzf
+como el menú textual muestran siempre el catálogo completo y conservan su
+orden. Las marcas ASCII `[+]` y `[-]` indican si el ejecutable está disponible.
+Elegir uno ausente muestra un aviso claro y vuelve al menú sin cerrar el panel
+ni publicar metadata de agente. Para forzar el fallback, por ejemplo en una
+sesión SSH limitada:
 
 ```sh
 export ENTORNO_AGENT_SELECTOR_USE_FZF=0
@@ -208,6 +210,7 @@ integraciones visuales:
 ```text
 @entorno_agent=codex
 @entorno_agent=opencode
+@entorno_agent=claude
 @entorno_agent=pi
 @entorno_agent=shell
 ```
@@ -218,10 +221,12 @@ vuelve al selector y se limpia `@entorno_agent`, sin alterar
 La detección normal distingue ejecutables nativos de wrappers con shebang Node.
 Si un empaquetado particular expone otro proceso, puede declararse sin ampliar
 la allowlist mediante `ENTORNO_AGENT_CODEX_PROCESS`,
-`ENTORNO_AGENT_OPENCODE_PROCESS` o `ENTORNO_AGENT_PI_PROCESS`.
+`ENTORNO_AGENT_OPENCODE_PROCESS`, `ENTORNO_AGENT_CLAUDE_PROCESS` o
+`ENTORNO_AGENT_PI_PROCESS`.
 
-Justo antes de ejecutar Codex, OpenCode o Pi, `scripts/agente.sh` elimina el
-scrollback del panel con tmux y limpia la pantalla mediante una secuencia ANSI.
+Justo antes de ejecutar Codex, OpenCode, Claude o Pi, `scripts/agente.sh`
+elimina el scrollback del panel con tmux y limpia la pantalla mediante una
+secuencia ANSI.
 La operación sucede después de validar el rol, el ejecutable y la metadata, por
 lo que los errores siguen siendo visibles y `<leader>ac` conserva su contrato.
 No se aplica a la opción Shell ni cambia el ciclo selector → shell → agente.

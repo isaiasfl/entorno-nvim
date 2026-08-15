@@ -8,4 +8,18 @@ if [ -e "$ENTORNO_TMUX_TEST_FZF_MARKER" ]; then
 fi
 
 printf '%s\n' usado > "$ENTORNO_TMUX_TEST_FZF_MARKER"
-awk -F '\t' -v selected="${ENTORNO_TMUX_TEST_FZF_CHOICE:-shell}" '$2 == selected { print; found = 1; exit } END { exit !found }'
+awk -F '\t' \
+  -v selected="${ENTORNO_TMUX_TEST_FZF_CHOICE:-shell}" \
+  -v capture="${ENTORNO_TMUX_TEST_FZF_INPUT:-}" '
+  {
+    if (capture != "") print > capture
+    if (!found && $2 == selected) {
+      chosen = $0
+      found = 1
+    }
+  }
+  END {
+    if (found) print chosen
+    exit !found
+  }
+'

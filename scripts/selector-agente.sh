@@ -46,6 +46,7 @@ selector_return_command() {
   for assignment in \
     "ENTORNO_AGENT_CODEX_PROCESS=${ENTORNO_AGENT_CODEX_PROCESS:-}" \
     "ENTORNO_AGENT_OPENCODE_PROCESS=${ENTORNO_AGENT_OPENCODE_PROCESS:-}" \
+    "ENTORNO_AGENT_CLAUDE_PROCESS=${ENTORNO_AGENT_CLAUDE_PROCESS:-}" \
     "ENTORNO_AGENT_PI_PROCESS=${ENTORNO_AGENT_PI_PROCESS:-}"
   do
     name=${assignment%%=*}
@@ -65,6 +66,7 @@ agent_process() {
   case "$agent_id" in
     codex) override=${ENTORNO_AGENT_CODEX_PROCESS:-} ;;
     opencode) override=${ENTORNO_AGENT_OPENCODE_PROCESS:-} ;;
+    claude) override=${ENTORNO_AGENT_CLAUDE_PROCESS:-} ;;
     pi) override=${ENTORNO_AGENT_PI_PROCESS:-} ;;
     *) override= ;;
   esac
@@ -85,40 +87,57 @@ agent_process() {
 }
 
 available_choices() {
-  command -v codex >/dev/null 2>&1 && printf 'Codex\tcodex\n'
-  command -v opencode >/dev/null 2>&1 && printf 'OpenCode\topencode\n'
-  command -v pi >/dev/null 2>&1 && printf 'Pi\tpi\n'
-  printf 'Shell\tshell\nSalir\texit\n'
+  for entry in \
+    'Codex:codex' \
+    'OpenCode:opencode' \
+    'Claude:claude' \
+    'Pi:pi'
+  do
+    label=${entry%%:*}
+    agent_id=${entry#*:}
+    if command -v "$agent_id" >/dev/null 2>&1; then
+      marker='[+]'
+    else
+      marker='[-]'
+    fi
+    printf '%s %s\t%s\n' "$marker" "$label" "$agent_id"
+  done
+  printf '[+] Shell\tshell\n[+] Salir\texit\n'
 }
 
 select_with_fzf() {
-  selected=$(available_choices | fzf --delimiter='\t' --with-nth=1 --prompt='Agente> ') || return 1
+  selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 --prompt='Agente> ') || return 1
   printf '%s\n' "${selected#*	}"
 }
 
 select_with_text_menu() {
-  printf '%s\n' \
-    "Selecciona agente:" \
-    "  1) Codex" \
-    "  2) OpenCode" \
-    "  3) Pi" \
-    "  4) Shell" \
-    "  0) Salir" >&2
+  printf '%s\n' "Selecciona agente:" >&2
+  available_choices | awk -F '\t' '
+    $2 == "exit" { number = 0 }
+    $2 != "exit" { number++ }
+    { printf "  %s) %s\n", number, $1 }
+  ' >&2
   printf '%s' "> " >&2
   IFS= read -r selected || return 1
   case "$selected" in
     1 | codex | Codex) choice=codex ;;
     2 | opencode | OpenCode) choice=opencode ;;
-    3 | pi | Pi) choice=pi ;;
-    4 | shell | Shell) choice=shell ;;
+    3 | claude | Claude) choice=claude ;;
+    4 | pi | Pi) choice=pi ;;
+    5 | shell | Shell) choice=shell ;;
     0 | exit | salir | Salir | '') choice=exit ;;
     *) printf '%s\n' "Opcion no valida: $selected" >&2; return 2 ;;
   esac
-  if [ "$choice" != shell ] && [ "$choice" != exit ] && ! command -v "$choice" >/dev/null 2>&1; then
-    printf '%s\n' "Agente no disponible: $choice" >&2
-    return 2
-  fi
   printf '%s\n' "$choice"
+}
+
+ensure_available() {
+  agent_id=$1
+  label=$2
+  if ! command -v "$agent_id" >/dev/null 2>&1; then
+    printf '%s\n' "Agente no disponible: $label (ejecutable: $agent_id)" >&2
+    return 1
+  fi
 }
 
 run_agent() {
@@ -164,7 +183,10 @@ while :; do
   fi
 
   case "$choice" in
-    codex | opencode | pi) run_agent "$choice" ;;
+    codex) if ensure_available codex Codex; then run_agent codex; fi ;;
+    opencode) if ensure_available opencode OpenCode; then run_agent opencode; fi ;;
+    claude) if ensure_available claude Claude; then run_agent claude; fi ;;
+    pi) if ensure_available pi Pi; then run_agent pi; fi ;;
     shell) run_shell ;;
     exit) exit 0 ;;
     *) printf '%s\n' "Opcion desconocida: $choice" >&2 ;;

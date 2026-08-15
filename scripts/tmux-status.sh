@@ -13,6 +13,7 @@ agent=$(tmux list-panes -s -t "$session" -F '#{@entorno_role}	#{@entorno_agent}'
 case "$agent" in
   codex) agent_label=Codex ;;
   opencode) agent_label=OpenCode ;;
+  claude) agent_label=Claude ;;
   pi) agent_label=Pi ;;
   shell) agent_label=Shell ;;
   *) agent_label=- ;;

@@ -403,6 +403,9 @@ git -C "$REPOSITORY" add estado-barra.txt
 tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent codex
 [ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Codex" ] ||
   fail "la barra no muestra el agente Codex"
+tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent claude
+[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Claude" ] ||
+  fail "la barra no muestra el agente Claude"
 tmux_test set-option -p -u -t "$AGENT_PANE" @entorno_agent
 
 # El selector usa fzf cuando existe y conserva el rol del panel.
@@ -412,11 +415,13 @@ FAKE_FZF_BIN="$WORK_DIR/fake-fzf-bin"
 mkdir -p "$FAKE_FZF_BIN"
 ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-fzf.sh" "$FAKE_FZF_BIN/fzf"
 FZF_MARKER="$WORK_DIR/fzf-usado"
+FZF_INPUT="$WORK_DIR/fzf-opciones"
 quoted_selector=$(printf '%s' "$SELECTOR" | sed "s/'/'\\''/g")
 quoted_fake_fzf_bin=$(printf '%s' "$FAKE_FZF_BIN" | sed "s/'/'\\''/g")
 quoted_fzf_marker=$(printf '%s' "$FZF_MARKER" | sed "s/'/'\\''/g")
+quoted_fzf_input=$(printf '%s' "$FZF_INPUT" | sed "s/'/'\\''/g")
 tmux_test send-keys -l -t "$AGENT_PANE" \
-  "PATH='$quoted_fake_fzf_bin':\$PATH ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_TMUX_TEST_FZF_MARKER='$quoted_fzf_marker' ENTORNO_TMUX_TEST_FZF_CHOICE=exit '$quoted_selector'"
+  "PATH='$quoted_fake_fzf_bin':\$PATH ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_TMUX_TEST_FZF_MARKER='$quoted_fzf_marker' ENTORNO_TMUX_TEST_FZF_INPUT='$quoted_fzf_input' ENTORNO_TMUX_TEST_FZF_CHOICE=exit '$quoted_selector'"
 tmux_test send-keys -t "$AGENT_PANE" Enter
 attempts=0
 while [ ! -f "$FZF_MARKER" ]; do
@@ -428,6 +433,11 @@ done
   fail "el selector altero @entorno_role=agent"
 AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 [ "$(wc -l < "$FZF_MARKER" | tr -d ' ')" -eq 1 ] || fail "fzf se ejecuto un numero inesperado de veces"
+[ "$(cut -f 2 "$FZF_INPUT" | paste -sd ' ' -)" = "codex opencode claude pi shell exit" ] ||
+  fail "fzf no mostro las seis opciones en orden estable"
+awk -F '\t' '
+  $1 !~ /^\[[+-]\] (Codex|OpenCode|Claude|Pi|Shell|Salir)$/ { exit 1 }
+' "$FZF_INPUT" || fail "fzf no mostro etiquetas ASCII de disponibilidad"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector no limpio @entorno_agent al salir"
 
@@ -435,15 +445,32 @@ AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 # agente.sh, publica ambos estados y al terminar regresa al selector.
 TEXT_BIN="$WORK_DIR/text-selector-bin"
 mkdir -p "$TEXT_BIN"
-ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-agent.sh" "$TEXT_BIN/codex"
+ln -s "$(command -v tmux)" "$TEXT_BIN/tmux"
+ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-agent.sh" "$TEXT_BIN/claude"
 AGENT_STARTED="$TEXT_BIN/agent-started"
 AGENT_RECEIVED="$TEXT_BIN/agent-received"
 quoted_text_bin=$(printf '%s' "$TEXT_BIN" | sed "s/'/'\\''/g")
 tmux_test send-keys -l -t "$AGENT_PANE" \
-  "PATH='$quoted_text_bin':\$PATH SHELL=/bin/sh ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_AGENT_SELECTOR_USE_FZF=0 ENTORNO_AGENT_CODEX_PROCESS=tee '$quoted_selector'"
+  "PATH='$quoted_text_bin':/usr/bin:/bin SHELL=/bin/sh ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_AGENT_SELECTOR_USE_FZF=0 ENTORNO_AGENT_CLAUDE_PROCESS=tee '$quoted_selector'"
 tmux_test send-keys -t "$AGENT_PANE" Enter
 wait_for_output "Selecciona agente:" "$AGENT_PANE"
-tmux_test send-keys -l -t "$AGENT_PANE" codex
+wait_for_output "1) [-] Codex" "$AGENT_PANE"
+wait_for_output "3) [+] Claude" "$AGENT_PANE"
+MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+tmux_test send-keys -l -t "$AGENT_PANE" opencode
+tmux_test send-keys -t "$AGENT_PANE" Enter
+wait_for_output "Agente no disponible: OpenCode (ejecutable: opencode)" "$AGENT_PANE"
+attempts=0
+while :; do
+  menus_now=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
+  [ "$menus_now" -gt "$MENUS_BEFORE" ] && break
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "el agente ausente no devolvio el control al selector"
+  sleep 1
+done
+[ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
+  fail "el agente ausente publico metadata"
+tmux_test send-keys -l -t "$AGENT_PANE" claude
 tmux_test send-keys -t "$AGENT_PANE" Enter
 attempts=0
 while [ ! -f "$AGENT_STARTED" ]; do
@@ -457,9 +484,9 @@ done
 wait_for_process tee "$AGENT_PANE"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_role)" = agent ] ||
   fail "la limpieza altero @entorno_role=agent"
-[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = codex ] ||
-  fail "el selector no declaro @entorno_agent=codex"
-[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_command)" = codex ] ||
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = claude ] ||
+  fail "el selector no declaro @entorno_agent=claude"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_command)" = claude ] ||
   fail "el selector no uso scripts/agente.sh"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_process)" = tee ] ||
   fail "la limpieza altero el proceso declarado del agente"
