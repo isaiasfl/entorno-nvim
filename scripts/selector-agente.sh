@@ -101,18 +101,18 @@ available_choices() {
     label=${entry%%:*}
     agent_id=${entry#*:}
     if command -v "$agent_id" >/dev/null 2>&1; then
-      marker='[+]'
+      marker='[OK]'
     else
-      marker='[-]'
+      marker='[--]'
     fi
     printf '%-11s %s\t%s\n' "$label" "$marker" "$agent_id"
   done
-  printf '%-11s [+]\tshell\n%-11s [+]\texit\n' Shell Salir
+  printf '%-11s [OK]\tshell\n%-11s [OK]\texit\n' Shell Salir
 }
 
 select_with_fzf() {
   selected=$(available_choices | fzf --no-sort --delimiter='\t' --with-nth=1 \
-    --header='Enter: seleccionar | Esc: salir' --prompt='Seleccionar> ') || return 1
+    --header='Entorno IA' --pointer='>' --prompt='Enter elegir | Esc cerrar > ') || return 1
   printf '%s\n' "${selected#*	}"
 }
 
@@ -123,7 +123,7 @@ select_with_text_menu() {
     $2 != "exit" { number++ }
     { printf "  %s) %s\n", number, $1 }
   ' >&2
-  printf '\n%s\n%s\n' "Enter: seleccionar" "0: salir" >&2
+  printf '\n%s\n%s\n' "Enter: elegir" "0: cerrar" >&2
   printf '%s' "> " >&2
   IFS= read -r selected || return 1
   case "$selected" in
@@ -150,7 +150,7 @@ ensure_available() {
 choose_only() {
   while :; do
     if [ "${ENTORNO_AGENT_SELECTOR_USE_FZF:-1}" != 0 ] \
-      && command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ -t 1 ]; then
+      && command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ -t 2 ]; then
       select_with_fzf
       return
     fi

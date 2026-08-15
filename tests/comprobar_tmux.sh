@@ -141,7 +141,7 @@ TERMINAL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno
 [ "$(tmux_test list-panes -s -t "=$SESSION" -F '#{@entorno_role}' |
   awk '$0 == "editor" || $0 == "agent" || $0 == "terminal" { count++ } END { print count + 0 }')" -eq 3 ] ||
   fail "el layout no tiene exactamente los tres roles esperados"
-wait_for_output "Seleccionar>" "$AGENT_PANE"
+wait_for_output "Enter elegir | Esc cerrar >" "$AGENT_PANE"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector sin eleccion declaro un agente activo"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
@@ -251,6 +251,13 @@ grep -q '@entorno_selector_state' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no comprueba que el selector espera entrada"
 grep -q 'exit) input=Salir' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no traduce la salida al nombre visible del selector"
+if grep -q -- '-T.*Entorno IA' "$POPUP_AGENT_SCRIPT"; then
+  fail "el popup IA duplica el titulo en el borde"
+fi
+grep -q 'restore_agent_style' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no restaura el aspecto del panel agente"
+grep -q '\[ -t 2 \]' "$PROJECT_ROOT/scripts/selector-agente.sh" ||
+  fail "el selector IA no detecta el TTY conservado por el popup"
 if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
   fail "Ctrl-b no debe conservar un binding de prefijo"
 fi
@@ -519,7 +526,7 @@ AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
 [ "$(cut -f 2 "$FZF_INPUT" | paste -sd ' ' -)" = "codex opencode claude pi shell exit" ] ||
   fail "fzf no mostro las seis opciones en orden estable"
 awk -F '\t' '
-  $1 !~ /^(Codex|OpenCode|Claude|Pi|Shell|Salir) +\[[+-]\]$/ { exit 1 }
+  $1 !~ /^(Codex|OpenCode|Claude|Pi|Shell|Salir) +\[(OK|--)\]$/ { exit 1 }
 ' "$FZF_INPUT" || fail "fzf no mostro etiquetas ASCII de disponibilidad"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector no limpio @entorno_agent al salir"
@@ -539,10 +546,10 @@ tmux_test send-keys -t "$AGENT_PANE" Enter
 wait_for_output "Entorno IA" "$AGENT_PANE"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
   fail "el fallback no publico su estado de espera"
-wait_for_output "1) Codex       [-]" "$AGENT_PANE"
-wait_for_output "3) Claude      [+]" "$AGENT_PANE"
-wait_for_output "Enter: seleccionar" "$AGENT_PANE"
-wait_for_output "0: salir" "$AGENT_PANE"
+wait_for_output "1) Codex       [--]" "$AGENT_PANE"
+wait_for_output "3) Claude      [OK]" "$AGENT_PANE"
+wait_for_output "Enter: elegir" "$AGENT_PANE"
+wait_for_output "0: cerrar" "$AGENT_PANE"
 MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Entorno IA" || true)
 tmux_test send-keys -l -t "$AGENT_PANE" opencode
 tmux_test send-keys -t "$AGENT_PANE" Enter

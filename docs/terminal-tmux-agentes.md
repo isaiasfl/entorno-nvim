@@ -203,9 +203,9 @@ no instala, autentica ni configura clientes.
 
 Las opciones estables son Codex, OpenCode, Claude, Pi, Shell y Salir. Tanto fzf
 como el menú textual muestran siempre el catálogo completo y conservan su
-orden. El nombre aparece primero y las marcas ASCII `[+]` y `[-]` alineadas a
+orden. El nombre aparece primero y las marcas ASCII `[OK]` y `[--]` alineadas a
 su derecha indican si el ejecutable está disponible. fzf recuerda las acciones
-Enter y Esc; el fallback POSIX muestra Enter y `0` para salir, sin depender de
+Enter y Esc; el fallback POSIX muestra Enter y `0` para cerrar, sin depender de
 símbolos Unicode.
 
 Elegir uno ausente muestra un aviso claro y vuelve al menú sin cerrar el panel
@@ -250,7 +250,9 @@ elección, `Ctrl-a i` ofrece una segunda interfaz en un popup ASCII centrado.
 La elección se entrega al selector original, que conserva en exclusiva el
 lanzamiento, la metadata y el retorno automático. Si hay un agente o una shell
 activos, el atajo muestra un aviso y `Ctrl-a a` vuelve a ese panel sin enviarle
-teclas accidentalmente.
+teclas accidentalmente. Mientras el popup está abierto, el contenido del panel
+agente se oculta con un estilo tmux temporal y se restaura siempre al cerrarlo.
+El borde ASCII permanece continuo y el título aparece una sola vez dentro.
 
 ## Destino seguro para el contexto
 

@@ -39,7 +39,16 @@ esac
 [ -x "$project_root/scripts/selector-agente.sh" ] ||
   fail "no se encuentra el selector de agentes"
 
-exec tmux display-popup -E -b simple -T " Entorno IA " -w 48 -h 16 \
+agent_style=$(tmux select-pane -g -t "$agent_pane" 2>/dev/null || true)
+[ -n "$agent_style" ] || agent_style=default
+restore_agent_style() {
+  tmux select-pane -t "$agent_pane" -P "$agent_style" 2>/dev/null || :
+}
+trap 'restore_agent_style' EXIT HUP INT TERM
+tmux select-pane -t "$agent_pane" -P 'fg=colour0,bg=colour0'
+
+popup_status=0
+tmux display-popup -E -b simple -w 48 -h 16 \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_AGENT_TARGET_PANE=$agent_pane" \
@@ -57,4 +66,8 @@ exec tmux display-popup -E -b simple -T " Entorno IA " -w 48 -h 16 \
   esac
   tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" C-u
   tmux send-keys -l -t "$ENTORNO_AGENT_TARGET_PANE" "$input"
-  tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" Enter'
+  tmux send-keys -t "$ENTORNO_AGENT_TARGET_PANE" Enter' || popup_status=$?
+
+trap - EXIT HUP INT TERM
+restore_agent_style
+exit "$popup_status"
