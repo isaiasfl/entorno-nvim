@@ -60,4 +60,6 @@ launcher_pid=$$
   tmux_cmd set-option -p -u -t "$TMUX_PANE" @entorno_agent_process 2>/dev/null || true
 ) </dev/null >/dev/null 2>&1 &
 
+printf '\033[2J\033[H'
+tmux_cmd clear-history -t "$TMUX_PANE"
 exec "$@"

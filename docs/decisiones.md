@@ -253,6 +253,14 @@ La revisión visual posterior añade corchetes a la ventana activa como fallback
 sin color, controla explícitamente los separadores y destaca la hora, sin mover
 presentación al helper ni introducir una fuente especial.
 
+## Limpieza visual al lanzar agentes
+
+El ciclo selector → shell → agente se conserva para no alterar el contrato del
+transporte de contexto. Después de validar el destino y publicar
+`@entorno_agent_command` y `@entorno_agent_process`, `scripts/agente.sh` limpia
+el scrollback tmux y la pantalla ANSI inmediatamente antes de `exec`. La
+limpieza no afecta al rol, la metadata ni el proceso que valida `<leader>ac`.
+
 ## Node 24 LTS
 
 La instalación vigente usa Node `>=24 <25`, en lugar de conservar el límite

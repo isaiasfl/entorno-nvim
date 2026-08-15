@@ -220,6 +220,12 @@ Si un empaquetado particular expone otro proceso, puede declararse sin ampliar
 la allowlist mediante `ENTORNO_AGENT_CODEX_PROCESS`,
 `ENTORNO_AGENT_OPENCODE_PROCESS` o `ENTORNO_AGENT_PI_PROCESS`.
 
+Justo antes de ejecutar Codex, OpenCode o Pi, `scripts/agente.sh` elimina el
+scrollback del panel con tmux y limpia la pantalla mediante una secuencia ANSI.
+La operación sucede después de validar el rol, el ejecutable y la metadata, por
+lo que los errores siguen siendo visibles y `<leader>ac` conserva su contrato.
+No se aplica a la opción Shell ni cambia el ciclo selector → shell → agente.
+
 ## Destino seguro para el contexto
 
 El panel derecho se marca con `@entorno_role=agent` y comienza en el selector.

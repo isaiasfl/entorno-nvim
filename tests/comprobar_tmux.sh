@@ -455,10 +455,28 @@ while [ ! -f "$AGENT_STARTED" ]; do
   sleep 1
 done
 wait_for_process tee "$AGENT_PANE"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_role)" = agent ] ||
+  fail "la limpieza altero @entorno_role=agent"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = codex ] ||
   fail "el selector no declaro @entorno_agent=codex"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_command)" = codex ] ||
   fail "el selector no uso scripts/agente.sh"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_process)" = tee ] ||
+  fail "la limpieza altero el proceso declarado del agente"
+attempts=0
+while :; do
+  AGENT_CAPTURE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE")
+  if ! printf '%s\n' "$AGENT_CAPTURE" |
+    grep -Eq 'Selecciona agente:|ENTORNO_AGENT_SELECTOR_USE_FZF=0|scripts/agente\.sh'; then
+    break
+  fi
+  attempts=$((attempts + 1))
+  if [ "$attempts" -ge 5 ]; then
+    pane_output=$(printf '%s\n' "$AGENT_CAPTURE" | tail -n 20 | tr '\n' ' ')
+    fail "el panel del agente conserva contenido anterior tras la limpieza: $pane_output"
+  fi
+  sleep 1
+done
 MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
 tmux_test send-keys -t "$AGENT_PANE" C-d
 attempts=0
