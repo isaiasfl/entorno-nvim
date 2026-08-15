@@ -248,7 +248,7 @@ en repositorios grandes a cambio de no señalar archivos nuevos sin seguimiento.
 La presentación usa el nombre base del proyecto sin alterar el identificador
 real de la sesión y diferencia la ventana activa con una paleta limitada a los
 16 colores ANSI. Los índices de ventana facilitan futuros espacios `git`,
-`server` o `logs`; los separadores y el estado `AI:none` permanecen en ASCII.
+`server` o `logs`; los separadores y el estado `AI:-` permanecen en ASCII.
 
 ## Node 24 LTS
 

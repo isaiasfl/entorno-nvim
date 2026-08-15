@@ -391,11 +391,11 @@ status_output() {
   TMUX="$STATUS_TMUX" TMUX_PANE="$EDITOR_PANE" "$STATUS_SCRIPT" "$SESSION"
 }
 EXPECTED_BRANCH=$(git -C "$REPOSITORY" symbolic-ref --quiet --short HEAD)
-[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:none" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:-" ] ||
   fail "la barra no muestra Git limpio y agente ausente"
 printf '%s\n' modificado > "$REPOSITORY/estado-barra.txt"
 git -C "$REPOSITORY" add estado-barra.txt
-[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:none" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:-" ] ||
   fail "la barra no muestra el repositorio modificado"
 tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent codex
 [ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Codex" ] ||

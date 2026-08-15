@@ -54,7 +54,7 @@ entorno-nvim | 1:code | git:main * | AI:Codex | 10:35
 
 La raíz canónica se conserva en la opción de sesión
 `@entorno_project_root`, por lo que Git no depende del directorio del panel
-activo. Si no hay agente muestra `AI:none`; los valores conocidos son Codex,
+activo. Si no hay agente muestra `AI:-`; los valores conocidos son Codex,
 OpenCode, Pi y Shell. La salida usa ASCII y funciona sin Nerd Font, TPM ni
 plugins tmux. La paleta se limita a los 16 colores ANSI: el proyecto aparece en
 cian, las ventanas inactivas en gris y la ventana activa usa fondo cian, texto
