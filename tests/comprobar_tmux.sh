@@ -121,9 +121,17 @@ AGENT_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_ro
   awk '$2 == "agent" { print $1 }')
 EDITOR_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_role}' |
   awk '$2 == "editor" { print $1 }')
+TERMINAL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_role}' |
+  awk '$2 == "terminal" { print $1 }')
 [ -n "$AGENT_PANE" ] || fail "falta el panel con rol agent"
 [ -n "$EDITOR_PANE" ] || fail "falta el panel con rol editor"
+[ -n "$TERMINAL_PANE" ] || fail "falta el panel con rol terminal"
 [ "$(printf '%s\n' "$AGENT_PANE" | wc -l)" -eq 1 ] || fail "hay mas de un panel con rol agent"
+[ "$(printf '%s\n' "$EDITOR_PANE" | wc -l)" -eq 1 ] || fail "hay mas de un panel con rol editor"
+[ "$(printf '%s\n' "$TERMINAL_PANE" | wc -l)" -eq 1 ] || fail "hay mas de un panel con rol terminal"
+[ "$(tmux_test list-panes -s -t "=$SESSION" -F '#{@entorno_role}' |
+  awk '$0 == "editor" || $0 == "agent" || $0 == "terminal" { count++ } END { print count + 0 }')" -eq 3 ] ||
+  fail "el layout no tiene exactamente los tres roles esperados"
 wait_for_output "Agente>" "$AGENT_PANE"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector sin eleccion declaro un agente activo"
@@ -169,9 +177,7 @@ done
 
 # Caso real de regresion: tmux conoce la raiz, pero una shell creada antes de
 # set-environment no la recibe. El popup debe consultarla en la sesion.
-SHELL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_role}' |
-  awk 'NF == 1 { print $1 }')
-[ -n "$SHELL_PANE" ] || fail "falta el panel shell para reproducir el entorno ausente"
+SHELL_PANE=$TERMINAL_PANE
 wait_for_shell "$SHELL_PANE" >/dev/null
 # tmux puede informar el proceso de la shell antes de que su prompt acepte
 # entrada, especialmente mientras arrancan en paralelo editor y selector.
@@ -198,12 +204,71 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h j k l H J K L C-a P r c d n p s w z '[' '|' '-'; do
+for binding in h j k l H J K L C-a P r c d n a t p s w z '[' '|' '-'; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
 if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
   fail "Ctrl-b no debe conservar un binding de prefijo"
 fi
+ROLE_SCRIPT="$PROJECT_ROOT/scripts/tmux-select-role.sh"
+[ -x "$ROLE_SCRIPT" ] || fail "el selector de panel por rol no es ejecutable"
+grep -q 'tmux display-message' "$ROLE_SCRIPT" || fail "el selector de rol no muestra los errores en tmux"
+for role_binding in 'n editor' 'a agent' 't terminal'; do
+  binding=${role_binding%% *}
+  role=${role_binding#* }
+  binding_definition=$(tmux_test list-keys -T prefix "$binding")
+  printf '%s\n' "$binding_definition" | grep -q 'tmux-select-role\.sh' ||
+    fail "Ctrl-a $binding no usa el selector por rol"
+  printf '%s\n' "$binding_definition" | grep -q " $role " ||
+    fail "Ctrl-a $binding no selecciona el rol $role"
+done
+
+SESSION_ID=$(tmux_test display-message -p -t "=$SESSION" '#{session_id}')
+TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
+active_pane() {
+  tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{pane_active}' |
+    while IFS=' ' read -r pane active; do
+      [ "$active" = 1 ] && printf '%s\n' "$pane"
+    done
+}
+select_role() {
+  TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
+    "$ROLE_SCRIPT" "$1" "$SESSION_ID" "$EDITOR_PANE"
+}
+
+select_role editor
+[ "$(active_pane)" = "$EDITOR_PANE" ] || fail "Ctrl-a n no selecciono el panel editor"
+select_role agent
+[ "$(active_pane)" = "$AGENT_PANE" ] || fail "Ctrl-a a no selecciono el panel agent"
+select_role terminal
+[ "$(active_pane)" = "$TERMINAL_PANE" ] || fail "Ctrl-a t no selecciono el panel terminal"
+
+# Los roles viajan con los paneles: intercambiar sus posiciones no debe alterar
+# el destino de la navegacion.
+tmux_test swap-pane -s "$EDITOR_PANE" -t "$TERMINAL_PANE"
+select_role editor
+[ "$(active_pane)" = "$EDITOR_PANE" ] || fail "la navegacion por rol dependio de la posicion del editor"
+select_role terminal
+[ "$(active_pane)" = "$TERMINAL_PANE" ] || fail "la navegacion por rol dependio de la posicion del terminal"
+tmux_test swap-pane -s "$EDITOR_PANE" -t "$TERMINAL_PANE"
+
+tmux_test set-option -p -u -t "$TERMINAL_PANE" @entorno_role
+if missing_role_error=$(select_role terminal 2>&1); then
+  fail "el selector acepto un rol inexistente"
+fi
+printf '%s\n' "$missing_role_error" | grep -q 'no existe ningun panel.*@entorno_role=terminal' ||
+  fail "el selector no explico el rol inexistente"
+tmux_test set-option -p -t "$TERMINAL_PANE" @entorno_role terminal
+
+DUPLICATE_TERMINAL=$(tmux_test split-window -d -t "$TERMINAL_PANE" -c "$REPOSITORY" -P -F '#{pane_id}')
+tmux_test set-option -p -t "$DUPLICATE_TERMINAL" @entorno_role terminal
+if duplicate_role_error=$(select_role terminal 2>&1); then
+  fail "el selector acepto dos paneles con el mismo rol"
+fi
+printf '%s\n' "$duplicate_role_error" | grep -q 'mas de un panel.*@entorno_role=terminal' ||
+  fail "el selector no explico el rol duplicado"
+tmux_test kill-pane -t "$DUPLICATE_TERMINAL"
+
 POPUP_BINDING=$(tmux_test list-keys -T prefix P)
 printf '%s\n' "$POPUP_BINDING" | grep -q 'popup-proyecto\.sh' || fail "Ctrl-a P no usa el lanzador del popup"
 printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment -t.*ENTORNO_NVIM_ROOT' ||

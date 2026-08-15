@@ -125,13 +125,20 @@ Ctrl-a` envía un `Ctrl-a` literal al panel. El ratón está activo como segunda
 vía para seleccionar paneles y ventanas, redimensionar y recorrer el historial;
 los bindings de teclado siguen siendo el flujo principal.
 
+Los tres paneles iniciales se identifican por su responsabilidad mediante
+`@entorno_role`, no por su número ni por su posición física. Por ello, la
+navegación sigue funcionando aunque el layout cambie:
+
 | Tecla | Acción |
 | --- | --- |
+| `Ctrl-a n` | Ir al panel Neovim/editor |
+| `Ctrl-a a` | Ir al panel del agente IA |
+| `Ctrl-a t` | Ir al panel terminal |
 | `Ctrl-a h/j/k/l` | Cambiar de panel |
 | `Ctrl-a H/J/K/L` | Redimensionar panel |
 | `Ctrl-a \|` / `Ctrl-a -` | Dividir a derecha / debajo |
 | `Ctrl-a c` | Crear una ventana |
-| `Ctrl-a n/p` | Ventana siguiente / anterior |
+| `Ctrl-a p` | Ventana anterior |
 | `Ctrl-a P` | Seleccionar o crear una sesión de proyecto en un popup |
 | `Ctrl-a z` | Maximizar o restaurar el panel |
 | `Ctrl-a [` | Entrar en modo copia Vi |
