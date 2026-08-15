@@ -121,6 +121,8 @@ tmux_test has-session -t "=$SESSION"
   fail "la ventana inicial no se llama code"
 [ "$(tmux_test show-option -v -t "$SESSION" @entorno_project_root)" = "$REPOSITORY" ] ||
   fail "la sesion no conserva la raiz del proyecto con espacios"
+[ "$(tmux_test show-option -v -t "$SESSION" @entorno_project_name)" = "proyecto principal" ] ||
+  fail "la sesion no conserva el nombre legible del proyecto"
 session_prefix=${SESSION%-*}
 [ "$session_prefix" = "proyecto_principal" ] || fail "nombre de sesion inesperado o con sufijo espurio: $SESSION"
 
@@ -358,7 +360,16 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv mouse)" = "on" ] || fail "mouse debe estar activado"
 [ "$(tmux_test show-options -gv status-interval)" = 15 ] || fail "status-interval no es razonable"
 [ "$(tmux_test show-options -gv status-style)" = "fg=default,bg=default" ] || fail "status-style no usa la base portable"
-[ "$(tmux_test show-options -gv status-left)" = " #[bold]#S#[default] |" ] || fail "status-left no muestra la sesion"
+[ "$(tmux_test show-options -gv status-left)" = ' #[bold]#{?#{@entorno_project_name},#{@entorno_project_name},#S}#[default] |' ] ||
+  fail "status-left no muestra el nombre legible del proyecto"
+[ "$(tmux_test show-window-options -gv window-status-format)" = " #W |" ] ||
+  fail "las ventanas inactivas no usan el formato limpio"
+[ "$(tmux_test show-window-options -gv window-status-current-format)" = " #W |" ] ||
+  fail "la ventana activa no usa el formato limpio"
+[ "$(tmux_test show-window-options -gv window-status-current-style)" = bold ] ||
+  fail "la ventana activa no esta diferenciada"
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " #[bold]proyecto principal#[default] |" ] ||
+  fail "status-left no oculta el checksum de la sesion"
 STATUS_RIGHT=$(tmux_test show-options -gv status-right)
 printf '%s\n' "$STATUS_RIGHT" | grep -q 'tmux-status\.sh' || fail "status-right no usa el helper"
 printf '%s\n' "$STATUS_RIGHT" | grep -q '%H:%M' || fail "status-right no muestra la hora"
@@ -374,11 +385,11 @@ status_output() {
   TMUX="$STATUS_TMUX" TMUX_PANE="$EDITOR_PANE" "$STATUS_SCRIPT" "$SESSION"
 }
 EXPECTED_BRANCH=$(git -C "$REPOSITORY" symbolic-ref --quiet --short HEAD)
-[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:-" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:none" ] ||
   fail "la barra no muestra Git limpio y agente ausente"
 printf '%s\n' modificado > "$REPOSITORY/estado-barra.txt"
 git -C "$REPOSITORY" add estado-barra.txt
-[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:-" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:none" ] ||
   fail "la barra no muestra el repositorio modificado"
 tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent codex
 [ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Codex" ] ||

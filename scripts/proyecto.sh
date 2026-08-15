@@ -248,6 +248,7 @@ if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
 fi
 
 tmux_cmd set-option -t "$session" @entorno_project_root "$project"
+tmux_cmd set-option -t "$session" @entorno_project_name "$(basename "$project")"
 tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
 tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
 tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_DEPTH "$MAX_DEPTH"

@@ -245,6 +245,9 @@ ni plugins. `proyecto.sh` registra la raíz canónica en
 versionados de Git y localiza el agente por `@entorno_role`, no por la posición
 del panel. El intervalo de 15 segundos y `--untracked-files=no` limitan el coste
 en repositorios grandes a cambio de no señalar archivos nuevos sin seguimiento.
+La presentación usa el nombre base del proyecto sin alterar el identificador
+real de la sesión, omite los índices de ventana y diferencia la ventana activa
+con negrita. Los separadores y el estado `AI:none` permanecen en ASCII.
 
 ## Node 24 LTS
 

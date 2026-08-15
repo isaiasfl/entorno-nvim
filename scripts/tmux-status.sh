@@ -15,7 +15,7 @@ case "$agent" in
   opencode) agent_label=OpenCode ;;
   pi) agent_label=Pi ;;
   shell) agent_label=Shell ;;
-  *) agent_label=- ;;
+  *) agent_label=none ;;
 esac
 
 git_label=
