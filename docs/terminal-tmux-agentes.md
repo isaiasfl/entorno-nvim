@@ -255,8 +255,9 @@ elección, `Ctrl-a i` ofrece una segunda interfaz en un popup ASCII centrado.
 La elección se entrega al selector original, que conserva en exclusiva el
 lanzamiento, la metadata y el retorno automático. Si hay un agente o una shell
 activos, el atajo muestra un aviso y `Ctrl-a a` vuelve a ese panel sin enviarle
-teclas accidentalmente. Mientras el popup está abierto, el contenido del panel
-agente se oculta con un estilo tmux temporal y se restaura siempre al cerrarlo.
+teclas accidentalmente ni generar un error de `run-shell`. Mientras el popup
+está abierto, el contenido del panel agente se oculta con un estilo tmux
+temporal y se restaura siempre al cerrarlo.
 El borde ASCII permanece continuo y el título aparece una sola vez dentro.
 Cerrar con Esc, perder el cliente o repetir el atajo mientras el popup anterior
 termina se consideran cierres normales y no generan errores de `run-shell`.

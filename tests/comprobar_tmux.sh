@@ -282,9 +282,9 @@ for role_binding in 'n editor' 'a agent' 't terminal'; do
 done
 
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
-if TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
+if ! TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
   "$POPUP_AGENT_SCRIPT" cliente-inexistente "$EDITOR_PANE"; then
-  fail "el popup IA acepto un panel sin selector esperando"
+  fail "Ctrl-a i trato como error un panel sin selector esperando"
 fi
 
 # Ctrl-a g crea lazygit bajo demanda y reutiliza la ventana por metadata.
@@ -599,6 +599,19 @@ wait_for_process tee "$AGENT_PANE"
   fail "el selector no uso scripts/agente.sh"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_process)" = tee ] ||
   fail "la limpieza altero el proceso declarado del agente"
+
+# Ciclo literal Ctrl-a i solicitado: con el agente aun activo, repetir el
+# atajo es una operacion valida y nunca debe abrir otro selector ni devolver 1.
+for popup_attempt in 1 2; do
+  if ! TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
+    "$POPUP_AGENT_SCRIPT" "cliente-con-agente-$popup_attempt" "$EDITOR_PANE"; then
+    fail "Ctrl-a i devolvio un error mientras el agente seguia activo"
+  fi
+  [ "$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')" = tee ] ||
+    fail "Ctrl-a i interrumpio el agente activo"
+  [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = claude ] ||
+    fail "Ctrl-a i altero la metadata del agente activo"
+done
 attempts=0
 while :; do
   AGENT_CAPTURE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE")

@@ -6,6 +6,11 @@ fail() {
   exit 1
 }
 
+notice() {
+  tmux display-message -t "${origin_pane:-}" "$*" 2>/dev/null || :
+  exit 0
+}
+
 [ "$#" -eq 2 ] || fail "uso interno: popup-agente.sh cliente pane"
 target_client=$1
 origin_pane=$2
@@ -28,7 +33,7 @@ EOF
 [ "$agent_panes" -eq 1 ] || fail "hay mas de un panel con @entorno_role=agent"
 selector_state=$(tmux show-option -p -v -t "$agent_pane" @entorno_selector_state 2>/dev/null || true)
 [ "$selector_state" = ready ] ||
-  fail "el selector IA no esta esperando; usa Ctrl-a a para volver al agente activo"
+  notice "IA activa: usa Ctrl-a a para volver al panel agente"
 
 root_entry=$(tmux show-environment -t "$target_session" ENTORNO_NVIM_ROOT 2>/dev/null) ||
   fail "tmux no conoce ENTORNO_NVIM_ROOT para esta sesion"
