@@ -13,6 +13,8 @@
 | Crear ventana | `Ctrl-a c` |
 | Abrir/reutilizar lazygit | `Ctrl-a g` |
 | Ir al editor | `Ctrl-a n` |
+| Abrir selector IA | `Ctrl-a i` |
+| Volver al panel agente | `Ctrl-a a` |
 | Ventana anterior | `Ctrl-a p` |
 | Maximizar/restaurar panel | `Ctrl-a z` |
 | Entrar en copy-mode | `Ctrl-a [` |

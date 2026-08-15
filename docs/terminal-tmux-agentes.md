@@ -162,6 +162,7 @@ navegación sigue funcionando aunque el layout cambie:
 | --- | --- |
 | `Ctrl-a n` | Ir al panel Neovim/editor |
 | `Ctrl-a a` | Ir al panel del agente IA |
+| `Ctrl-a i` | Abrir el selector IA en un popup |
 | `Ctrl-a t` | Ir al panel terminal |
 | `Ctrl-a h/j/k/l` | Cambiar de panel |
 | `Ctrl-a H/J/K/L` | Redimensionar panel |
@@ -238,6 +239,14 @@ secuencia ANSI.
 La operación sucede después de validar el rol, el ejecutable y la metadata, por
 lo que los errores siguen siendo visibles y `<leader>ac` conserva su contrato.
 No se aplica a la opción Shell ni cambia el ciclo selector → shell → agente.
+
+El selector embebido sigue arrancando dentro del panel para que las sesiones
+puedan crearse sin un cliente tmux conectado. Cuando está esperando una
+elección, `Ctrl-a i` ofrece una segunda interfaz en un popup ASCII centrado.
+La elección se entrega al selector original, que conserva en exclusiva el
+lanzamiento, la metadata y el retorno automático. Si hay un agente o una shell
+activos, el atajo muestra un aviso y `Ctrl-a a` vuelve a ese panel sin enviarle
+teclas accidentalmente.
 
 ## Destino seguro para el contexto
 

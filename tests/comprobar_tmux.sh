@@ -144,8 +144,16 @@ TERMINAL_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno
 wait_for_output "Agente>" "$AGENT_PANE"
 [ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/null || true)" ] ||
   fail "el selector sin eleccion declaro un agente activo"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
+  fail "el selector no publico su estado de espera"
 tmux_test send-keys -t "$AGENT_PANE" Escape
 AGENT_SHELL=$(wait_for_shell "$AGENT_PANE")
+attempts=0
+while [ -n "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state 2>/dev/null || true)" ]; do
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "cancelar el selector no limpio su estado de espera"
+  sleep 1
+done
 attempts=0
 while [ ! -f "$NVIM_ARGS_FILE" ] && [ "$attempts" -lt 20 ]; do
   attempts=$((attempts + 1))
@@ -222,9 +230,24 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h j k l H J K L C-a P r c d g n a t p s w z '[' '|' '-'; do
+for binding in h i j k l H J K L C-a P r c d g n a t p s w z '[' '|' '-'; do
   tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
+
+POPUP_AGENT_SCRIPT="$PROJECT_ROOT/scripts/popup-agente.sh"
+[ -x "$POPUP_AGENT_SCRIPT" ] || fail "falta el popup ejecutable del selector IA"
+POPUP_AGENT_BINDING=$(tmux_test list-keys -T prefix i)
+printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q 'popup-agente\.sh' ||
+  fail "Ctrl-a i no abre el selector IA"
+printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q '#{client_name}' ||
+  fail "Ctrl-a i no conserva el cliente de origen"
+grep -q 'display-popup' "$POPUP_AGENT_SCRIPT" || fail "el selector IA no usa un popup tmux"
+grep -q '@entorno_role=agent' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no localiza el panel por rol"
+grep -q '@entorno_selector_state' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no comprueba que el selector espera entrada"
+grep -q 'exit) input=Salir' "$POPUP_AGENT_SCRIPT" ||
+  fail "el popup IA no traduce la salida al nombre visible del selector"
 if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
   fail "Ctrl-b no debe conservar un binding de prefijo"
 fi
@@ -245,6 +268,10 @@ for role_binding in 'n editor' 'a agent' 't terminal'; do
 done
 
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
+if TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
+  "$POPUP_AGENT_SCRIPT" cliente-inexistente "$EDITOR_PANE" "$SESSION"; then
+  fail "el popup IA acepto un panel sin selector esperando"
+fi
 
 # Ctrl-a g crea lazygit bajo demanda y reutiliza la ventana por metadata.
 LAZYGIT_SCRIPT="$PROJECT_ROOT/scripts/tmux-lazygit.sh"
@@ -462,6 +489,8 @@ tmux_test set-option -p -u -t "$AGENT_PANE" @entorno_agent
 # El selector usa fzf cuando existe y conserva el rol del panel.
 SELECTOR="$PROJECT_ROOT/scripts/selector-agente.sh"
 [ -x "$SELECTOR" ] || fail "falta el selector de agentes ejecutable"
+CHOOSE_ONLY=$(printf '3\n' | ENTORNO_AGENT_SELECTOR_USE_FZF=0 "$SELECTOR" --choose-only 2>/dev/null)
+[ "$CHOOSE_ONLY" = claude ] || fail "el popup no reutiliza la seleccion del menu textual"
 FAKE_FZF_BIN="$WORK_DIR/fake-fzf-bin"
 mkdir -p "$FAKE_FZF_BIN"
 ln -s "$PROJECT_ROOT/tests/fixtures/tmux/fake-fzf.sh" "$FAKE_FZF_BIN/fzf"
@@ -505,6 +534,8 @@ tmux_test send-keys -l -t "$AGENT_PANE" \
   "PATH='$quoted_text_bin':/usr/bin:/bin SHELL=/bin/sh ENTORNO_TMUX_SOCKET='$SOCKET' ENTORNO_AGENT_SELECTOR_USE_FZF=0 ENTORNO_AGENT_CLAUDE_PROCESS=tee '$quoted_selector'"
 tmux_test send-keys -t "$AGENT_PANE" Enter
 wait_for_output "Selecciona agente:" "$AGENT_PANE"
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
+  fail "el fallback no publico su estado de espera"
 wait_for_output "1) [-] Codex" "$AGENT_PANE"
 wait_for_output "3) [+] Claude" "$AGENT_PANE"
 MENUS_BEFORE=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | grep -Fc "Selecciona agente:" || true)
@@ -533,6 +564,8 @@ while [ ! -f "$AGENT_STARTED" ]; do
   sleep 1
 done
 wait_for_process tee "$AGENT_PANE"
+[ -z "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state 2>/dev/null || true)" ] ||
+  fail "lanzar el agente no limpio el estado del selector"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_role)" = agent ] ||
   fail "la limpieza altero @entorno_role=agent"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent)" = claude ] ||
@@ -566,6 +599,8 @@ while :; do
   [ "$attempts" -lt 20 ] || fail "el fallback no volvio al selector tras salir del agente"
   sleep 1
 done
+[ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state)" = ready ] ||
+  fail "el retorno automatico no restauro el estado del selector"
 tmux_test send-keys -l -t "$AGENT_PANE" shell
 tmux_test send-keys -t "$AGENT_PANE" Enter
 attempts=0

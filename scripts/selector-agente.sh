@@ -18,7 +18,12 @@ clear_agent_state() {
   tmux_cmd set-option -p -u -t "$TMUX_PANE" @entorno_agent 2>/dev/null || true
 }
 
+clear_selector_state() {
+  tmux_cmd set-option -p -u -t "$TMUX_PANE" @entorno_selector_state 2>/dev/null || true
+}
+
 cleanup() {
+  clear_selector_state
   [ "${handoff:-0}" = 1 ] || clear_agent_state
 }
 
@@ -140,6 +145,23 @@ ensure_available() {
   fi
 }
 
+choose_only() {
+  while :; do
+    if [ "${ENTORNO_AGENT_SELECTOR_USE_FZF:-1}" != 0 ] \
+      && command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ -t 1 ]; then
+      select_with_fzf
+      return
+    fi
+    choice=$(select_with_text_menu) || {
+      status=$?
+      [ "$status" -eq 2 ] && continue
+      return 1
+    }
+    printf '%s\n' "$choice"
+    return
+  done
+}
+
 run_agent() {
   agent_id=$1
   agent_executable=$(command -v "$agent_id")
@@ -159,6 +181,12 @@ run_shell() {
   queue_in_pane "$command_line"
 }
 
+if [ "$#" -eq 1 ] && [ "$1" = --choose-only ]; then
+  choose_only
+  exit $?
+fi
+[ "$#" -eq 0 ] || fail "uso: scripts/selector-agente.sh [--choose-only]"
+
 [ -n "${TMUX:-}" ] || fail "el selector debe ejecutarse dentro de tmux"
 [ -n "${TMUX_PANE:-}" ] || fail "no se pudo identificar el panel tmux actual"
 [ -x "$AGENT_LAUNCHER" ] || fail "no se encuentra scripts/agente.sh"
@@ -169,6 +197,7 @@ handoff=0
 trap 'cleanup' 0 HUP TERM
 trap ':' INT
 clear_agent_state
+tmux_cmd set-option -p -t "$TMUX_PANE" @entorno_selector_state ready
 
 while :; do
   if [ "${ENTORNO_AGENT_SELECTOR_USE_FZF:-1}" != 0 ] \
