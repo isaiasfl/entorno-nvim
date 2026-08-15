@@ -241,6 +241,9 @@ printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q 'popup-agente\.sh' ||
   fail "Ctrl-a i no abre el selector IA"
 printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q '#{client_name}' ||
   fail "Ctrl-a i no conserva el cliente de origen"
+if printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q '#{session_id}'; then
+  fail "Ctrl-a i expone session_id a una segunda expansion del shell"
+fi
 grep -q 'display-popup' "$POPUP_AGENT_SCRIPT" || fail "el selector IA no usa un popup tmux"
 grep -q '@entorno_role=agent' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no localiza el panel por rol"
@@ -269,7 +272,7 @@ done
 
 TMUX_TEST_ENV=$(tmux_test display-message -p -t "=$SESSION" '#{socket_path},#{pid},0')
 if TMUX="$TMUX_TEST_ENV" TMUX_PANE="$EDITOR_PANE" \
-  "$POPUP_AGENT_SCRIPT" cliente-inexistente "$EDITOR_PANE" "$SESSION"; then
+  "$POPUP_AGENT_SCRIPT" cliente-inexistente "$EDITOR_PANE"; then
   fail "el popup IA acepto un panel sin selector esperando"
 fi
 

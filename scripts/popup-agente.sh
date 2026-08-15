@@ -6,10 +6,11 @@ fail() {
   exit 1
 }
 
-[ "$#" -eq 3 ] || fail "uso interno: popup-agente.sh cliente pane sesion"
+[ "$#" -eq 2 ] || fail "uso interno: popup-agente.sh cliente pane"
 target_client=$1
 origin_pane=$2
-target_session=$3
+target_session=$(tmux display-message -p -t "$origin_pane" '#{session_id}' 2>/dev/null) ||
+  fail "no se pudo identificar la sesion actual"
 
 panes=$(tmux list-panes -s -t "$target_session" -F '#{pane_id}|#{@entorno_role}' 2>/dev/null) ||
   fail "no se pudieron consultar los paneles de la sesion"
