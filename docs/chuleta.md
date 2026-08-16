@@ -28,8 +28,11 @@ El ratón también permite seleccionar paneles y ventanas, redimensionar y hacer
 scroll. Muchos terminales requieren mantener `Shift` para seleccionar texto
 directamente con el emulador en vez de con tmux.
 
-La ayuda `Ctrl-a ?` usa categorías navegables. Enter abre una categoría, Esc
-vuelve o cierra desde la raíz y `q` cierra desde cualquier nivel.
+La ayuda `Ctrl-a ?` usa un popup amplio con categorías navegables: flujo diario,
+editor, inteligencia artificial, tmux/espacio de trabajo, Git, terminal,
+navegación y configuración. La cabecera recuerda `PREFIX = CTRL-a` y
+`SPACE = leader Neovim`. Enter abre una categoría, Esc vuelve o cierra desde la
+raíz y `q` cierra desde cualquier nivel.
 
 ### Sesiones en el socket dedicado
 
@@ -51,6 +54,9 @@ máquina no: la persistencia tras reinicios queda aplazada.
 | Acción | Tecla |
 | --- | --- |
 | Guardar / salir | `<leader>w` / `<leader>q` |
+| Duplicar línea | `<leader>d` |
+| Mover línea o selección (Linux) | `Alt-Shift-j/k` |
+| Mover línea o selección (macOS) | `Cmd-Shift-↓/↑` |
 | Buscar archivo / texto | dashboard `f` / `g` |
 | Explorador | dashboard `e` |
 | Definición / referencias / rename | `gd` / `grr` / `grn` |

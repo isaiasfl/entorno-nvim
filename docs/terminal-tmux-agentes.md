@@ -190,14 +190,22 @@ lazygit y se vuelve a crear la próxima vez que se use el atajo.
 
 `Ctrl-a ?` abre una ayuda interactiva por capas dentro de un popup con borde
 redondeado de caracteres Unicode estándar, sin depender de Nerd Fonts. El
-primer nivel ordena las categorías Neovim, movimiento, tmux, IA, Git y terminal
-según el contexto actual; Enter muestra sus acciones con las teclas completas y
-Esc vuelve al primer nivel. `q`, o Esc desde la raíz, cierra sin ejecutar
-acciones. La interfaz principal usa fzf y conserva un menú POSIX cuando falta.
+primer nivel presenta flujo diario, editor, inteligencia artificial, tmux y
+espacio de trabajo, Git, terminal, navegación y configuración. Flujo diario
+permanece primero y el contexto actual ocupa la segunda posición. La cabecera
+explica `PREFIX = CTRL-a` y `SPACE = leader Neovim`; las acciones usan después
+esas etiquetas en vez de repetir combinaciones técnicas. Enter muestra una
+categoría y Esc vuelve al primer nivel. `q`, o Esc desde la raíz, cierra sin
+ejecutar acciones. La interfaz principal usa fzf y conserva un menú POSIX cuando
+falta.
 
 La ventana `git` se reconoce mediante `@entorno_window_role=git`; editor, agente
-y terminal se reconocen mediante `@entorno_role`. La categoría Neovim también
-documenta `Espacio u t`, el selector de Catppuccin, Tokyo Night y Kanagawa.
+y terminal se reconocen mediante `@entorno_role`. Editor incluye movimientos y
+modos básicos de Vim, duplicación y desplazamiento de líneas o selecciones.
+Configuración documenta `Espacio u t`, el selector de
+Catppuccin, Tokyo Night y Kanagawa. Inteligencia artificial muestra la
+disponibilidad real de Codex, OpenCode, Claude, Pi y Shell y explica el recorrido
+seguro de contexto desde Neovim.
 
 Ejecutar `proyecto.sh` desde el mismo servidor dedicado cambia de cliente sin
 anidar tmux. Si se detecta que la terminal ya pertenece a otro socket, el script

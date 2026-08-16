@@ -241,8 +241,8 @@ printf '%s\n' "$HELP_BINDING" | grep -q 'tmux-ayuda\.sh' ||
   fail "Ctrl-a ? no abre la ayuda contextual"
 printf '%s\n' "$HELP_BINDING" | grep -q '#{client_name}' ||
   fail "Ctrl-a ? no conserva el cliente de origen"
-grep -q 'display-popup.*-w 58 -h 18' "$HELP_SCRIPT" ||
-  fail "la ayuda no usa un popup compacto de 58x18"
+grep -q 'display-popup.*-w 76% -h 78%' "$HELP_SCRIPT" ||
+  fail "la ayuda no usa un popup amplio de 76% por 78%"
 grep -q -- '-b rounded' "$HELP_SCRIPT" || fail "la ayuda no usa borde redondeado"
 grep -q 'command -v fzf' "$HELP_SCRIPT" || fail "la ayuda no usa fzf como interfaz principal"
 grep -q 'run_posix' "$HELP_SCRIPT" || fail "la ayuda no conserva fallback POSIX"
@@ -252,36 +252,55 @@ grep -q 'Esc volver' "$HELP_SCRIPT" || fail "la ayuda no permite volver con Esc"
 for help_context in editor agent/codex terminal git general; do
   HELP_CATEGORIES=$(ENTORNO_HELP_PROJECT='proyecto con espacios' \
     ENTORNO_HELP_CONTEXT="$help_context" "$HELP_SCRIPT" --categories)
-  [ "$(printf '%s\n' "$HELP_CATEGORIES" | wc -l | tr -d ' ')" -eq 6 ] ||
-    fail "la ayuda no muestra seis categorias unicas en contexto $help_context"
-  for category in NEOVIM MOVIMIENTO TMUX IA GIT TERMINAL; do
+  [ "$(printf '%s\n' "$HELP_CATEGORIES" | wc -l | tr -d ' ')" -eq 8 ] ||
+    fail "la ayuda no muestra ocho categorias unicas en contexto $help_context"
+  for category in 'FLUJO DIARIO' EDITOR 'INTELIGENCIA ARTIFICIAL' \
+    'TMUX / ESPACIO DE TRABAJO' GIT TERMINAL NAVEGACION CONFIGURACION; do
     printf '%s\n' "$HELP_CATEGORIES" | grep -q "^$category" ||
       fail "falta la categoria $category en contexto $help_context"
   done
+  [ "$(printf '%s\n' "$HELP_CATEGORIES" | sed -n '1s/[[:space:]][[:space:]].*//p')" = 'FLUJO DIARIO' ] ||
+    fail "FLUJO DIARIO no aparece primero en contexto $help_context"
 done
-[ "$(ENTORNO_HELP_CONTEXT=editor "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = NEOVIM ] ||
-  fail "NEOVIM no tiene prioridad en el editor"
-[ "$(ENTORNO_HELP_CONTEXT=agent/codex "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = IA ] ||
-  fail "IA no tiene prioridad en el panel agente"
-[ "$(ENTORNO_HELP_CONTEXT=terminal "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = TERMINAL ] ||
+[ "$(ENTORNO_HELP_CONTEXT=editor "$HELP_SCRIPT" --categories | sed -n '2s/[[:space:]].*//p')" = EDITOR ] ||
+  fail "EDITOR no sigue al flujo diario en el editor"
+[ "$(ENTORNO_HELP_CONTEXT=agent/codex "$HELP_SCRIPT" --categories | sed -n '2s/[[:space:]].*//p')" = INTELIGENCIA ] ||
+  fail "INTELIGENCIA ARTIFICIAL no sigue al flujo diario en el panel agente"
+[ "$(ENTORNO_HELP_CONTEXT=terminal "$HELP_SCRIPT" --categories | sed -n '2s/[[:space:]].*//p')" = TERMINAL ] ||
   fail "TERMINAL no tiene prioridad en su panel"
-[ "$(ENTORNO_HELP_CONTEXT=git "$HELP_SCRIPT" --categories | sed -n '1s/[[:space:]].*//p')" = GIT ] ||
+[ "$(ENTORNO_HELP_CONTEXT=git "$HELP_SCRIPT" --categories | sed -n '2s/[[:space:]].*//p')" = GIT ] ||
   fail "GIT no tiene prioridad en su ventana"
 
-HELP_NEOVIM=$("$HELP_SCRIPT" --actions NEOVIM)
-printf '%s\n' "$HELP_NEOVIM" | grep -q '^SPACE ac.*Enviar contexto' ||
-  fail "la ayuda Neovim omite el transporte IA"
-printf '%s\n' "$HELP_NEOVIM" | grep -q '^SPACE ut.*tema visual' ||
-  fail "la ayuda Neovim omite el selector de temas"
-printf '%s\n' "$HELP_NEOVIM" | grep -q 'Catppuccin / Tokyo Night / Kanagawa' ||
-  fail "la ayuda Neovim no muestra los tres temas"
-"$HELP_SCRIPT" --actions TMUX | grep -q '^CTRL-A i.*selector IA' ||
-  fail "la ayuda tmux omite el selector IA"
-"$HELP_SCRIPT" --actions MOVIMIENTO | grep -q '^CTRL-A h/j/k/l.*paneles tmux' ||
+HELP_EDITOR=$("$HELP_SCRIPT" --actions EDITOR)
+printf '%s\n' "$HELP_EDITOR" | grep -q '^SPACE gg / ac.*contexto IA' ||
+  fail "la ayuda Editor omite el transporte IA"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^MODOS BASICOS$' ||
+  fail "la ayuda Editor omite los modos basicos"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^h j k l.*Izquierda' ||
+  fail "la ayuda Editor omite el movimiento basico"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^SPACE d.*Duplicar linea' ||
+  fail "la ayuda Editor omite la duplicacion de linea"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^ALT-SHIFT j/k.*Mover linea' ||
+  fail "la ayuda Editor omite el movimiento de lineas en Linux"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
+  fail "la ayuda Editor omite el movimiento de lineas en macOS"
+"$HELP_SCRIPT" --actions CONFIG | grep -q '^SPACE ut.*tema visual' ||
+  fail "Configuracion omite el selector de temas"
+"$HELP_SCRIPT" --actions CONFIG | grep -q 'Catppuccin / Tokyo Night / Kanagawa' ||
+  fail "Configuracion no muestra los tres temas"
+"$HELP_SCRIPT" --actions CONFIG | grep -q '^clipboard.*portapapeles' ||
+  fail "Configuracion omite la integracion del portapapeles"
+"$HELP_SCRIPT" --actions WORKSPACE | grep -q '^PREFIX i / g.*Selector IA' ||
+  fail "TMUX / Espacio de trabajo omite el selector IA"
+"$HELP_SCRIPT" --actions NAVIGATION | grep -q '^PREFIX h / j.*Izquierda' ||
   fail "la ayuda omite la navegacion entre paneles"
-"$HELP_SCRIPT" --actions TERMINAL | grep -q '^CTRL-A g.*lazygit' ||
-  fail "la ayuda terminal omite lazygit"
-"$HELP_SCRIPT" --actions GIT | grep -q 'Ayuda propia de lazygit' ||
+"$HELP_SCRIPT" --actions TERMINAL | grep -q '^docker compose up' ||
+  fail "la ayuda Terminal omite herramientas de desarrollo"
+"$HELP_SCRIPT" --actions AI | grep -q '^SPACE ac.*contexto' ||
+  fail "la ayuda IA omite el flujo de contexto"
+"$HELP_SCRIPT" --actions FLOW | grep -q '^REVISAR CAMBIOS$' ||
+  fail "la ayuda omite el flujo diario de Git"
+"$HELP_SCRIPT" --actions GIT | grep -q 'git diff --staged' ||
   fail "la ayuda Git omite las acciones de lazygit"
 
 POPUP_AGENT_SCRIPT="$PROJECT_ROOT/scripts/popup-agente.sh"

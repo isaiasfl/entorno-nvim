@@ -26,6 +26,7 @@ opt.mouse = "a"
 opt.confirm = true
 opt.completeopt = { "menu", "menuone", "noselect", "popup" }
 opt.termguicolors = true
+opt.clipboard = "unnamedplus"
 
 opt.timeoutlen = 700
 opt.updatetime = 250

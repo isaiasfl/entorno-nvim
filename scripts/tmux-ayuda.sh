@@ -35,84 +35,193 @@ detect_context() {
 
 category_rows() {
   case "${ENTORNO_HELP_CONTEXT:-general}" in
-    editor) first=NEOVIM ;;
-    agent*) first=IA ;;
-    terminal) first=TERMINAL ;;
-    git) first=GIT ;;
-    *) first=TMUX ;;
+    editor) contextual=EDITOR ;;
+    agent*) contextual=AI ;;
+    terminal) contextual=TERMINAL ;;
+    git) contextual=GIT ;;
+    *) contextual=WORKSPACE ;;
   esac
-  for category in "$first" NEOVIM MOVIMIENTO TMUX IA GIT TERMINAL; do
+  for category in FLOW "$contextual" EDITOR AI WORKSPACE GIT TERMINAL NAVIGATION CONFIG; do
     case " ${seen:-} " in *" $category "*) continue ;; esac
     seen="${seen:-} $category"
     case "$category" in
-      NEOVIM) description='Edicion, busqueda y temas' ;;
-      MOVIMIENTO) description='Paneles, splits y tamanos' ;;
-      TMUX) description='Ventanas y sesiones' ;;
-      IA) description='Agentes y contexto' ;;
-      GIT) description='Lazygit' ;;
-      TERMINAL) description='Acceso al terminal' ;;
+      FLOW) label='FLUJO DIARIO'; description='Ciclo habitual de trabajo' ;;
+      EDITOR) label='EDITOR'; description='Edicion, busqueda, LSP y modos' ;;
+      AI) label='INTELIGENCIA ARTIFICIAL'; description='Agentes, selector y contexto' ;;
+      WORKSPACE) label='TMUX / ESPACIO DE TRABAJO'; description='Paneles, ventanas y proyectos' ;;
+      GIT) label='GIT'; description='Lazygit, estado y cambios' ;;
+      TERMINAL) label='TERMINAL'; description='Herramientas de desarrollo' ;;
+      NAVIGATION) label='NAVEGACION'; description='Paneles, splits y tamanos' ;;
+      CONFIG) label='CONFIGURACION'; description='Temas, interfaz y diagnostico' ;;
     esac
-    printf '%-12s %s\t%s\n' "$category" "$description" "$category"
+    printf '%-29s %s\t%s\n' "$label" "$description" "$category"
   done
+}
+
+availability() {
+  if command -v "$1" >/dev/null 2>&1; then printf '%s' '[OK]'; else printf '%s' '[--]'; fi
 }
 
 action_rows() {
   case "$1" in
-    TMUX)
+    FLOW)
       printf '%s\n' \
-        'CTRL-A a     Ir al panel agente' \
-        'CTRL-A i     Abrir selector IA' \
-        'CTRL-A n     Ir a Neovim' \
-        'CTRL-A t     Ir al terminal' \
-        'CTRL-A g     Abrir lazygit' \
-        'CTRL-A s     Gestionar sesiones' \
-        'CTRL-A ?     Abrir esta ayuda'
+        'EDITAR' \
+        'PREFIX n        Ir al editor' \
+        'SPACE ff        Abrir un archivo' \
+        'SPACE fg        Buscar texto' \
+        'SPACE w         Guardar' \
+        'CONSULTAR IA' \
+        'SPACE ac        Preparar y pegar contexto' \
+        'revisar         Comprobar el texto generado' \
+        'Enter           Enviar manualmente' \
+        'PREFIX a / i    Agente activo / selector' \
+        'REVISAR CAMBIOS' \
+        'PREFIX g        Abrir lazygit' \
+        'status / diff   Revisar cambios' \
+        'PREFIX n        Volver al editor'
       ;;
-    NEOVIM)
+    EDITOR)
       printf '%s\n' \
-        'SPACE ff     Buscar archivos' \
-        'SPACE fg     Buscar texto' \
-        'SPACE gg     Abrir lazygit' \
-        'SPACE ac     Enviar contexto a IA' \
-        'SPACE ut     Elegir tema visual' \
-        '             Catppuccin / Tokyo Night / Kanagawa'
+        'BUSCAR Y EXPLORAR' \
+        'SPACE ff / fg   Archivos / texto del proyecto' \
+        'SPACE fb        Buffers abiertos' \
+        'dashboard r     Archivos recientes' \
+        'SPACE ee / ef   Explorador / enfocar archivo' \
+        'ARCHIVO Y CODIGO' \
+        'SPACE w / q     Guardar / cerrar ventana' \
+        'SPACE d         Duplicar linea' \
+        'ALT-SHIFT j/k   Mover linea o seleccion (Linux)' \
+        'CMD-SHIFT arriba/abajo  Mover linea o seleccion (macOS)' \
+        'gd / gD         Definicion / declaracion' \
+        'SPACE lf        Formatear buffer' \
+        '[d / ]d         Diagnostico anterior / siguiente' \
+        'SPACE e         Mostrar diagnostico' \
+        'MODOS BASICOS' \
+        'i / a / o       Insertar / anadir / nueva linea' \
+        'v / V           Seleccion visual / por lineas' \
+        'Esc o jk        Volver al modo normal' \
+        'MOVIMIENTO BASICO' \
+        'h j k l         Izquierda, abajo, arriba, derecha' \
+        'w / b / e       Palabra siguiente / anterior / final' \
+        'gg / G          Inicio / final del archivo' \
+        '0 / $           Inicio / final de linea' \
+        'INTEGRACIONES' \
+        'SPACE gg / ac   Lazygit / enviar contexto IA'
       ;;
-    IA)
+    AI)
       printf '%s\n' \
-        'CTRL-A a     Volver al agente activo' \
-        'CTRL-A i     Abrir selector IA' \
-        'CTRL-A n     Volver a Neovim' \
-        'SPACE ac     Enviar contexto desde Neovim'
+        'AGENTES' \
+        "Codex           $(availability codex)" \
+        "OpenCode        $(availability opencode)" \
+        "Claude          $(availability claude)" \
+        "Pi              $(availability pi)" \
+        'Shell           [OK]' \
+        'CONTROL' \
+        'PREFIX i        Abrir selector de agentes' \
+        'PREFIX a        Ir al agente activo' \
+        'PREFIX n        Volver al editor' \
+        'ENVIAR CONTEXTO' \
+        'SPACE ac        Preparar contexto desde Neovim' \
+        'Normal          Archivo, linea y posicion' \
+        'Visual          Seleccion y metadatos' \
+        'revisar         Comprobar el texto pegado' \
+        'Enter           Enviar manualmente' \
+        'SEGURIDAD' \
+        'No envia Enter automaticamente' \
+        'Solo admite paneles y procesos autorizados'
+      ;;
+    WORKSPACE)
+      printf '%s\n' \
+        'PREFIX = CTRL-a' \
+        'PANELES POR FUNCION' \
+        'PREFIX n / a / t  Editor / agente / terminal' \
+        'PREFIX i / g      Selector IA / lazygit' \
+        'PANELES Y VENTANAS' \
+        'PREFIX | / -      Dividir horizontal / vertical' \
+        'PREFIX z          Maximizar o restaurar' \
+        'PREFIX c / p / w  Crear / anterior / elegir ventana' \
+        'PREFIX 0-9        Ir a ventana por indice' \
+        'SESIONES Y PROYECTOS' \
+        'PREFIX s / d      Elegir / separar sesion' \
+        'PREFIX P          Selector de proyectos' \
+        'entorno-dev ruta  Abrir otra carpeta' \
+        'ENTORNO' \
+        'PREFIX ?          Abrir esta ayuda' \
+        'PREFIX [          Modo copia' \
+        'PREFIX CTRL-a     Enviar prefijo literal'
       ;;
     GIT)
       printf '%s\n' \
-        'CTRL-A g     Abrir o volver a lazygit' \
-        'SPACE gg     Abrir lazygit desde Neovim' \
-        'q            Cerrar lazygit' \
-        '?            Ayuda propia de lazygit'
+        'LAZYGIT' \
+        'PREFIX g        Abrir o recuperar lazygit' \
+        'SPACE gg        Abrir desde el editor' \
+        'q / ?           Cerrar / ayuda de lazygit' \
+        'REVISAR' \
+        'git status --short   Estado resumido' \
+        'git diff             Cambios locales' \
+        'git diff --staged    Cambios preparados' \
+        'git diff --check     Errores de espacios' \
+        'git log --oneline    Historial reciente' \
+        'FLUJO' \
+        'editar > revisar > preparar > confirmar' \
+        'PREFIX n        Volver al editor'
       ;;
     TERMINAL)
       printf '%s\n' \
-        'CTRL-A t     Ir al terminal' \
-        'CTRL-A n     Ir a Neovim' \
-        'CTRL-A a     Ir al agente' \
-        'CTRL-A g     Abrir lazygit' \
-        'CTRL-A |     Dividir horizontalmente' \
-        'CTRL-A -     Dividir verticalmente'
+        'PROYECTO' \
+        'PREFIX t        Ir al terminal' \
+        'git / rg / fd   Git, buscar texto o archivos' \
+        'JAVASCRIPT' \
+        'pnpm / npm      Dependencias y scripts' \
+        'pnpm test       Ejecutar pruebas del proyecto' \
+        'CONTENEDORES' \
+        'docker ps       Ver contenedores' \
+        'docker compose up    Arrancar servicios' \
+        'docker compose logs  Consultar registros' \
+        'REMOTO' \
+        'ssh host        Conectar a un servidor' \
+        'Ctrl-d          Cerrar shell o conexion' \
+        'PREFIX CTRL-a   Prefijo para tmux remoto' \
+        'ENTORNO-NVIM' \
+        'PREFIX n / a / g  Editor / agente / lazygit'
       ;;
-    MOVIMIENTO)
+    NAVIGATION)
       printf '%s\n' \
-        'CTRL-A h/j/k/l  Navegar paneles tmux' \
-        'CTRL-A H/J/K/L  Redimensionar paneles' \
-        'CTRL-h/j/k/l    Navegar splits de Neovim' \
-        'CTRL-A z        Maximizar o restaurar panel'
+        'PANELES TMUX' \
+        'PREFIX h / j     Izquierda / abajo' \
+        'PREFIX k / l     Arriba / derecha' \
+        'REDIMENSIONAR' \
+        'PREFIX H/J/K/L   Izquierda/abajo/arriba/derecha' \
+        'PREFIX z         Maximizar o restaurar' \
+        'SPLITS DEL EDITOR' \
+        'CTRL-h / CTRL-j  Izquierda / abajo' \
+        'CTRL-k / CTRL-l  Arriba / derecha' \
+        'DESTINOS DIRECTOS' \
+        'PREFIX n / a / t Editor / agente / terminal' \
+        'PREFIX g         Git'
+      ;;
+    CONFIG)
+      printf '%s\n' \
+        'APARIENCIA DEL EDITOR' \
+        'SPACE ut        Elegir tema visual' \
+        '                Catppuccin / Tokyo Night / Kanagawa' \
+        'SPACE ul        Mostrar caracteres invisibles' \
+        'clipboard       Integrado con el portapapeles del sistema' \
+        'DIAGNOSTICO' \
+        ':checkhealth    Revisar salud de Neovim' \
+        ':Lazy           Revisar plugins instalados' \
+        'ENTORNO' \
+        ':IFL            Volver al dashboard' \
+        'PREFIX ?        Abrir esta ayuda' \
+        'Los cambios persistentes se mantienen en el repositorio'
       ;;
     *) return 1 ;;
   esac
 }
 
 header() {
-  printf 'ENTORNO-NVIM\nProyecto: %s\nContexto: %s' \
+  printf 'ENTORNO-NVIM\nProyecto: %s\nContexto: %s\nPREFIX = CTRL-a   SPACE = leader Neovim' \
     "$(clean_label "${ENTORNO_HELP_PROJECT:-sin proyecto}")" \
     "${ENTORNO_HELP_CONTEXT:-general}"
 }
@@ -155,13 +264,14 @@ run_posix() {
     header
     printf '\n\nCATEGORIAS\n\n'
     category_rows | awk -F '\t' '{ printf "  %s\n", $1 }'
-    printf '\n[n] Neovim [m] Movimiento [t] tmux [i] IA [g] Git [e] Terminal\n'
+    printf '\n[f] Flujo [e] Editor [i] IA [w] Tmux [g] Git [t] Terminal [n] Navegacion [c] Config\n'
     printf 'Pulsa categoria; Esc/q cierra: '
     choice=$(read_key) || return 0
     case "$choice" in
-      n | N) category=NEOVIM ;; m | M) category=MOVIMIENTO ;;
-      t | T) category=TMUX ;; i | I) category=IA ;;
-      g | G) category=GIT ;; e | E) category=TERMINAL ;;
+      f | F) category=FLOW ;; e | E) category=EDITOR ;;
+      i | I) category=AI ;; w | W) category=WORKSPACE ;;
+      g | G) category=GIT ;; t | T) category=TERMINAL ;;
+      n | N) category=NAVIGATION ;; c | C) category=CONFIG ;;
       q | Q | "$escape") return 0 ;; *) continue ;;
     esac
     clear 2>/dev/null || printf '\033[2J\033[H'
@@ -216,7 +326,7 @@ case "$root_entry" in
 esac
 [ -x "$project_root/scripts/tmux-ayuda.sh" ] || fail "no se encuentra el helper de ayuda"
 
-tmux display-popup -E -b rounded -w 58 -h 18 \
+tmux display-popup -E -b rounded -w 76% -h 78% \
   -c "$target_client" \
   -t "$origin_pane" \
   -e "ENTORNO_HELP_PROJECT=$(clean_label "$project")" \
