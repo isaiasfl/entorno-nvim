@@ -127,6 +127,7 @@ local function render(buffer, window)
   add_line("Neovim de Isaías", nil, "IFLSubtitle")
   local version = vim.version()
   add_line(string.format("v%d.%d.%d", version.major, version.minor, version.patch), nil, "IFLSecondary")
+  add_line("Perfil " .. require("config.profile").name .. " | :EntornoInfo", nil, "IFLSecondary")
   add_blank()
 
   local first_action_line = #lines
@@ -179,8 +180,7 @@ local function render(buffer, window)
 end
 
 local function load_fzf(method)
-  require("lazy").load({ plugins = { "fzf-lua" } })
-  require("fzf-lua")[method]()
+  require("config.navigation").pick(method)
 end
 
 local function set_actions(buffer)
@@ -193,8 +193,7 @@ local function set_actions(buffer)
     load_fzf("live_grep")
   end, vim.tbl_extend("force", options, { desc = "IFL: buscar texto" }))
   vim.keymap.set("n", "e", function()
-    require("lazy").load({ plugins = { "nvim-tree.lua" } })
-    require("nvim-tree.api").tree.toggle({ focus = true })
+    require("config.navigation").explorer()
   end, vim.tbl_extend("force", options, { desc = "IFL: explorador" }))
   vim.keymap.set("n", "b", function()
     load_fzf("buffers")

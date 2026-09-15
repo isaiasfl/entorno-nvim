@@ -80,7 +80,7 @@ local function context_max_bytes()
 end
 
 local function context_directory()
-  return vim.fs.joinpath(vim.fn.stdpath("run"), "agent-context")
+  return vim.fs.joinpath(require("config.paths").run(), "agent-context")
 end
 
 local function prepare_context_directory(directory)
@@ -187,6 +187,10 @@ local function transport_path()
 end
 
 function M.send(options)
+  if not require("config.profile").has("ai") then
+    notify_error("IA desactivada en este perfil; habilitela expresamente con --ia")
+    return
+  end
   options = options or {}
   local directory = context_directory()
   local prepared, directory_error = prepare_context_directory(directory)

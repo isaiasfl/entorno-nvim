@@ -4,13 +4,14 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/comun.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
 
 VERSION=$ENTORNO_LUALS_VERSION
 ARCHIVE="lua-language-server-$VERSION-linux-x64.tar.gz"
 URL="https://github.com/LuaLS/lua-language-server/releases/download/$VERSION/$ARCHIVE"
 SHA256=624ae8dd3bfbd5c2ee3ccf2f3547d33aeefa209971cce8c11d48f69fc1ec065a
 BINARY_SHA256=$ENTORNO_LUALS_LINUX_X64_BINARY_SHA256
-OPT_ROOT=${LUALS_OPT_ROOT:-"$HOME/.local/opt"}
+OPT_ROOT=${LUALS_OPT_ROOT:-"$ENTORNO_TOOLS_ROOT"}
 INSTALL_DIR="$OPT_ROOT/lua-language-server-$VERSION"
 
 if [ "$(uname -s)" != "Linux" ] || [ "$(uname -m)" != "x86_64" ]; then

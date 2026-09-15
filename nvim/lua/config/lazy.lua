@@ -1,6 +1,17 @@
 local data_path = require("config.paths").data()
 local lazypath = vim.fs.joinpath(data_path, "lazy", "lazy.nvim")
 local lockfile = vim.fs.joinpath(vim.fn.stdpath("config"), "lazy-lock.json")
+local installing = vim.env.ENTORNO_INSTALL_PLUGINS == "1"
+
+if not installing then
+  local lock = vim.json.decode(table.concat(vim.fn.readfile(lockfile), "\n"))
+  for name in pairs(lock) do
+    if not vim.uv.fs_stat(vim.fs.joinpath(data_path, "lazy", name)) then
+      require("config.profile").unavailable("Plugins", "ejecute scripts/instalar-plugins.sh; editor nativo disponible")
+      return { available = false }
+    end
+  end
+end
 
 local function locked_lazy_commit()
   local ok, lock = pcall(vim.json.decode, table.concat(vim.fn.readfile(lockfile), "\n"))
@@ -43,6 +54,8 @@ if not vim.uv.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 require("lazy").setup({
   spec = { { import = "plugins" } },
@@ -52,7 +65,9 @@ require("lazy").setup({
   local_spec = false,
   checker = { enabled = false },
   change_detection = { notify = false },
-  install = { colorscheme = { "habamax" } },
+  install = { missing = installing, colorscheme = { "habamax" } },
   pkg = { enabled = false },
   rocks = { enabled = false },
 })
+
+return { available = true }

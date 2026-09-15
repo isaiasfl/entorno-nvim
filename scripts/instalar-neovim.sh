@@ -4,9 +4,10 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/comun.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
 
 VERSION=$ENTORNO_NVIM_VERSION
-OPT_ROOT=${ENTORNO_NVIM_OPT_ROOT:-"$HOME/.local/opt"}
+OPT_ROOT=${ENTORNO_NVIM_OPT_ROOT:-"$ENTORNO_TOOLS_ROOT"}
 INSTALL_DIR="$OPT_ROOT/nvim-$VERSION"
 ARCHIVE=nvim-linux-x86_64.tar.gz
 URL="https://github.com/neovim/neovim/releases/download/v$VERSION/$ARCHIVE"

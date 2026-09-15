@@ -1,5 +1,6 @@
 local M = {}
 local paths = require("config.paths")
+local profile = require("config.profile")
 
 local tailwind_config_names = {
   "tailwind.config.js",
@@ -214,6 +215,7 @@ local function map(bufnr, lhs, callback, description)
 end
 
 function M.attach(bufnr)
+  if not profile.has("diagnostics") then return end
   map(bufnr, "gd", vim.lsp.buf.definition, "LSP: Ir a la definicion")
   map(bufnr, "gD", vim.lsp.buf.declaration, "LSP: Ir a la declaracion")
   map(bufnr, "<leader>lf", function()
@@ -232,20 +234,21 @@ local function enable_web_servers()
   for name, server in pairs(M.web_servers) do
     local executable = vim.fs.joinpath(bin_dir, server.executable)
     if vim.fn.executable(executable) ~= 1 then
-      error("Servidor LSP no ejecutable: " .. executable)
+      profile.unavailable(name, "ejecute scripts/instalar-lsp-web.sh")
+    else
+      local config = vim.tbl_deep_extend("force", vim.deepcopy(server.config or {}), {
+        cmd = vim.list_extend({ executable }, vim.deepcopy(server.args)),
+      })
+      M.enable(name, config)
     end
-
-    local config = vim.tbl_deep_extend("force", vim.deepcopy(server.config or {}), {
-      cmd = vim.list_extend({ executable }, vim.deepcopy(server.args)),
-    })
-    M.enable(name, config)
   end
 end
 
 local function enable_lua_server()
   local executable = paths.luals_bin()
   if vim.fn.executable(executable) ~= 1 then
-    error("Servidor LSP no ejecutable: " .. executable)
+    profile.unavailable("lua_ls", "ejecute scripts/instalar-luals.sh")
+    return
   end
 
   local runtime = vim.env.VIMRUNTIME
@@ -277,7 +280,8 @@ end
 local function enable_python_server()
   local executable = vim.fs.joinpath(paths.python_lsp_bin(), "pyright-langserver")
   if vim.fn.executable(executable) ~= 1 then
-    error("Servidor LSP no ejecutable: " .. executable)
+    profile.unavailable("pyright", "ejecute scripts/instalar-lsp-python.sh")
+    return
   end
 
   M.enable("pyright", {
@@ -297,6 +301,11 @@ end
 
 function M.setup()
   vim.diagnostic.config({ update_in_insert = true })
+  vim.diagnostic.enable(profile.has("diagnostics"))
+  if not require("config.lazy").available then
+    profile.unavailable("LSP", "prepare plugins y servidores; :EntornoInfo muestra el perfil")
+    return
+  end
 
   local group = vim.api.nvim_create_augroup("entorno_nvim_lsp", { clear = true })
 
@@ -307,9 +316,9 @@ function M.setup()
     end,
   })
 
-  enable_web_servers()
-  enable_lua_server()
-  enable_python_server()
+  if profile.has("web") then enable_web_servers() end
+  if profile.has("lua") then enable_lua_server() end
+  if profile.has("python") then enable_python_server() end
 end
 
 return M

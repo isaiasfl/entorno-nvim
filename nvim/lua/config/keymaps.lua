@@ -10,20 +10,24 @@ map("n", "<leader>gg", function()
   require("config.git").open()
 end, { desc = "Abrir lazygit" })
 
-map("n", "<leader>mp", function()
-  require("config.markdown_pdf").export_current()
-end, { desc = "Generar PDF del Markdown actual" })
+if require("config.profile").has("pdf") then
+  map("n", "<leader>mp", function()
+    require("config.markdown_pdf").export_current()
+  end, { desc = "Generar PDF del Markdown actual" })
 
-map("n", "<leader>mv", function()
-  require("config.markdown_pdf").export_current(nil, { preview = true })
-end, { desc = "Generar y visualizar PDF del Markdown actual" })
+  map("n", "<leader>mv", function()
+    require("config.markdown_pdf").export_current(nil, { preview = true })
+  end, { desc = "Generar y visualizar PDF del Markdown actual" })
+end
 
-map({ "n", "x" }, "<leader>ac", function()
-  local mode = vim.fn.mode()
-  require("config.agent_context").send({
-    visual = mode == "v" or mode == "V" or mode == "\22",
-  })
-end, { desc = "Enviar contexto al agente" })
+if require("config.profile").has("ai") then
+  map({ "n", "x" }, "<leader>ac", function()
+    local mode = vim.fn.mode()
+    require("config.agent_context").send({
+      visual = mode == "v" or mode == "V" or mode == "\22",
+    })
+  end, { desc = "Enviar contexto al agente" })
+end
 
 map("n", "<leader>ul", function()
   vim.wo.list = not vim.wo.list
@@ -135,6 +139,11 @@ end, {
   desc = "Diagnostico anterior",
 })
 
-map("n", "<leader>e", vim.diagnostic.open_float, {
+map("n", "<leader>ld", vim.diagnostic.open_float, {
   desc = "Mostrar diagnostico",
 })
+
+-- Sin nowait: mantener tambien las secuencias historicas ee y ef.
+map("n", "<leader>e", function()
+  require("config.navigation").explorer()
+end, { desc = "Abrir explorador" })

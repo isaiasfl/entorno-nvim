@@ -45,6 +45,7 @@ vim.api.nvim_create_autocmd("FileType", {
     "css",
     "html",
     "javascript",
+    "javascriptreact",
     "json",
     "python",
     "sh",
@@ -53,7 +54,8 @@ vim.api.nvim_create_autocmd("FileType", {
   },
   callback = function(event)
     local language = vim.treesitter.language.get_lang(vim.bo[event.buf].filetype)
-    if language and vim.treesitter.language.add(language) then
+    local ok, loaded = pcall(vim.treesitter.language.add, language or "")
+    if language and ok and loaded then
       vim.treesitter.start(event.buf, language)
     end
   end,

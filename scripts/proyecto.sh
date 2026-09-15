@@ -23,7 +23,7 @@ tmux_session_environment() {
 default_project_roots() {
   [ -n "${HOME:-}" ] || return 1
   default_roots=
-  for default_root in "$HOME/Proyectos" "$HOME/Projects"; do
+  for default_root in "$HOME/Work" "$HOME/Proyectos" "$HOME/Projects"; do
     [ -d "$default_root" ] || continue
     case ":$default_roots:" in
       *:"$default_root":*) continue ;;
@@ -54,6 +54,15 @@ if [ -n "${TMUX:-}" ]; then
   if [ -z "${NVIM_BIN:-}" ]; then
     NVIM_BIN=$(tmux_session_environment NVIM_BIN) || NVIM_BIN=
   fi
+  if [ -z "${ENTORNO_EDITOR_COMMAND:-}" ]; then
+    ENTORNO_EDITOR_COMMAND=$(tmux_session_environment ENTORNO_EDITOR_COMMAND) || ENTORNO_EDITOR_COMMAND=
+  fi
+  if [ -z "${ENTORNO_PERFIL:-}" ]; then
+    ENTORNO_PERFIL=$(tmux_session_environment ENTORNO_PERFIL) || ENTORNO_PERFIL=
+  fi
+  if [ -z "${ENTORNO_IA:-}" ]; then
+    ENTORNO_IA=$(tmux_session_environment ENTORNO_IA) || ENTORNO_IA=
+  fi
 fi
 
 if [ -z "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
@@ -62,6 +71,14 @@ fi
 
 TMUX_CONFIG="$PROJECT_ROOT/tmux/tmux.conf"
 TMUX_SOCKET=${ENTORNO_TMUX_SOCKET:-entorno-nvim}
+ENTORNO_PERFIL=${ENTORNO_PERFIL:-profesor}
+if [ -z "${ENTORNO_IA:-}" ]; then
+  if [ "$ENTORNO_PERFIL" = profesor ]; then ENTORNO_IA=1; else ENTORNO_IA=0; fi
+fi
+case "$ENTORNO_PERFIL:$ENTORNO_IA" in
+  inicial:0 | inicial:1 | dwec:0 | dwec:1 | si:0 | si:1 | profesor:0 | profesor:1) ;;
+  *) printf '%s\n' 'Error: perfil o estado IA incorrecto.' >&2; exit 2 ;;
+esac
 MAX_DEPTH=${ENTORNO_TMUX_PROJECT_DEPTH:-5}
 
 tmux_cmd() {
@@ -182,15 +199,16 @@ session_name() {
 
 start_editor() {
   pane=$1
-  nvim_command=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}
+  nvim_command=${ENTORNO_EDITOR_COMMAND:-"$DEFAULT_NVIM_BIN"}
   nvim_path=$(command -v "$nvim_command" 2>/dev/null || true)
   [ -n "$nvim_path" ] && [ -x "$nvim_path" ] || fail "el editor no es ejecutable: $nvim_command"
 
   quoted=$(printf '%s' "$nvim_path" | sed "s/'/'\\\\''/g")
   quoted_socket=$(printf '%s' "$TMUX_SOCKET" | sed "s/'/'\\\\''/g")
   quoted_root=$(printf '%s' "$PROJECT_ROOT" | sed "s/'/'\\\\''/g")
+  quoted_binary=$(printf '%s' "${NVIM_BIN:-}" | sed "s/'/'\\\\''/g")
   tmux_cmd send-keys -l -t "$pane" \
-    "export ENTORNO_TMUX_SOCKET='$quoted_socket' ENTORNO_NVIM_ROOT='$quoted_root'; '$quoted'"
+    "export ENTORNO_TMUX_SOCKET='$quoted_socket' ENTORNO_NVIM_ROOT='$quoted_root' ENTORNO_PERFIL='$ENTORNO_PERFIL' ENTORNO_IA='$ENTORNO_IA'; env NVIM_BIN='$quoted_binary' '$quoted'"
   tmux_cmd send-keys -t "$pane" Enter
 }
 
@@ -222,6 +240,9 @@ fi
 [ -n "$project" ] || exit 0
 
 session=$(session_name "$project")
+if [ "$ENTORNO_PERFIL:$ENTORNO_IA" != profesor:1 ]; then
+  session=$session-$ENTORNO_PERFIL-ia$ENTORNO_IA
+fi
 
 if tmux_cmd list-sessions >/dev/null 2>&1; then
   tmux_cmd source-file "$TMUX_CONFIG"
@@ -238,11 +259,13 @@ if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
   fi
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
   terminal_pane=$(tmux_cmd split-window -v -p 15 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
-  agent_pane=$(tmux_cmd split-window -h -p 30 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
   tmux_cmd set-option -p -t "$editor_pane" @entorno_role editor
-  tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
   tmux_cmd set-option -p -t "$terminal_pane" @entorno_role terminal
-  start_agent_selector "$agent_pane"
+  if [ "$ENTORNO_IA" = 1 ]; then
+    agent_pane=$(tmux_cmd split-window -h -p 30 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+    tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
+    start_agent_selector "$agent_pane"
+  fi
   tmux_cmd select-pane -t "$editor_pane"
   start_editor "$editor_pane"
 fi
@@ -251,12 +274,17 @@ tmux_cmd set-option -t "$session" @entorno_project_root "$project"
 tmux_cmd set-option -t "$session" @entorno_project_name "$(basename "$project")"
 tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
 tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
+tmux_cmd set-environment -t "=$session" ENTORNO_PERFIL "$ENTORNO_PERFIL"
+tmux_cmd set-environment -t "=$session" ENTORNO_IA "$ENTORNO_IA"
 tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_DEPTH "$MAX_DEPTH"
 if [ -n "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
   tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_ROOTS "$ENTORNO_TMUX_PROJECT_ROOTS"
 fi
 if [ -n "${NVIM_BIN:-}" ]; then
   tmux_cmd set-environment -t "=$session" NVIM_BIN "$NVIM_BIN"
+fi
+if [ -n "${ENTORNO_EDITOR_COMMAND:-}" ]; then
+  tmux_cmd set-environment -t "=$session" ENTORNO_EDITOR_COMMAND "$ENTORNO_EDITOR_COMMAND"
 fi
 
 if [ "${ENTORNO_TMUX_NO_ATTACH:-0}" = "1" ]; then

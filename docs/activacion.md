@@ -1,5 +1,9 @@
 # Activación en el equipo principal
 
+> Procedimiento historico V1. No es necesario para el entorno docente y no
+> debe usarse para convivir con Omarchy: sustituye `~/.config/nvim`.
+> Use el [lanzador separado](entorno-docente.md).
+
 ## Estado previo inventariado
 
 El 9 de agosto de 2026, antes de activar este repositorio, se comprobó:

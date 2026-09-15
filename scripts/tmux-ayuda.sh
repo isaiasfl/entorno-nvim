@@ -96,7 +96,8 @@ action_rows() {
         'gd / gD         Definicion / declaracion' \
         'SPACE lf        Formatear buffer' \
         '[d / ]d         Diagnostico anterior / siguiente' \
-        'SPACE e         Mostrar diagnostico' \
+        'SPACE e         Abrir explorador' \
+        'SPACE l d       Mostrar diagnostico' \
         'MODOS BASICOS' \
         'i / a / o       Insertar / anadir / nueva linea' \
         'v / V           Seleccion visual / por lineas' \

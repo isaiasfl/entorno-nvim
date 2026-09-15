@@ -4,9 +4,10 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/comun.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
 
 VERSION=$ENTORNO_TREE_SITTER_VERSION
-OPT_ROOT=${TREE_SITTER_OPT_ROOT:-"$HOME/.local/opt"}
+OPT_ROOT=${TREE_SITTER_OPT_ROOT:-"$ENTORNO_TOOLS_ROOT"}
 INSTALL_DIR="$OPT_ROOT/tree-sitter-cli-$VERSION"
 
 case "$(uname -s):$(uname -m)" in

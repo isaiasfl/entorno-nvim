@@ -1,5 +1,11 @@
 # Entorno aislado
 
+> Cambios actuales: se conserva `XDG_RUNTIME_DIR` del escritorio; los contextos
+> y el socket principal tienen rutas privadas. El estado se separa por perfil,
+> las nuevas herramientas se instalan en `.tools/` y las ausencias permiten
+> el arranque nativo. Consulte [la guia vigente](entorno-docente.md).
+> Las rutas y requisitos estrictos siguientes documentan la V1 historica.
+
 ## Propósito
 
 La configuración se prueba sin leer ni escribir la configuración activa de

@@ -1,6 +1,7 @@
 # Copias locales previas a modificaciones
 .backups/
 .xdg/
+.tools/
 **/node_modules/
 
 # Archivos generados por pruebas y editores

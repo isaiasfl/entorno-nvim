@@ -66,8 +66,8 @@ assert(vim.wait(10000, function()
   return vim.api.nvim_get_current_buf() == bufnr and vim.api.nvim_win_get_cursor(0)[1] == 1
 end, 50), "gd no navego a la definicion Lua")
 
-vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, { "", "vim." })
-local completion = request(client, bufnr, "textDocument/completion", position_params(bufnr, 11, 4))
+vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, { "", "vim.a" })
+local completion = request(client, bufnr, "textDocument/completion", position_params(bufnr, 11, 5))
 local items = completion and (completion.items or completion) or {}
 local found_api = false
 for _, item in ipairs(items) do

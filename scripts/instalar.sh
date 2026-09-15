@@ -19,22 +19,22 @@ case "$system" in
     fi
     case "$distro" in
       debian | ubuntu)
-        hint="sudo apt install git tmux fzf fd-find ripgrep lazygit pandoc chromium poppler-utils curl unzip build-essential"
+        hint="sudo apt install git tmux fzf fd-find ripgrep lazygit chromium poppler-utils curl unzip build-essential (Pandoc es opcional para PDF)"
         node_hint="Node >=24 <25 y Corepack deben proceder de una fuente aprobada; no se instala Node mediante un script remoto"
         ;;
-      arch | cachyos)
-        hint="sudo pacman -S git tmux fzf fd ripgrep lazygit nodejs corepack pandoc-cli chromium poppler curl unzip base-devel"
+      arch | cachyos | omarchy)
+        hint="sudo pacman -S git tmux fzf fd ripgrep lazygit nodejs corepack chromium poppler curl unzip base-devel (Pandoc es opcional para PDF)"
         node_hint="Node >=24 <25 y Corepack"
         ;;
       *)
-        hint="instala Git, tmux, fzf, fd, ripgrep, lazygit, Pandoc, Chromium, curl, unzip y un compilador"
+        hint="instala Git, tmux, fzf, fd, ripgrep, lazygit, Chromium, curl, unzip y un compilador; Pandoc es opcional para PDF"
         node_hint="Node >=24 <25 y Corepack"
         ;;
     esac
     ;;
   Darwin)
     distro=macos
-    hint="brew install git tmux fzf fd ripgrep lazygit node@24 corepack pandoc poppler; instala Chromium, Chrome o Brave si no dispones ya de uno"
+    hint="brew install git tmux fzf fd ripgrep lazygit node@24 corepack poppler; instala Chromium, Chrome o Brave si no dispones ya de uno (Pandoc es opcional para PDF)"
     node_hint="Node >=24 <25 y Corepack"
     ;;
   *)
@@ -44,7 +44,7 @@ case "$system" in
 esac
 
 missing=
-for dependency in git tmux fzf rg lazygit node corepack pandoc curl tar unzip; do
+for dependency in git tmux fzf rg lazygit node corepack curl tar unzip; do
   command -v "$dependency" >/dev/null 2>&1 || missing="$missing $dependency"
 done
 if ! command -v fd >/dev/null 2>&1 && ! command -v fdfind >/dev/null 2>&1; then missing="$missing fd/fdfind"; fi
@@ -90,7 +90,5 @@ fi
 "$SCRIPT_DIR/instalar-plugins.sh"
 "$SCRIPT_DIR/instalar-parsers.sh"
 "$SCRIPT_DIR/comprobar-requisitos.sh"
-"$SCRIPT_DIR/instalar-entorno-dev.sh"
-
-printf '\n%s\n' "Instalacion de usuario preparada. No se ha activado ~/.config/nvim."
-printf '%s\n' "Prueba con ./scripts/arrancar.sh y activa despues con ./scripts/activar.sh."
+printf '\n%s\n' "Instalacion local preparada. No se ha activado ~/.config/nvim ni creado comandos globales."
+printf '%s\n' "Abre un proyecto con ./bin/entorno-dev --perfil dwec /ruta/al/proyecto."

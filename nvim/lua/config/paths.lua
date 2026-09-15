@@ -33,12 +33,21 @@ end
 
 function M.luals_bin()
   return vim.env.ENTORNO_NVIM_LUALS_BIN
-    or vim.fs.joinpath(vim.env.HOME, ".local", "opt", "lua-language-server-3.19.0", "bin", "lua-language-server")
+    or vim.fs.joinpath(M.tools(), "lua-language-server-3.19.0", "bin", "lua-language-server")
 end
 
 function M.tree_sitter_bin()
   return vim.env.ENTORNO_NVIM_TREE_SITTER_BIN
-    or vim.fs.joinpath(vim.env.HOME, ".local", "opt", "tree-sitter-cli-0.26.11", "bin", "tree-sitter")
+    or vim.fs.joinpath(M.tools(), "tree-sitter-cli-0.26.11", "bin", "tree-sitter")
+end
+
+function M.tools()
+  return vim.env.ENTORNO_TOOLS_ROOT or vim.fs.joinpath(repository_root(), ".tools")
+end
+
+function M.run()
+  local isolated = vim.env.ENTORNO_NVIM_XDG_ROOT
+  return isolated and vim.fs.joinpath(isolated, "runtime") or vim.fn.stdpath("run")
 end
 
 function M.setup_tool_path()
@@ -51,7 +60,7 @@ end
 function M.luals_log_dir()
   local isolated = vim.env.ENTORNO_NVIM_XDG_ROOT
   if isolated and isolated ~= "" then
-    return vim.fs.joinpath(isolated, "state", "nvim", "luals")
+    return vim.fs.joinpath(vim.fn.stdpath("state"), "luals")
   end
   return vim.fs.joinpath(vim.fn.stdpath("state"), "luals")
 end

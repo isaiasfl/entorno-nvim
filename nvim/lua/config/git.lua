@@ -30,6 +30,7 @@ function M.open(command)
 
   local job = vim.fn.jobstart(command or { "lazygit" }, {
     cwd = cwd,
+    env = require("config.process").desktop_env(),
     term = true,
     on_exit = vim.schedule_wrap(function()
       if vim.api.nvim_win_is_valid(window) then

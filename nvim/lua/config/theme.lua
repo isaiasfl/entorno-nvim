@@ -97,6 +97,10 @@ function M.select()
 end
 
 function M.setup()
+  if not require("config.lazy").available then
+    vim.cmd.colorscheme("habamax")
+    return
+  end
   M.apply(M.read())
   vim.keymap.set("n", "<leader>ut", M.select, {
     desc = "Seleccionar tema visual",

@@ -4,6 +4,8 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
+export ENTORNO_PERFIL=profesor
+export ENTORNO_IA=1
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 TEST_FILE=${NVIM_TEST_FILE:-"$PROJECT_ROOT/tests/comprobar_nucleo.lua"}
 DASHBOARD_TEST="$PROJECT_ROOT/tests/comprobar_dashboard.lua"
@@ -38,8 +40,8 @@ export ENTORNO_NVIM_EXPECTED_VERSION="${NVIM_EXPECTED_VERSION:-}"
 "$PROJECT_ROOT/tests/comprobar_markdown_pdf.sh"
 "$PROJECT_ROOT/tests/comprobar_instalacion.sh"
 
-git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/undo/prueba"
-git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/nvim/swap/prueba"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/profesor/nvim/undo/prueba"
+git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/state/profesor/nvim/swap/prueba"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/lazy.nvim"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/fzf-lua"
 git -C "$PROJECT_ROOT" check-ignore -q "$XDG_ROOT/data/nvim/lazy/catppuccin"

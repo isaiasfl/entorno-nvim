@@ -33,7 +33,7 @@ local function preview(pdf)
   end
 
   active_previews[pdf] = true
-  vim.system({ viewer, pdf }, { text = true }, function(result)
+  vim.system({ viewer, pdf }, { text = true, env = require("config.process").desktop_env() }, function(result)
     active_previews[pdf] = nil
     if result.code ~= 0 then
       vim.schedule(function()

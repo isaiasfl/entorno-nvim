@@ -11,7 +11,9 @@ assert(plugin.build == nil, "nvim-treesitter no debe ejecutar TSUpdate automatic
 assert(not lazy_config.plugins["nvim-treesitter-textobjects"], "no deben instalarse textobjects")
 
 local cli = vim.env.ENTORNO_NVIM_TREE_SITTER_BIN
-assert(cli == vim.fn.exepath("tree-sitter"), "no se esta usando el tree-sitter-cli paralelo")
+local expected_cli = vim.uv.fs_realpath(cli) or cli
+local active_cli = vim.uv.fs_realpath(vim.fn.exepath("tree-sitter")) or vim.fn.exepath("tree-sitter")
+assert(active_cli == expected_cli, "no se esta usando el tree-sitter-cli paralelo")
 local cli_version = vim.system({ cli, "--version" }, { text = true }):wait()
 assert(cli_version.code == 0, "tree-sitter-cli no se puede ejecutar")
 assert(cli_version.stdout:find("tree%-sitter 0%.26%.11"), "version inesperada de tree-sitter-cli")

@@ -3,7 +3,15 @@
 
 *Neovim de Isaías: desarrollo, docencia y Markdown/PDF.*
 
+**[Guía completa de teclas y uso](docs/guia-completa-teclas.md)**: editor,
+explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
+
 ## Qué es
+
+La evolucion docente portable ya dispone de perfiles y arranque minimo sin
+dependencias opcionales. Consulte [estado y uso actual](docs/entorno-docente.md).
+La V1 descrita mas abajo es la referencia historica completa en Debian;
+esta fase se prueba en Omarchy y aun no certifica WSL2.
 
 `entorno-nvim` v1.0.0 es una configuración de Neovim y tmux comprensible,
 versionada y reversible para programación, docencia y documentos Markdown.
@@ -15,18 +23,28 @@ La referencia probada es Debian 13 con Neovim 0.12.4.
 - LSP nativo para Lua, web y Python; completado nativo de Neovim 0.12.
 - Tree-sitter con ocho parsers externos fijados.
 - sesiones tmux por proyecto en el socket dedicado `entorno-nvim`;
-- Markdown → Pandoc → HTML/CSS → Chromium → PDF A4.
+- Markdown → HTML/CSS → Chromium → PDF A4 (Pandoc opcional, sólo para PDF).
 
 El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
 ## Instalación rápida
+
+Para empezar con Neovim 0.12+ ya instalado, sin sustituir su configuracion:
+
+```sh
+./bin/entorno-dev --perfil dwec /ruta/a/mi-proyecto
+```
+
+Abre en modo nativo si faltan plugins o servidores. `:EntornoInfo` muestra lo
+pendiente; el autocompletado requiere preparar los LSP. Para disponer de todos
+los componentes fijados:
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
 ./scripts/comprobar-requisitos.sh
 ./scripts/instalar.sh
-./scripts/arrancar.sh
+./bin/entorno-dev --perfil dwec
 ```
 
 El instalador es idempotente, no usa `sudo`, no activa la configuración y no
@@ -41,9 +59,10 @@ comando orientativo y se detiene. Véase [instalación V1](docs/instalacion.md).
 
 Solo lee el estado y clasifica cada elemento como `OK`, `FALTA` u `OPCIONAL`.
 
-## Activar
+## Activación histórica V1 (no necesaria para el entorno docente)
 
-Tras probar el entorno aislado:
+Este procedimiento sustituye el Neovim habitual. **No usarlo para convivir
+con Omarchy**; el lanzador separado de arriba no necesita activacion.
 
 ```sh
 ./scripts/activar.sh
@@ -67,20 +86,22 @@ backup registrado. El backup histórico se conserva. Véase
 
 ```sh
 cd /ruta/al/proyecto
-entorno-dev
+/ruta/entorno-nvim/bin/entorno-dev --perfil dwec
 ```
 
-La sesión contiene Neovim, un panel de agente y una shell para pruebas o
-servidores. La [chuleta diaria](docs/chuleta.md) resume los comandos habituales.
+Sin opciones recupera el perfil profesor, PDF y tmux con tres paneles.
+`--sin-tmux` abre solo Neovim; `--sin-ia` omite el agente.
+La [guia docente](docs/entorno-docente.md)
+describe los perfiles y la [chuleta diaria](docs/chuleta.md) los atajos.
 El lanzador acepta otra ruta con `entorno-dev /ruta` y abre el selector con
-`entorno-dev --elegir`. `scripts/instalar.sh` lo enlaza automáticamente en
-`~/.local/bin`, que debe estar incluido en `PATH`.
+`entorno-dev --elegir`. Use `./bin/entorno-dev` o su ruta absoluta; el enlace
+opcional en `~/.local/bin` solo se crea con `scripts/instalar-entorno-dev.sh`.
 
 ## Neovim
 
-`./scripts/arrancar.sh` ejecuta Neovim con datos, caché, estado y sockets XDG
-aislados. La configuración activa usa el mismo código mediante un enlace
-simbólico reversible. [Arquitectura aislada](docs/entorno-aislado.md).
+`./scripts/arrancar.sh` ejecuta Neovim con datos, cache y estado aislados.
+Conserva el runtime del escritorio y separa sus propios sockets y contextos.
+No cambia la configuracion activa. [Arquitectura docente](docs/entorno-docente.md).
 
 ## tmux
 
@@ -145,9 +166,10 @@ actualizaciones automáticas de plugins, parsers ni LSP.
 
 ## Desinstalación
 
-Primero ejecuta `./scripts/restaurar.sh`. Después pueden retirarse manualmente
-la raíz XDG del repositorio y los directorios versionados de `~/.local/opt`
-cuando ningún proceso los use. El proyecto nunca borra backups automáticamente.
+El modo portable no requiere restaurar Neovim: no lo sustituye. Antes de
+retirar el entorno, cierre sus procesos y conserve sus proyectos y documentos.
+Solo quien activo la V1 mediante `activar.sh` necesita el procedimiento
+historico de restauracion. El proyecto nunca borra backups automaticamente.
 
 ## Licencia
 

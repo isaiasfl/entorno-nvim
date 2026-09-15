@@ -2,6 +2,24 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## En desarrollo - 2026-09-13
+
+- primera fase del entorno docente portable: perfiles inicial, DWEC, SI y
+  profesor, con IA desactivada salvo opcion expresa;
+- entrada sin tmux y sesiones optativas, con dos paneles sin IA y tres con IA;
+- arranque nativo sin descargas ni bloqueo por servidores o plugins ausentes;
+- herramientas privadas nuevas bajo `.tools/`, sin enlace global automatico;
+- estado por perfil, runtime Wayland conservado y rutas personales recuperadas
+  para lazygit y visores;
+- correccion de `NVIM_BIN` en tmux para que conserve el wrapper aislado;
+- pruebas de perfiles y navegacion nativa; regresion tmux adaptada a 3.7;
+- Omarchy: pruebas locales de esta fase; WSL2/Debian y el entorno completo de
+  lenguajes siguen pendientes de validacion en esta revision.
+
+Los scripts de activacion/restauracion V1 se conservan, pero no son parte de
+la via portable. No se actualizan dependencias ni se instalan herramientas
+globales en esta fase.
+
 ## [1.0.0] - 2026-08-10
 
 ### Incluye

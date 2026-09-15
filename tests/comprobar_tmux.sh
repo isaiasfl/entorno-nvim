@@ -3,6 +3,9 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+export ENTORNO_PERFIL=profesor
+export ENTORNO_IA=1
+export ENTORNO_EDITOR_COMMAND="$PROJECT_ROOT/tests/fixtures/tmux/fake-nvim.sh"
 SOCKET="entorno-nvim-test-$$"
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-tmux.XXXXXX")
 FALLBACK_HOME="$WORK_DIR-fallback casa con espacios"
@@ -11,6 +14,20 @@ NVIM_ARGS_FILE="$WORK_DIR/nvim-argc"
 
 tmux_test() {
   tmux -L "$SOCKET" "$@"
+}
+
+# tmux 3.7 envia una consulta de una sola tecla a la barra de estado, incluso
+# sin cliente adjunto. Consultar la tabla completa conserva stdout en 3.5/3.7.
+tmux_binding() {
+  tmux_test list-keys -T prefix | awk -v wanted="$1" '
+    { for (i = 1; i <= NF - 2; i++) {
+        if ($i == "-T" && $(i+1) == "prefix") {
+          key = $(i+2); gsub(/[\\\042\047]/, "", key)
+          if (key == wanted) { print; found = 1 }
+        }
+      }
+    }
+    END { exit !found }'
 }
 
 cleanup() {
@@ -88,7 +105,7 @@ transport() {
 
 command -v tmux >/dev/null 2>&1 || fail "tmux no esta instalado"
 command -v fzf >/dev/null 2>&1 || fail "fzf no esta disponible"
-grep -Fq 'nvim_command=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}' "$PROJECT_ROOT/scripts/proyecto.sh" ||
+grep -Fq 'nvim_command=${ENTORNO_EDITOR_COMMAND:-"$DEFAULT_NVIM_BIN"}' "$PROJECT_ROOT/scripts/proyecto.sh" ||
   fail "proyecto.sh no usa el wrapper aislado como editor predeterminado"
 
 REPOSITORY="$WORK_DIR/proyecto principal"
@@ -123,7 +140,8 @@ tmux_test has-session -t "=$SESSION"
   fail "la sesion no conserva la raiz del proyecto con espacios"
 [ "$(tmux_test show-option -v -t "$SESSION" @entorno_project_name)" = "proyecto principal" ] ||
   fail "la sesion no conserva el nombre legible del proyecto"
-session_prefix=${SESSION%-*}
+session_base=$SESSION
+session_prefix=${session_base%-*}
 [ "$session_prefix" = "proyecto_principal" ] || fail "nombre de sesion inesperado o con sufijo espurio: $SESSION"
 
 AGENT_PANE=$(tmux_test list-panes -s -t "=$SESSION" -F '#{pane_id} #{@entorno_role}' |
@@ -231,14 +249,14 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
 for binding in h i j k l H J K L C-a P r c d g n a t p s w z '?' '[' '|' '-'; do
-  tmux_test list-keys -T prefix "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
+  tmux_binding "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
 
 HELP_SCRIPT="$PROJECT_ROOT/scripts/tmux-ayuda.sh"
 [ -x "$HELP_SCRIPT" ] || fail "falta el helper ejecutable de ayuda contextual"
-HELP_BINDING=$(tmux_test list-keys -T prefix '?')
+HELP_BINDING=$(tmux_binding '?')
 printf '%s\n' "$HELP_BINDING" | grep -q 'tmux-ayuda\.sh' ||
-  fail "Ctrl-a ? no abre la ayuda contextual"
+  fail "Ctrl-a ? no abre la ayuda contextual: $HELP_BINDING"
 printf '%s\n' "$HELP_BINDING" | grep -q '#{client_name}' ||
   fail "Ctrl-a ? no conserva el cliente de origen"
 grep -q 'display-popup.*-w 76% -h 78%' "$HELP_SCRIPT" ||
@@ -305,7 +323,7 @@ printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
 
 POPUP_AGENT_SCRIPT="$PROJECT_ROOT/scripts/popup-agente.sh"
 [ -x "$POPUP_AGENT_SCRIPT" ] || fail "falta el popup ejecutable del selector IA"
-POPUP_AGENT_BINDING=$(tmux_test list-keys -T prefix i)
+POPUP_AGENT_BINDING=$(tmux_binding i)
 printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q 'popup-agente\.sh' ||
   fail "Ctrl-a i no abre el selector IA"
 printf '%s\n' "$POPUP_AGENT_BINDING" | grep -q '#{client_name}' ||
@@ -332,7 +350,7 @@ grep -q 'ENTORNO_AGENT_SELECTOR_POPUP=1' "$POPUP_AGENT_SCRIPT" ||
   fail "el popup IA no activa su composicion visual propia"
 grep -q '\[ -t 2 \]' "$PROJECT_ROOT/scripts/selector-agente.sh" ||
   fail "el selector IA no detecta el TTY conservado por el popup"
-if tmux_test list-keys -T prefix C-b >/dev/null 2>&1; then
+if tmux_binding C-b >/dev/null 2>&1; then
   fail "Ctrl-b no debe conservar un binding de prefijo"
 fi
 ROLE_SCRIPT="$PROJECT_ROOT/scripts/tmux-select-role.sh"
@@ -341,7 +359,7 @@ grep -q 'tmux display-message' "$ROLE_SCRIPT" || fail "el selector de rol no mue
 for role_binding in 'n editor' 'a agent' 't terminal'; do
   binding=${role_binding%% *}
   role=${role_binding#* }
-  binding_definition=$(tmux_test list-keys -T prefix "$binding")
+  binding_definition=$(tmux_binding "$binding")
   printf '%s\n' "$binding_definition" | grep -q 'tmux-select-role\.sh' ||
     fail "Ctrl-a $binding no usa el selector por rol"
   printf '%s\n' "$binding_definition" | grep -q " $role " ||
@@ -366,7 +384,7 @@ fi
 # Ctrl-a g crea lazygit bajo demanda y reutiliza la ventana por metadata.
 LAZYGIT_SCRIPT="$PROJECT_ROOT/scripts/tmux-lazygit.sh"
 [ -x "$LAZYGIT_SCRIPT" ] || fail "falta el helper ejecutable de lazygit"
-LAZYGIT_BINDING=$(tmux_test list-keys -T prefix g)
+LAZYGIT_BINDING=$(tmux_binding g)
 printf '%s\n' "$LAZYGIT_BINDING" | grep -q 'tmux-lazygit\.sh' ||
   fail "Ctrl-a g no usa el helper de lazygit"
 LAZYGIT_BIN="$WORK_DIR/lazygit-bin"
@@ -460,7 +478,7 @@ printf '%s\n' "$duplicate_role_error" | grep -q 'mas de un panel.*@entorno_role=
   fail "el selector no explico el rol duplicado"
 tmux_test kill-pane -t "$DUPLICATE_TERMINAL"
 
-POPUP_BINDING=$(tmux_test list-keys -T prefix P)
+POPUP_BINDING=$(tmux_binding P)
 printf '%s\n' "$POPUP_BINDING" | grep -q 'popup-proyecto\.sh' || fail "Ctrl-a P no usa el lanzador del popup"
 printf '%s\n' "$POPUP_BINDING" | grep -q 'show-environment -t.*ENTORNO_NVIM_ROOT' ||
   fail "el popup no obtiene la raiz desde el entorno de sesion"
@@ -482,7 +500,7 @@ if printf '%s\n' "$POPUP_BINDING" | grep -Eq 'sesh|gum|fzf-tmux' ||
   grep -Eq 'sesh|gum|fzf-tmux' "$POPUP_SCRIPT"; then
   fail "el popup introdujo un sessionizer o selector adicional"
 fi
-REFRESH_BINDING=$(tmux_test list-keys -T prefix r)
+REFRESH_BINDING=$(tmux_binding r)
 printf '%s\n' "$REFRESH_BINDING" | grep -q 'refresh-client' || fail "Ctrl-a r dejo de refrescar el cliente"
 if printf '%s\n' "$REFRESH_BINDING" | grep -q 'ENTORNO_'; then
   fail "Ctrl-a r depende indebidamente del entorno de entorno-nvim"
@@ -742,6 +760,15 @@ while [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/nu
   if [ "$attempts" -ge 20 ]; then
     pane_output=$(tmux_test capture-pane -p -J -S - -t "$AGENT_PANE" | tail -n 30 | tr '\n' ' ')
     fail "el fallback no declaro @entorno_agent=shell; salida: $pane_output"
+  fi
+  sleep 1
+done
+attempts=0
+while [ "$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')" != sh ]; do
+  attempts=$((attempts + 1))
+  if [ "$attempts" -ge 20 ]; then
+    pane_process=$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')
+    fail "el fallback declaro la shell antes de arrancarla; proceso actual: $pane_process"
   fi
   sleep 1
 done

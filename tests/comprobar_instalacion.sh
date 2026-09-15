@@ -9,7 +9,10 @@ TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/entorno-nvim-instalacion.XXXXXX")
 TEST_ROOT=$(CDPATH= cd "$TEST_ROOT" && pwd -P)
 TEST_HOME="$TEST_ROOT/home"
 TEST_XDG="$TEST_ROOT/xdg"
-REAL_HOME=$HOME
+SOURCE_TOOLS=${ENTORNO_TOOLS_ROOT:-"$PROJECT_ROOT/.tools"}
+TEST_TOOLS="$TEST_ROOT/tools"
+export ENTORNO_TOOLS_ROOT="$TEST_TOOLS"
+export ENTORNO_PERFIL=profesor
 TMUX_SOCKET="entorno-nvim-install-$$"
 
 cleanup() {
@@ -18,7 +21,7 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-mkdir -p "$TEST_HOME/.local/opt" "$TEST_XDG/data/nvim/lazy" "$TEST_XDG/data/nvim/site/parser"
+mkdir -p "$TEST_TOOLS" "$TEST_XDG/data/nvim/lazy" "$TEST_XDG/data/nvim/site/parser"
 
 HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null
 [ -L "$TEST_HOME/.local/bin/entorno-dev" ]
@@ -45,30 +48,30 @@ fi
 [ "$(readlink "$FOREIGN_LINK_HOME/.local/bin/entorno-dev")" = "$TEST_ROOT/lanzador-ajeno" ]
 
 for directory in "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION"; do
-  [ -d "$REAL_HOME/.local/opt/$directory" ] || {
+  [ -d "$SOURCE_TOOLS/$directory" ] || {
     printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
     exit 1
   }
-  ln -s "$REAL_HOME/.local/opt/$directory" "$TEST_HOME/.local/opt/$directory"
+  ln -s "$SOURCE_TOOLS/$directory" "$TEST_TOOLS/$directory"
 done
 
 if [ "$(uname -s)" = Darwin ]; then
   mkdir -p \
-    "$TEST_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin" \
-    "$TEST_HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin"
-  ln -s "$(command -v nvim)" "$TEST_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
+    "$TEST_TOOLS/nvim-$ENTORNO_NVIM_VERSION/bin" \
+    "$TEST_TOOLS/lua-language-server-$ENTORNO_LUALS_VERSION/bin"
+  ln -s "$(command -v nvim)" "$TEST_TOOLS/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
   ln -s "$(command -v lua-language-server)" \
-    "$TEST_HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
+    "$TEST_TOOLS/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
 else
   for directory in \
     "nvim-$ENTORNO_NVIM_VERSION" \
     "lua-language-server-$ENTORNO_LUALS_VERSION"
   do
-    [ -d "$REAL_HOME/.local/opt/$directory" ] || {
+    [ -d "$SOURCE_TOOLS/$directory" ] || {
       printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2
       exit 1
     }
-    ln -s "$REAL_HOME/.local/opt/$directory" "$TEST_HOME/.local/opt/$directory"
+    ln -s "$SOURCE_TOOLS/$directory" "$TEST_TOOLS/$directory"
   done
 fi
 

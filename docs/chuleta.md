@@ -1,11 +1,27 @@
 # Chuleta diaria
 
+Para la referencia extensa: [guía completa de teclas y uso](guia-completa-teclas.md),
+con [inventario de teclas de LazyGit](lazygit-teclas-defaults.md).
+
+Entrada personal: `/ruta/entorno-nvim/bin/entorno-dev /ruta/proyecto`.
+Conserva el perfil completo, PDF y tmux con editor, agente y terminal.
+Use `--sin-tmux` para abrir solo Neovim o `--sin-ia` para omitir el agente.
+Los ejemplos con `entorno-dev` abreviado presuponen
+el enlace opcional instalado. `:EntornoInfo` muestra lo que falta preparar.
+
 ## TMUX
+
+En la pantalla inicial, `e` abre el explorador. En Neovim, `Espacio e`
+tambien lo abre; se conservan `Espacio e e` y `Espacio e f`.
+`Espacio e` espera brevemente por si completa una de esas secuencias.
+El diagnostico flotante pasa a `Espacio l d`.
+En el explorador nativo, `Espacio e` tambien cierra y devuelve el archivo
+anterior o la pantalla principal. `:IFL` permite volver al inicio directamente.
 
 | Acción | Comando o tecla |
 | --- | --- |
-| Abrir proyecto actual | `entorno-dev` |
-| Abrir otra ruta | `entorno-dev /ruta` |
+| Abrir proyecto actual con tmux | `entorno-dev --tmux` |
+| Abrir otra ruta con tmux | `entorno-dev --tmux /ruta` |
 | Elegir proyecto | `entorno-dev --elegir` o `Ctrl-a P` |
 | Moverse por paneles | `Ctrl-a h/j/k/l` |
 | Redimensionar | `Ctrl-a H/J/K/L` |
@@ -66,6 +82,8 @@ máquina no: la persistencia tras reinicios queda aplazada.
 
 ## AGENTES
 
+Solo disponibles con `--ia`; no se habilitan por elegir el perfil profesor.
+
 1. Arrancar el cliente en el panel marcado como agente.
 2. Usar `<leader>ac` en normal o visual.
 3. Revisar el texto pegado.
@@ -83,6 +101,8 @@ El transporte rechaza shells y procesos desconocidos; no envía Enter.
 | Revisar espacios | `git diff --check` |
 
 ## MARKDOWN/PDF
+
+El modulo PDF se habilita con `--perfil profesor`.
 
 | Acción | Comando o tecla |
 | --- | --- |

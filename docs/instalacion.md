@@ -1,13 +1,19 @@
 # Instalación reproducible V1
 
+> Evolucion docente: las nuevas instalaciones privadas van a `.tools/` dentro
+> del repositorio y el instalador ya no crea el enlace `~/.local/bin/entorno-dev`.
+> El arranque minimo, los perfiles y sus limites estan en
+> [entorno-docente.md](entorno-docente.md). Las rutas `~/.local/opt` de este
+> documento describen la instalacion historica V1.
+
 ## Alcance
 
 `scripts/instalar.sh` coordina las instalaciones de usuario, lockfiles y
 comprobaciones. No activa `~/.config/nvim`, no ejecuta `sudo`, no toca la
-configuración tmux personal y no instala agentes CLI. También crea de forma
-idempotente `~/.local/bin/entorno-dev` como enlace al lanzador del repositorio.
-Si ese destino ya existe y no pertenece al proyecto, se detiene sin
-sobrescribirlo.
+configuración tmux personal, no instala agentes CLI ni crea comandos globales.
+Quien quiera el enlace opcional `~/.local/bin/entorno-dev` debe ejecutar
+`scripts/instalar-entorno-dev.sh`; si el destino ya existe y no pertenece al
+proyecto, ese script se detiene sin sobrescribirlo.
 
 ```sh
 ./scripts/comprobar-requisitos.sh
@@ -47,7 +53,9 @@ su ejecución separadamente; el script nunca lo ejecuta.
 5. plugins mediante `:Lazy restore`, respetando `lazy-lock.json`.
 6. parsers Tree-sitter enumerados explícitamente y compilados en la raíz XDG.
 7. comprobación final de requisitos.
-8. enlace seguro del lanzador `entorno-dev` bajo `~/.local/bin`.
+8. comprobación final sin crear enlaces globales. El enlace seguro opcional
+   del lanzador `entorno-dev` se crea aparte con
+   `scripts/instalar-entorno-dev.sh`.
 
 No se usa Mason, npm global, TPM, `curl | sh` ni instalación automática al
 arrancar Neovim. Las descargas directas usan HTTPS, staging temporal y

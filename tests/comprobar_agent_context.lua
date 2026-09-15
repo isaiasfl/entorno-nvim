@@ -1,6 +1,6 @@
 local root = vim.env.ENTORNO_NVIM_ROOT
 local socket = "entorno-nvim-context-" .. vim.fn.getpid()
-local runtime_context = vim.fs.joinpath(vim.fn.stdpath("run"), "agent-context")
+local runtime_context = vim.fs.joinpath(require("config.paths").run(), "agent-context")
 local original = {
   allowed = vim.env.ENTORNO_AGENT_ALLOWED_COMMANDS,
   input = vim.ui.input,
@@ -102,8 +102,8 @@ local function run()
   vim.cmd("edit " .. vim.fn.fnameescape(fixture))
   vim.api.nvim_win_set_cursor(0, { 2, 6 })
 
-  local sentinel_subshell = vim.fs.joinpath(vim.fn.stdpath("run"), "contexto-no-ejecutado-subshell")
-  local sentinel_backtick = vim.fs.joinpath(vim.fn.stdpath("run"), "contexto-no-ejecutado-backtick")
+  local sentinel_subshell = vim.fs.joinpath(require("config.paths").run(), "contexto-no-ejecutado-subshell")
+  local sentinel_backtick = vim.fs.joinpath(require("config.paths").run(), "contexto-no-ejecutado-backtick")
   vim.uv.fs_unlink(sentinel_subshell)
   vim.uv.fs_unlink(sentinel_backtick)
   local special_prompt = string.format(
@@ -168,8 +168,8 @@ local function run()
   end, 20), "Lua no respeto el override de tamano")
   assert(#context_files() == 0, "el payload demasiado grande creo un temporal")
 
-  local override_script = vim.fs.joinpath(vim.fn.stdpath("run"), "transport-override.sh")
-  local override_marker = vim.fs.joinpath(vim.fn.stdpath("run"), "transport-override.txt")
+  local override_script = vim.fs.joinpath(require("config.paths").run(), "transport-override.sh")
+  local override_marker = vim.fs.joinpath(require("config.paths").run(), "transport-override.txt")
   vim.fn.writefile({
     "#!/bin/sh",
     "printf '%s|%s\\n' \"$ENTORNO_AGENT_CONTEXT_MAX_BYTES\" "
@@ -210,7 +210,7 @@ local function run()
   assert(vim.uv.fs_symlink(recent_context, linked_context), "no se pudo crear el symlink de prueba")
 
   vim.cmd("enew")
-  vim.api.nvim_buf_set_name(0, vim.fs.joinpath(vim.fn.stdpath("run"), ".env"))
+  vim.api.nvim_buf_set_name(0, vim.fs.joinpath(require("config.paths").run(), ".env"))
   local prompted = false
   vim.ui.input = function()
     prompted = true
@@ -241,7 +241,7 @@ local function run()
     ".password-store/correo.gpg",
   }) do
     vim.cmd("enew")
-    vim.api.nvim_buf_set_name(0, vim.fs.joinpath(vim.fn.stdpath("run"), "sensible", relative))
+    vim.api.nvim_buf_set_name(0, vim.fs.joinpath(require("config.paths").run(), "sensible", relative))
     prompted = false
     agent_context.send({ visual = false })
     assert(not prompted, "un archivo sensible llego al prompt: " .. relative)

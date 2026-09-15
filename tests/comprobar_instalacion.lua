@@ -4,7 +4,7 @@ local paths = require("config.paths")
 
 assert(vim.fn.stdpath("config") == root .. "/nvim", "configuracion aislada incorrecta")
 assert(vim.fn.stdpath("data") == xdg .. "/data/nvim", "datos fuera del XDG temporal")
-assert(vim.fn.stdpath("state") == xdg .. "/state/nvim", "estado fuera del XDG temporal")
+assert(vim.fn.stdpath("state") == xdg .. "/state/profesor/nvim", "estado fuera del XDG temporal")
 assert(vim.fn.stdpath("cache") == xdg .. "/cache/nvim", "cache fuera del XDG temporal")
 
 for _, module in ipairs({

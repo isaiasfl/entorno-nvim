@@ -4,7 +4,9 @@ local paths = require("config.paths")
 
 assert(paths.repository() == root, "la raiz aislada del repositorio es incorrecta")
 assert(paths.data() == vim.fn.stdpath("data"), "los datos aislados no deben cambiar de ubicacion")
-assert(vim.fn.exepath("tree-sitter") == paths.tree_sitter_bin(), "Neovim no prioriza el tree-sitter-cli fijado")
+local expected_tree_sitter = vim.uv.fs_realpath(paths.tree_sitter_bin()) or paths.tree_sitter_bin()
+local active_tree_sitter = vim.uv.fs_realpath(vim.fn.exepath("tree-sitter")) or vim.fn.exepath("tree-sitter")
+assert(active_tree_sitter == expected_tree_sitter, "Neovim no prioriza el tree-sitter-cli fijado")
 
 assert(type(xdg_root) == "string" and xdg_root ~= "", "falta la raiz XDG de prueba")
 
@@ -19,8 +21,8 @@ local function mapping(mode, lhs)
 end
 
 assert(vim.fn.stdpath("config") == root .. "/nvim", "configuracion XDG incorrecta")
-assert(vim.fn.stdpath("run") == xdg_root .. "/runtime", "runtime XDG incorrecto")
-assert(vim.fn.getfperm(vim.fn.stdpath("run")) == "rwx------", "runtime XDG requiere permisos 0700")
+assert(paths.run() == xdg_root .. "/runtime", "runtime privado incorrecto")
+assert(vim.fn.getfperm(paths.run()) == "rwx------", "runtime privado requiere permisos 0700")
 assert(package.loaded["config.options"], "config.options no se cargo")
 assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
@@ -104,7 +106,7 @@ assert(listchars.extends == ">", "listchars.extends incorrecto")
 assert(listchars.precedes == "<", "listchars.precedes incorrecto")
 assert(listchars.nbsp == "+", "listchars.nbsp incorrecto")
 
-local state_root = xdg_root .. "/state/nvim"
+local state_root = xdg_root .. "/state/profesor/nvim"
 assert(vim.o.undofile, "undo persistente debe estar activo")
 assert(vim.o.swapfile, "swap debe estar activo")
 assert(vim.o.undodir:find(state_root .. "/undo", 1, true) == 1, "undodir no esta aislado")

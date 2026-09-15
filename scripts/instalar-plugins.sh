@@ -23,4 +23,4 @@ if [ "$all_locked" -eq 1 ] && [ "$plugin_count" -gt 0 ]; then
 fi
 
 # restore respeta lazy-lock.json; no actualiza las revisiones fijadas.
-"$SCRIPT_DIR/arrancar.sh" --headless "+Lazy! restore" "+qa"
+ENTORNO_INSTALL_PLUGINS=1 "$SCRIPT_DIR/arrancar.sh" --headless "+Lazy! restore" "+qa"

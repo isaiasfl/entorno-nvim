@@ -5,17 +5,19 @@ end
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
--- nvim-tree es el unico explorador de directorios de esta configuracion.
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
+require("config.profile").setup()
 require("config.paths").setup_tool_path()
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.lazy")
+if not require("config.lazy").available then
+  require("config.navigation").setup()
+end
 require("config.theme").setup()
 require("config.lsp").setup()
 require("config.completion").setup()
-require("config.markdown_pdf").setup()
+if require("config.profile").has("pdf") then
+  require("config.markdown_pdf").setup()
+end
 require("config.dashboard").setup()

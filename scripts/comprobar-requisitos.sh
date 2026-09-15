@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/comun.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
 ENTORNO_VERSION=$(sed -n '1p' "$PROJECT_ROOT/VERSION")
 [ -n "$ENTORNO_VERSION" ] || {
   printf '%s\n' "Error: VERSION esta vacio." >&2
@@ -13,13 +14,13 @@ ENTORNO_VERSION=$(sed -n '1p' "$PROJECT_ROOT/VERSION")
 
 USER_HOME=${ENTORNO_NVIM_HOME:-"$HOME"}
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
-DEFAULT_NVIM_BIN="$USER_HOME/.local/opt/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
+DEFAULT_NVIM_BIN="$ENTORNO_TOOLS_ROOT/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
 if [ ! -x "$DEFAULT_NVIM_BIN" ] && [ "$(uname -s)" = Darwin ]; then
   DEFAULT_NVIM_BIN=$(command -v nvim 2>/dev/null || printf '%s' "$DEFAULT_NVIM_BIN")
 fi
 NVIM_BIN=${NVIM_BIN:-"$DEFAULT_NVIM_BIN"}
-TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$USER_HOME/.local/opt/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter"}
-DEFAULT_LUALS_BIN="$USER_HOME/.local/opt/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
+TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$ENTORNO_TOOLS_ROOT/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter"}
+DEFAULT_LUALS_BIN="$ENTORNO_TOOLS_ROOT/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
 if [ ! -x "$DEFAULT_LUALS_BIN" ] && [ "$(uname -s)" = Darwin ]; then
   DEFAULT_LUALS_BIN=$(command -v lua-language-server 2>/dev/null || printf '%s' "$DEFAULT_LUALS_BIN")
 fi
@@ -80,7 +81,7 @@ command_required ripgrep rg
 command_required lazygit lazygit
 command_required Node node
 command_required Corepack corepack
-command_required Pandoc pandoc
+command_optional Pandoc pandoc
 if command -v chromium >/dev/null 2>&1; then
   ok navegador "$(command -v chromium)"
 elif command -v google-chrome >/dev/null 2>&1; then
