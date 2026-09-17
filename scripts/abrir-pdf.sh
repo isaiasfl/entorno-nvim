@@ -30,6 +30,13 @@ case $(uname -s) in
     exec open "$PDF"
     ;;
   Linux)
+    if [ -n "${WSL_DISTRO_NAME:-}" ] || { [ -r /proc/version ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
+      if command -v wslview >/dev/null 2>&1; then
+        exec wslview "$PDF"
+      elif command -v explorer.exe >/dev/null 2>&1; then
+        exec explorer.exe "$PDF"
+      fi
+    fi
     command -v xdg-open >/dev/null 2>&1 ||
       fail "no se encontró xdg-open; configura ENTORNO_PDF_VIEWER"
     exec xdg-open "$PDF"

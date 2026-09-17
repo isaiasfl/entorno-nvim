@@ -6,6 +6,8 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/comun.sh"
 . "$SCRIPT_DIR/lib/rutas.sh"
+. "$SCRIPT_DIR/lib/plataforma.sh"
+entorno_preferir_node_vendor
 ENTORNO_VERSION=$(sed -n '1p' "$PROJECT_ROOT/VERSION")
 [ -n "$ENTORNO_VERSION" ] || {
   printf '%s\n' "Error: VERSION esta vacio." >&2
@@ -72,15 +74,15 @@ node_package_matches() {
   ' "$package_dir" "$package_name" 2>/dev/null
 }
 
-printf 'entorno-nvim v%s - %s %s\n\n' "$ENTORNO_VERSION" "$(uname -s)" "$(uname -m)"
+printf 'entorno-nvim v%s - %s %s' "$ENTORNO_VERSION" "$ENTORNO_OS" "$ENTORNO_ARCH"
+[ "$ENTORNO_IS_WSL" = 1 ] && printf ' (WSL2)'
+printf ' - %s\n\n' "$ENTORNO_DISTRO"
 command_required git git
 command_required tmux tmux
 command_required fzf fzf
 command_required fd fd fdfind
 command_required ripgrep rg
 command_required lazygit lazygit
-command_required Node node
-command_required Corepack corepack
 command_optional Pandoc pandoc
 if command -v chromium >/dev/null 2>&1; then
   ok navegador "$(command -v chromium)"
@@ -92,6 +94,8 @@ elif [ -x "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ] \
   || [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
   || [ -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then
   ok navegador "aplicacion macOS detectada"
+elif [ "$ENTORNO_IS_WSL" = 1 ]; then
+  opcional navegador "WSL2 sin navegador: el PDF y el visor quedaran deshabilitados"
 else
   falta navegador "Chromium, Google Chrome o Brave no encontrado"
 fi
@@ -105,11 +109,21 @@ command_optional pdftoppm pdftoppm
 command_optional "visor PDF" xdg-open open
 
 if command -v node >/dev/null 2>&1; then
+  node_origen=sistema
+  entorno_node_bin_dir >/dev/null 2>&1 && node_origen=vendorizado
   compatible=$(node -p "const [a,b]=process.versions.node.split('.').map(Number); Number(a === $ENTORNO_NODE_MAJOR && b >= $ENTORNO_NODE_MIN_MINOR)" 2>/dev/null || printf 0)
-  if [ "$compatible" = 1 ]; then ok "Node compatible" "$(node --version)"; else falta "Node compatible" "se requiere >=24 <25"; fi
+  if [ "$compatible" = 1 ]; then
+    ok "Node compatible" "$(node --version) ($node_origen)"
+  else
+    falta "Node compatible" "se requiere >=$ENTORNO_NODE_MAJOR <$((ENTORNO_NODE_MAJOR + 1)); ejecuta scripts/instalar-node.sh"
+  fi
+else
+  falta Node "ejecuta scripts/instalar-node.sh"
 fi
 if command -v corepack >/dev/null 2>&1; then
   ok pnpm "v$ENTORNO_PNPM_VERSION fijado por packageManager; no se requiere global"
+else
+  falta Corepack "lo incluye el Node vendorizado; ejecuta scripts/instalar-node.sh"
 fi
 
 if [ -x "$NVIM_BIN" ] && [ "$("$NVIM_BIN" --version | sed -n '1s/^NVIM v//p')" = "$ENTORNO_NVIM_VERSION" ] \

@@ -267,3 +267,33 @@ La instalación vigente usa Node `>=24 <25`, en lugar de conservar el límite
 histórico de Node 22. Las herramientas LSP no requieren la rama anterior y Node
 24 ofrece una base LTS más actual para máquinas nuevas. pnpm continúa fijado por
 `packageManager` y los lockfiles; no se instala globalmente.
+
+## Node vendorizado y plataformas docentes
+
+Exigir al alumno un Node 24 del sistema era el principal bloqueo real: Debian 13
+no lo trae, Arch es una distribución rodante y no todas las instalaciones
+incluyen `corepack`. Para que el mismo repositorio funcione en WSL2, Debian y
+Arch sin administrar el sistema, `scripts/instalar-node.sh` descarga Node 24
+LTS dentro de `.tools/`, con `SHA-256` publicado por nodejs.org y validación de
+rutas del archivo antes de extraer. `scripts/lib/plataforma.sh` concentra la
+detección de sistema, distribución, WSL2 y arquitectura, y decide el artefacto
+(`linux-x64`, `linux-arm64`, `darwin-arm64`, `darwin-x64`). El Node del sistema
+solo se usa como respaldo si no existe artefacto fijado para esa arquitectura.
+
+`scripts/arrancar.sh` antepone ese Node al `PATH` porque los lanzadores de los
+servidores LSP invocan `node` por `PATH`. En WSL2 el navegador pasa a ser
+opcional: sin WSLg no hay portapapeles X11 y el PDF puede no estar disponible,
+pero el editor, tmux, lazygit y Git funcionan. La configuración detecta el
+portapapeles de Windows (`win32yank.exe` o `clip.exe`/`powershell.exe`) y el
+visor del PDF intenta `wslview` o `explorer.exe` antes de `xdg-open`. La guía
+para el alumno vive en [alumno.md](alumno.md).
+
+## Instalador comodo y seguro
+
+`instalar.sh` es el unico comando que necesita el alumno. Clasifica lo que falta
+en imprescindible y opcional, descarga sin `sudo` todo lo que vive en el
+repositorio y, si falta un paquete del sistema, imprime el comando exacto para
+la distribucion detectada. La opcion `--sistema` muestra ese comando, pide
+confirmacion por terminal y solo entonces lo ejecuta con `sudo`; nunca instala
+paquetes en silencio. `comprobar-requisitos.sh` queda como diagnostico de solo
+lectura. Se mantiene la regla de no usar `sudo` sin consentimiento explicito.

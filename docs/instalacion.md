@@ -40,20 +40,25 @@ Intel y Apple Silicon tienen checksum auditado. Neovim 0.12.4 y LuaLS 3.19.0
 deben prepararse externamente y pasarse mediante `NVIM_BIN` y `LUALS_BIN`; la
 V1 se niega a fingir una instalación reproducible sin artefactos auditados.
 
-Si faltan paquetes del sistema, el instalador imprime un comando orientativo
-para `apt`, `pacman` o Homebrew y termina. El usuario debe revisarlo y aprobar
-su ejecución separadamente; el script nunca lo ejecuta.
+Si faltan paquetes del sistema, el instalador los clasifica en imprescindibles
+y opcionales, imprime el comando orientativo para `apt`, `pacman` o Homebrew y
+se detiene sin ejecutarlo. Con `./scripts/instalar.sh --sistema` muestra ese
+mismo comando, pide confirmación interactiva y solo entonces lo ejecuta con
+`sudo`; nunca instala paquetes de forma silenciosa.
 
 ## Orden y fuentes
 
 1. Neovim 0.12.4 bajo `~/.local/opt`, con SHA-256 del tarball y del binario.
 2. tree-sitter CLI 0.26.11, con ZIP y plataforma explícitos.
 3. LuaLS 3.19.0, con SHA-256 del tarball y del binario.
-4. LSP web y Pyright mediante Corepack/pnpm 11.18.0 y lockfiles congelados.
-5. plugins mediante `:Lazy restore`, respetando `lazy-lock.json`.
-6. parsers Tree-sitter enumerados explícitamente y compilados en la raíz XDG.
-7. comprobación final de requisitos.
-8. comprobación final sin crear enlaces globales. El enlace seguro opcional
+4. Node 24 LTS bajo `.tools/` con el SHA-256 publicado por nodejs.org para la
+   plataforma detectada; evita depender del Node del sistema del alumno.
+5. LSP web y Pyright mediante el Corepack/pnpm 11.18.0 del Node anterior y
+   lockfiles congelados.
+6. plugins mediante `:Lazy restore`, respetando `lazy-lock.json`.
+7. parsers Tree-sitter enumerados explícitamente y compilados en la raíz XDG.
+8. comprobación final de requisitos.
+9. comprobación final sin crear enlaces globales. El enlace seguro opcional
    del lanzador `entorno-dev` se crea aparte con
    `scripts/instalar-entorno-dev.sh`.
 

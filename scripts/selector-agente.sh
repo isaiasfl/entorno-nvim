@@ -35,7 +35,12 @@ queue_in_pane() {
   handoff_buffer="entorno-agent-selector-$$"
   tmux_cmd set-buffer -b "$handoff_buffer" "$1"
   tmux_path=$(command -v tmux)
-  delayed_enter="sleep 0.1; $(shell_quote "$tmux_path") -L $(shell_quote "$TMUX_SOCKET")"
+  selector_pid=$$
+  # El texto debe pegarse cuando este selector ya haya terminado, para no
+  # escribir en su tty. Esperar al PID es determinista incluso con carga alta;
+  # el retardo fijo anterior provocaba carreras intermitentes.
+  delayed_enter="while kill -0 $selector_pid 2>/dev/null; do sleep 0.05; done; sleep 0.05;"
+  delayed_enter="$delayed_enter $(shell_quote "$tmux_path") -L $(shell_quote "$TMUX_SOCKET")"
   delayed_enter="$delayed_enter paste-buffer -d -b $(shell_quote "$handoff_buffer") -t $(shell_quote "$TMUX_PANE");"
   delayed_enter="$delayed_enter $(shell_quote "$tmux_path") -L $(shell_quote "$TMUX_SOCKET")"
   delayed_enter="$delayed_enter send-keys -t $(shell_quote "$TMUX_PANE") Enter"

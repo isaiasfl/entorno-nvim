@@ -80,6 +80,88 @@ máquina no: la persistencia tras reinicios queda aplazada.
 | Formatear con LSP | `<leader>lf` |
 | Volver al dashboard | `:IFL` |
 
+### Moverse
+
+| Tecla | Acción |
+| --- | --- |
+| `h j k l` | Carácter a la izquierda/abajo/arriba/derecha |
+| `w` / `b` / `e` | Palabra siguiente/anterior/final de palabra |
+| `W` / `B` / `E` | Igual pero por espacios (ignora puntuación) |
+| `0` / `^` / `$` | Inicio de línea / primer carácter / final |
+| `{` / `}` | Párrafo anterior/siguiente (línea en blanco) |
+| `(` / `)` | Frase anterior/siguiente (. ! ?) |
+| `%` | Salta a la pareja de `()`, `[]`, `{}` |
+| `gg` / `G` | Inicio/final del archivo |
+| `Ctrl+d` / `Ctrl+u` | Media pantalla abajo/arriba |
+| `H` / `M` / `L` | Arriba/centro/abajo de la pantalla |
+| `zz` / `zt` / `zb` | Centrar/arriba/abajo con el cursor |
+| `f`/`t` + carácter | Ir al carácter / justo antes; `;` y `,` repiten |
+| `Ctrl+o` / `Ctrl+i` | Saltos anteriores/posteriores |
+
+### Seleccionar (modo visual)
+
+| Tecla | Acción |
+| --- | --- |
+| `v` / `V` / `Ctrl+v` | Selección por caracteres / líneas / bloque rectangular |
+| `o` | Saltar al otro extremo de la selección |
+| `gv` | Reseleccionar lo último seleccionado |
+| `viw` / `vaw` | Seleccionar palabra interior / con espacios |
+| `vi"` / `va"` | Seleccionar dentro de `"..."` / incluyendo las comillas |
+| `vi(` / `va(` | Igual con paréntesis; también `b`, `[`, `{`, `<`, `` ` ``, `'` |
+| `vip` / `vap` | Seleccionar el párrafo interior / con línea en blanco |
+
+### Objetos de texto (la clave: `i` dentro, `a` alrededor)
+
+Se combinan con `d` (borrar), `c` (cambiar), `y` (copiar) y `v` (seleccionar):
+
+| Objeto | Qué abarca |
+| --- | --- |
+| `iw` / `aw` | Palabra / palabra y espacio siguiente |
+| `i"` / `a"` | Dentro de `"..."` / incluyendo las comillas (también `'` y `` ` ``) |
+| `i(` / `a(` | Dentro de `(...)` / incluyendo los paréntesis (también `b`, `[`, `{`, `<`) |
+| `ip` / `ap` | Párrafo / párrafo y línea en blanco |
+| `is` / `as` | Frase / frase y espacio |
+| `it` / `at` | Contenido de una etiqueta HTML/XML / la etiqueta completa |
+
+Ejemplos: `ciw` → cambiar la palabra, `ci"` → cambiar el texto de unas comillas,
+`ci(` → cambiar el contenido de unos paréntesis, `dap` → borrar el párrafo
+entero, `ya(` → copiar unos paréntesis con su contenido, `vip` → seleccionar el
+párrafo.
+
+### Copiar, cortar y pegar
+
+| Tecla | Acción |
+| --- | --- |
+| `yy` / `yiw` / `y$` / `yap` | Copiar línea / palabra / hasta fin de línea / párrafo |
+| `dd` / `diw` / `d$` / `dap` | Cortar (borrar) igual que arriba |
+| `p` / `P` | Pegar después / antes del cursor |
+| `"+y` / `"+p` | Copiar/pegar en el portapapeles del escritorio |
+| `"_d` | Borrar sin guardar en ningún registro |
+
+### Mover líneas o bloques
+
+| Tecla | Acción |
+| --- | --- |
+| `Alt-Shift-j` / `Alt-Shift-k` | Mover línea o selección abajo/arriba (Linux) |
+| `Cmd-Shift-↓` / `Cmd-Shift-↑` | Lo mismo en macOS |
+| `<leader>d` | Duplicar la línea actual |
+| `ddp` / `ddkP` | Bajar/subir la línea actual con `dd` + pegar |
+| `:m .+1` / `:m -2` | Mover la línea con comando |
+
+### Reemplazar y cambiar
+
+| Tecla | Acción |
+| --- | --- |
+| `r` + carácter | Reemplazar un solo carácter |
+| `R` | Modo reemplazo hasta salir con `Esc` |
+| `s` / `S` | Borrar carácter/línea y escribir |
+| `cc` / `C` | Cambiar la línea / hasta el final de la línea |
+| `ciw`, `ci"`, `ci(`, `cip` | Cambiar palabra, comillas, paréntesis, párrafo |
+| `~` | Cambiar mayúsculas/minúsculas del carácter |
+| `:%s/viejo/nuevo/gc` | Sustituir en todo el archivo pidiendo confirmación |
+| `:s/viejo/nuevo/g` | Sustituir en la línea actual |
+| `.` / `u` / `Ctrl+r` | Repetir / deshacer / rehacer |
+
 ## AGENTES
 
 Solo disponibles con `--ia`; no se habilitan por elegir el perfil profesor.

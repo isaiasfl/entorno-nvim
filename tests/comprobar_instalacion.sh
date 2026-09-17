@@ -14,6 +14,7 @@ TEST_TOOLS="$TEST_ROOT/tools"
 export ENTORNO_TOOLS_ROOT="$TEST_TOOLS"
 export ENTORNO_PERFIL=profesor
 TMUX_SOCKET="entorno-nvim-install-$$"
+. "$PROJECT_ROOT/scripts/lib/plataforma.sh"
 
 cleanup() {
   tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
@@ -54,6 +55,17 @@ for directory in "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION"; do
   }
   ln -s "$SOURCE_TOOLS/$directory" "$TEST_TOOLS/$directory"
 done
+
+# El Node vendorizado forma parte de la instalacion preparada: la prueba
+# aislada debe reutilizarlo igual que Neovim, LuaLS y tree-sitter.
+if [ -n "${ENTORNO_NODE_PLATFORM:-}" ]; then
+  node_directory="node-$ENTORNO_NODE_VERSION-$ENTORNO_NODE_PLATFORM"
+  [ -d "$SOURCE_TOOLS/$node_directory" ] || {
+    printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$node_directory" >&2
+    exit 1
+  }
+  ln -s "$SOURCE_TOOLS/$node_directory" "$TEST_TOOLS/$node_directory"
+fi
 
 if [ "$(uname -s)" = Darwin ]; then
   mkdir -p \

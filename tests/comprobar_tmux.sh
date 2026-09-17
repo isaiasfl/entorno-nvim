@@ -763,6 +763,16 @@ while [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent 2>/dev/nu
   fi
   sleep 1
 done
+# La cesion del panel termina cuando el selector sale y el shell de reemplazo
+# recibe el comando. Esperar ese estado evita enviar `exit` antes de tiempo,
+# que bajo carga cerraba el panel en lugar de volver al selector.
+attempts=0
+while [ -n "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_selector_state 2>/dev/null || true)" ]; do
+  attempts=$((attempts + 1))
+  [ "$attempts" -lt 20 ] || fail "el selector no libero su estado al ceder el panel"
+  sleep 1
+done
+sleep 1
 attempts=0
 while [ "$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')" != sh ]; do
   attempts=$((attempts + 1))

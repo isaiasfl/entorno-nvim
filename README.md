@@ -29,15 +29,7 @@ El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
 ## Instalación rápida
 
-Para empezar con Neovim 0.12+ ya instalado, sin sustituir su configuracion:
-
-```sh
-./bin/entorno-dev --perfil dwec /ruta/a/mi-proyecto
-```
-
-Abre en modo nativo si faltan plugins o servidores. `:EntornoInfo` muestra lo
-pendiente; el autocompletado requiere preparar los LSP. Para disponer de todos
-los componentes fijados:
+Para descargar y preparar el entorno sin sustituir tu configuración de Neovim:
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
@@ -47,9 +39,24 @@ cd entorno-nvim
 ./bin/entorno-dev --perfil dwec
 ```
 
+El último comando abre la carpeta actual. Para abrir un proyecto concreto:
+
+```sh
+./bin/entorno-dev --perfil dwec /ruta/a/mi-proyecto
+```
+
+Si ya tienes Neovim 0.12+ y aún no has instalado los componentes opcionales,
+puedes probar el lanzador tras clonar: abre en modo nativo y `:EntornoInfo`
+muestra lo pendiente. El autocompletado requiere preparar los LSP.
+
 El instalador es idempotente, no usa `sudo`, no activa la configuración y no
-elimina instalaciones anteriores. Si faltan paquetes del sistema, muestra un
-comando orientativo y se detiene. Véase [instalación V1](docs/instalacion.md).
+elimina instalaciones anteriores. Comprueba qué falta, separa imprescindibles de
+opcionales y descarga Node 24 LTS verificado dentro del repositorio, así que no
+hace falta preparar Node a mano. Si faltan paquetes del sistema, muestra el
+comando exacto y se detiene; con `./scripts/instalar.sh --sistema` ofrece
+ejecutarlo con `sudo` tras pedir confirmación. Pensado para WSL2, Debian/Ubuntu
+y Arch/CachyOS; guía paso a paso en [alumno.md](docs/alumno.md). Véase también
+[instalación V1](docs/instalacion.md).
 
 ## Comprobar requisitos
 

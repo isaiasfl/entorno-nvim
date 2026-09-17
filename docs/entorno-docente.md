@@ -13,8 +13,13 @@ autocompletado de lenguajes este disponible sin sus servidores**.
 
 El comportamiento docente completo se prepara con las versiones fijadas.
 La base esta dirigida a Omarchy/Arch, Debian y Ubuntu, con o sin escritorio,
-y Ubuntu dentro de WSL2. WSL2 y Debian requieren validacion real adicional;
-las pruebas locales de esta fase se realizan en Omarchy.
+y Ubuntu dentro de WSL2. Node 24 LTS se descarga verificado dentro del
+repositorio (`scripts/instalar-node.sh`), de modo que el alumno no depende de un
+Node 24 del sistema. `scripts/lib/plataforma.sh` centraliza la deteccion de
+distribucion, WSL2 y arquitectura. En WSL2 el navegador es opcional: sin WSLg se
+mantienen editor, tmux, lazygit y Git, pero el PDF puede no estar disponible.
+WSL2 y Debian requieren validacion real adicional; las pruebas locales de esta
+fase se realizan en Omarchy.
 
 ## Uso desde una carpeta
 
@@ -87,10 +92,12 @@ explicito de ese enlace sigue disponible para quien quiera instalarlo.
 `activar.sh` y `restaurar.sh` se conservan como procedimientos historicos de V1;
 **no son necesarios ni recomendados para convivir con Omarchy**.
 
-Node y Corepack todavia son requisitos externos de la instalacion LSP; esta
-fase no instala runtimes nuevos. Pandoc es opcional: solo hace falta para el
-perfil profesor y la exportacion Markdown/PDF; los perfiles inicial, DWEC y SI
-funcionan sin el. El arranque nativo puede usar Neovim 0.12+ existente, mientras
+Node y Corepack ya no son requisitos externos: `scripts/instalar-node.sh`
+descarga Node 24 LTS verificado dentro de `.tools/`. En arquitecturas sin
+artefacto fijado (por ejemplo Linux ARM) se usa el Node del sistema y Neovim,
+LuaLS o tree-sitter deben prepararse aparte. Pandoc es opcional: solo hace
+falta para el perfil profesor y la exportacion Markdown/PDF; los perfiles
+inicial, DWEC y SI funcionan sin el. El arranque nativo puede usar Neovim 0.12+ existente, mientras
 `comprobar-requisitos.sh` distingue requisitos obligatorios de opcionales. Un perfil no es una barrera de seguridad:
 los comandos conservan los permisos del usuario.
 

@@ -263,17 +263,20 @@ Fuentes oficiales consultadas:
 
 ## Instalación reproducible
 
-Node 22.23.2 y Corepack 0.34.6 ya estaban instalados. No se ejecuta
-`corepack enable`, no se instala pnpm globalmente y no se cambia el `PATH`.
+La configuración vigente adopta Node `>=24 <25` LTS. El instalador descarga
+Node 24.21.0 verificado dentro de `.tools/` (`scripts/instalar-node.sh`) y usa
+su Corepack; no se ejecuta `corepack enable`, no se instala pnpm globalmente y
+no se cambia el `PATH` de forma permanente. Los instaladores LSP anteponen ese
+Node vendorizado cuando existe y solo recurren al Node del sistema si no hay
+artefacto fijado para la arquitectura.
 
 ```sh
+./scripts/instalar-node.sh
 ./scripts/instalar-lsp-web.sh
 ./scripts/instalar-lsp-python.sh
 ```
 
-En otra máquina, después de clonar el repositorio y comprobar que existen Node
-La configuración vigente adopta Node `>=24 <25` LTS y Corepack. El comando para
-recrear esta subfase es:
+El comando para recrear esta subfase es:
 
 ```sh
 cd /ruta/al/entorno-nvim

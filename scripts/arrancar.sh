@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/rutas.sh"
+. "$SCRIPT_DIR/lib/plataforma.sh"
 ENTORNO_PERFIL=${ENTORNO_PERFIL:-profesor}
 case "$ENTORNO_PERFIL" in
   inicial | dwec | si | profesor) ;;
@@ -48,6 +49,10 @@ if [ -x "$TREE_SITTER_BIN" ]; then
   TREE_SITTER_DIR=$(dirname "$TREE_SITTER_BIN")
   PATH="$TREE_SITTER_DIR:$PATH"
 fi
+
+# Los servidores LSP web y Pyright son lanzadores que invocan `node` por PATH.
+# Anteponer el Node vendorizado evita depender del Node del sistema del alumno.
+entorno_preferir_node_vendor
 
 case "$NVIM_BIN" in
   */*)

@@ -4,6 +4,9 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
+. "$SCRIPT_DIR/lib/plataforma.sh"
+entorno_preferir_node_vendor
 TOOLS_DIR="$PROJECT_ROOT/tools/lsp-python"
 XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 
