@@ -14,9 +14,9 @@ cd entorno-nvim
 Este carril instala los paquetes básicos que falten (`git`, `tmux`, `fzf`,
 `fd-find`, `ripgrep`, `curl`, `tar` y certificados), descarga Neovim y Node 24
 locales y verificados e instala los plugins, Pyright y Bash Language Server con
-versiones fijadas. No requiere el Neovim antiguo de Ubuntu y no usa un posible
-`nvim.exe` de Windows heredado por WSL2. ShellCheck es recomendable para obtener
-diagnósticos adicionales, pero su ausencia no bloquea la instalación.
+versiones fijadas. También instala ShellCheck para diagnosticar scripts. No
+requiere el Neovim antiguo de Ubuntu y no usa un posible `nvim.exe` de Windows
+heredado por WSL2.
 
 No instala Tree-sitter CLI, parsers externos, Pandoc, navegador, Poppler ni
 LazyGit. Tampoco instala clientes de IA ni gestiona credenciales. Para comprobar

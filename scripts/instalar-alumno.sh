@@ -87,12 +87,10 @@ case "$ENTORNO_OS:$ENTORNO_ARCH" in
 esac
 
 faltan=
-for herramienta in git tmux curl tar fzf rg; do
+for herramienta in git tmux curl tar fzf rg shellcheck; do
   command -v "$herramienta" >/dev/null 2>&1 || faltan="$faltan $herramienta"
 done
 entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
-[ -n "$(command -v shellcheck 2>/dev/null || true)" ] || \
-  printf '%s\n' "Aviso: ShellCheck no esta instalado; Bash LSP funcionara, pero con menos diagnosticos." >&2
 faltan=${faltan# }
 
 printf 'Entorno alumno - %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
@@ -140,7 +138,7 @@ if [ -n "$faltan" ]; then
     *) printf '%s\n' "Cancelado. No se ha modificado el sistema." >&2; exit 1 ;;
   esac
   sh -c "$comando"
-  for herramienta in git tmux curl tar fzf rg; do
+  for herramienta in git tmux curl tar fzf rg shellcheck; do
     command -v "$herramienta" >/dev/null 2>&1 || {
       printf 'Error: %s sigue sin estar disponible.\n' "$herramienta" >&2
       exit 1

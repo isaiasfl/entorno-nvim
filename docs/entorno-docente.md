@@ -55,9 +55,8 @@ permite elegir otras raices.
 | profesor (predeterminado) | Web, Python y Lua | Si | Si | Si; desactivar con `--sin-ia` |
 
 La seleccion reside en `nvim/lua/config/profile.lua`. El perfil SI incorpora
-Bash Language Server 5.6.0 con Node 24 local y Pyright. ShellCheck amplía los
-diagnósticos si está instalado, pero no bloquea el entorno. Siguen pendientes
-las integraciones de Zsh, Docker, kubectl y Kubernetes.
+Bash Language Server 5.6.0 con Node 24 local, ShellCheck y Pyright. Siguen
+pendientes las integraciones de Zsh, Docker, kubectl y Kubernetes.
 
 `:EntornoInfo` indica el perfil, la IA y los componentes pendientes. Si faltan
 plugins, funcionan el explorador nativo, la apertura de archivos, los buffers

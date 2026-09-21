@@ -39,8 +39,8 @@ entorno-dev --perfil si --ia
 ```
 
 Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, Neovim y Node 24 locales,
-plugins fijados, Pyright y Bash Language Server. ShellCheck mejora los
-diagnósticos si está disponible. No instala Pandoc, Chromium, Poppler ni
+plugins fijados, Pyright, Bash Language Server y ShellCheck para diagnósticos
+de scripts. No instala Pandoc, Chromium, Poppler ni
 herramientas PDF. Tampoco toca `~/.config/nvim` ni usa un posible Neovim de
 Windows desde WSL2.
 
