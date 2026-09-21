@@ -120,6 +120,7 @@ entorno_paquete_sistema() {
     debian | ubuntu)
       case "$clave" in
         fd) printf 'fd-find' ;;
+        xz) printf 'xz-utils' ;;
         compilador) printf 'build-essential' ;;
         navegador) printf 'chromium' ;;
         poppler) printf 'poppler-utils' ;;

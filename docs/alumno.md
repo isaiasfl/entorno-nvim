@@ -5,32 +5,43 @@
 
 ## Instalación esencial recomendada (Ubuntu, Pop!_OS y WSL2)
 
+Elige el perfil de la asignatura. Para **DWEC**:
+
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --sistema
+./scripts/instalar-alumno.sh --perfil dwec --sistema
 ```
 
 Este carril instala los paquetes básicos que falten (`git`, `tmux`, `fzf`,
-`fd-find`, `ripgrep`, `curl`, `tar` y certificados), descarga Neovim y Node 24
-locales y verificados e instala los plugins, Pyright y Bash Language Server con
-versiones fijadas. También instala ShellCheck para diagnosticar scripts. No
+`fd-find`, `ripgrep`, `curl`, `tar`, `xz-utils` y certificados), descarga
+Neovim y Node 24 locales y verificados e instala los plugins y servidores de
+HTML, CSS, JSON, JavaScript, TypeScript y Tailwind con versiones fijadas. No
 requiere el Neovim antiguo de Ubuntu y no usa un posible `nvim.exe` de Windows
 heredado por WSL2.
+
+Para **Sistemas Informáticos**, sustituye `dwec` por `si`; ese perfil instala
+Bash Language Server, ShellCheck y Pyright.
 
 No instala Tree-sitter CLI, parsers externos, Pandoc, navegador, Poppler ni
 LazyGit. Tampoco instala clientes de IA ni gestiona credenciales. Para comprobar
 el estado sin modificar nada:
 
 ```sh
-./scripts/instalar-alumno.sh --comprobar
+./scripts/instalar-alumno.sh --perfil dwec --comprobar
 ```
 
-Para abrir el perfil de Sistemas Informáticos con la integración de IA:
+Para abrir un proyecto de DWEC sin IA:
 
 ```sh
-entorno-dev --perfil si --ia /ruta/al/proyecto
+entorno-dev --perfil dwec --sin-ia /ruta/al/proyecto
 ```
+
+La terminal del perfil incluye `node`, `npm`, `npx` y el compilador `tsc`
+fijado por el entorno. Para una comprobación rápida use `tsc --noEmit archivo.ts`.
+Use `npx tsc` solamente cuando el proyecto declare `typescript` en sus
+`devDependencies`; de lo contrario npm puede descargar el paquete homónimo
+incorrecto llamado `tsc`.
 
 La IA se podrá seleccionar solamente si el alumno ya tiene instalado y
 configurado un cliente compatible. El editor y tmux funcionan sin él. El

@@ -68,13 +68,17 @@ do
   fi
 done
 
-if packages_match "$TAILWIND_FIXTURE_DIR"; then
-  printf '%s\n' "Fixture Tailwind v4 ya instalado con las versiones fijadas."
-else
-  cd "$TAILWIND_FIXTURE_DIR"
-  corepack "pnpm@$ENTORNO_PNPM_VERSION" install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
-  corepack "pnpm@$ENTORNO_PNPM_VERSION" ignored-builds
+if [ "${ENTORNO_SIN_FIXTURES:-0}" != 1 ]; then
+  if packages_match "$TAILWIND_FIXTURE_DIR"; then
+    printf '%s\n' "Fixture Tailwind v4 ya instalado con las versiones fijadas."
+  else
+    cd "$TAILWIND_FIXTURE_DIR"
+    corepack "pnpm@$ENTORNO_PNPM_VERSION" install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+    corepack "pnpm@$ENTORNO_PNPM_VERSION" ignored-builds
+  fi
 fi
 
 printf '%s\n' "Servidores LSP web instalados en $TOOLS_DIR/node_modules/.bin"
-printf '%s\n' "Fixture Tailwind v4 instalado en $TAILWIND_FIXTURE_DIR/node_modules"
+if [ "${ENTORNO_SIN_FIXTURES:-0}" != 1 ]; then
+  printf '%s\n' "Fixture Tailwind v4 instalado en $TAILWIND_FIXTURE_DIR/node_modules"
+fi

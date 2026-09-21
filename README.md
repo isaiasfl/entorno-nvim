@@ -9,6 +9,9 @@ explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
 **[Chuleta para alumnado](chuleta_comandos.md)**: instalación, perfiles,
 sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
 
+**[Fragmento HTML para Moodle DWEC](docs/moodle-dwec.html)**: entrada breve con
+instalación, enlaces, bloques de comandos, atajos e incidencias.
+
 ## Qué es
 
 La evolucion docente portable ya dispone de perfiles y arranque minimo sin
@@ -32,33 +35,36 @@ El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
 ## Instalación rápida para alumnado
 
-Para una primera clase en Ubuntu, Pop!_OS o WSL2 usa el carril mínimo:
+Para una clase de DWEC en Ubuntu, Pop!_OS o WSL2 usa el carril web:
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --sistema
-entorno-dev --perfil si --ia
+./scripts/instalar-alumno.sh --perfil dwec --sistema
+entorno-dev --perfil dwec --sin-ia ~/ruta/del/proyecto
 ```
 
-Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, Neovim y Node 24 locales,
-plugins fijados, Pyright, Bash Language Server y ShellCheck para diagnósticos
-de scripts. No instala Pandoc, Chromium, Poppler ni
-herramientas PDF. Tampoco toca `~/.config/nvim` ni usa un posible Neovim de
-Windows desde WSL2.
+Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, `xz`, Neovim y Node 24 locales,
+plugins fijados y los servidores de HTML, CSS, JSON, JavaScript, TypeScript y
+Tailwind. El perfil muestra diagnósticos de código y ofrece completado,
+navegación y renombrado. La terminal del entorno recibe automáticamente ese
+Node local, junto con `npm`, `npx` y Corepack. No instala Pandoc, Chromium,
+Poppler ni herramientas PDF. Tampoco toca `~/.config/nvim` ni usa un posible
+Neovim de Windows desde WSL2.
 
 El último comando abre la carpeta actual. Para abrir un proyecto concreto:
 
 ```sh
-entorno-dev --perfil si --ia /ruta/a/mi-proyecto
+entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
 ```
 
 La IA solo se abre si ya existe un cliente compatible configurado; el editor y
 tmux funcionan sin él. El instalador crea de forma segura el comando en
 `~/.local/bin/entorno-dev` y no sobrescribe archivos ajenos. Si la terminal
 actual todavía no incluye esa carpeta en `PATH`, muestra cómo activarla.
-`./scripts/instalar-alumno.sh --comprobar` diagnostica esta instalación sin
-modificar nada.
+`./scripts/instalar-alumno.sh --perfil dwec --comprobar` diagnostica esta
+instalación sin modificar nada. Para Sistemas se conserva el carril
+`--perfil si`, con Bash Language Server, ShellCheck y Pyright.
 
 ## Instalación completa
 

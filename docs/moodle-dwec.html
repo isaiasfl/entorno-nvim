@@ -1,0 +1,91 @@
+<!-- Fragmento para una etiqueta/pagina de Moodle con Formato HTML. -->
+<div class="card border-primary mb-4">
+  <div class="card-body">
+    <p class="text-uppercase text-primary font-weight-bold mb-2">DWEC · Entorno de desarrollo</p>
+    <h3 class="card-title">Neovim, JavaScript, TypeScript y Node.js</h3>
+    <p class="card-text lead mb-3">
+      Entorno preparado para HTML, CSS, JSON, JavaScript, TypeScript, JSX y TSX,
+      con autocompletado, navegación y detección de errores.
+    </p>
+    <p class="mb-0">
+      <a class="btn btn-primary mr-2 mb-2" href="https://github.com/isaiasfl/entorno-nvim" target="_blank" rel="noopener">Repositorio</a>
+      <a class="btn btn-outline-primary mr-2 mb-2" href="https://github.com/isaiasfl/entorno-nvim/blob/main/docs/alumno.md" target="_blank" rel="noopener">Guía de instalación</a>
+      <a class="btn btn-outline-secondary mb-2" href="https://github.com/isaiasfl/entorno-nvim/blob/main/chuleta_comandos.md" target="_blank" rel="noopener">Chuleta completa</a>
+    </p>
+  </div>
+</div>
+
+<div class="alert alert-info" role="alert">
+  <strong>Instalación segura y repetible.</strong> Puede ejecutar de nuevo el
+  instalador después de actualizar el repositorio: conservará lo que ya esté
+  correcto y añadirá lo que falte. No sustituye la configuración personal de
+  Neovim, tmux o la terminal.
+</div>
+
+<h4 class="mt-4">1. Primera instalación</h4>
+<p>Abra una terminal, copie el bloque completo y pulse <kbd>Enter</kbd>:</p>
+<pre class="bg-light border rounded p-3"><code>cd ~
+git clone https://github.com/isaiasfl/entorno-nvim.git
+cd entorno-nvim
+./scripts/instalar-alumno.sh --perfil dwec --sistema</code></pre>
+
+<p>
+  El instalador mostrará los paquetes que falten y pedirá confirmación antes de
+  utilizar <code>sudo</code>. Incluye Node.js 24, npm, npx, Neovim, tmux y los
+  servidores de lenguaje web. <strong>No instala Pandoc, PDF ni Chromium.</strong>
+</p>
+
+<h4 class="mt-4">2. Abrir la carpeta de trabajo</h4>
+<pre class="bg-light border rounded p-3"><code>mkdir -p ~/DWEC
+cd ~/entorno-nvim
+./bin/entorno-dev --perfil dwec --sin-ia ~/DWEC</code></pre>
+<p>
+  Para abrir otro proyecto, sustituya <code>~/DWEC</code> por la ruta de su
+  carpeta. El entorno mostrará Neovim arriba y una terminal debajo.
+</p>
+
+<h4 class="mt-4">3. Actualizar más adelante</h4>
+<pre class="bg-light border rounded p-3"><code>cd ~/entorno-nvim
+git pull
+./scripts/instalar-alumno.sh --perfil dwec --sistema</code></pre>
+
+<h4 class="mt-4">4. Chuleta esencial</h4>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead class="thead-light">
+      <tr><th scope="col">Objetivo</th><th scope="col">Teclas o comando</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Escribir en Neovim</td><td><kbd>i</kbd></td></tr>
+      <tr><td>Volver al modo normal</td><td><kbd>Esc</kbd></td></tr>
+      <tr><td>Guardar</td><td><kbd>Espacio</kbd> y después <kbd>w</kbd></td></tr>
+      <tr><td>Ver el detalle de un error</td><td><kbd>Espacio</kbd>, <kbd>l</kbd>, <kbd>d</kbd></td></tr>
+      <tr><td>Error siguiente / anterior</td><td><kbd>]</kbd><kbd>d</kbd> / <kbd>[</kbd><kbd>d</kbd></td></tr>
+      <tr><td>Ir a la definición</td><td><kbd>g</kbd><kbd>d</kbd></td></tr>
+      <tr><td>Solicitar completado</td><td><kbd>Ctrl</kbd>+<kbd>Espacio</kbd></td></tr>
+      <tr><td>Ir a editor / terminal</td><td><kbd>Ctrl</kbd>+<kbd>a</kbd>, soltar y pulsar <kbd>n</kbd> / <kbd>t</kbd></td></tr>
+      <tr><td>Salir conservando la sesión</td><td><kbd>Ctrl</kbd>+<kbd>a</kbd>, soltar y pulsar <kbd>d</kbd></td></tr>
+      <tr><td>Ejecutar JavaScript</td><td><code>node programa.js</code></td></tr>
+      <tr><td>Comprobar TypeScript</td><td><code>tsc --noEmit programa.ts</code></td></tr>
+      <tr><td>Proyecto con package.json</td><td><code>npm install</code> y <code>npm run dev</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="alert alert-secondary mt-3" role="alert">
+  <strong>Importante:</strong> use <code>tsc</code> directamente con el
+  compilador incluido. Utilice <code>npx tsc</code> sólo si el proyecto ha
+  instalado antes <code>typescript</code> como dependencia de desarrollo.
+</div>
+
+<div class="alert alert-warning mt-4" role="alert">
+  <h4 class="alert-heading">Si aparece un error</h4>
+  <p>Ejecute la comprobación y copie el mensaje completo de la terminal:</p>
+  <pre class="bg-white border rounded p-3 mb-2"><code>cd ~/entorno-nvim
+./scripts/instalar-alumno.sh --perfil dwec --comprobar</code></pre>
+  <p class="mb-0">
+    Si Neovim parece bloqueado, pulse <kbd>Esc</kbd>. Tras una actualización,
+    cierre la sesión antigua con <kbd>Ctrl</kbd>+<kbd>a</kbd>, suelte y pulse
+    <kbd>Q</kbd>; después vuelva a abrir el proyecto.
+  </p>
+</div>

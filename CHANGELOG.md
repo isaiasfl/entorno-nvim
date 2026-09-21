@@ -1,5 +1,21 @@
 # Changelog
 
+## En desarrollo
+
+- El instalador esencial admite `--perfil dwec` e instala únicamente Node,
+  Neovim, plugins y servidores web, sin herramientas de PDF ni fixtures de
+  prueba.
+- Las terminales de las sesiones reciben el Node local verificado, por lo que
+  `node`, `npm`, `npx` y Corepack funcionan sin modificar la shell del alumno.
+- Los perfiles web exponen también el compilador `tsc` fijado por el entorno;
+  los proyectos pueden seguir declarando su propia versión de TypeScript.
+- Las instalaciones mínimas de Debian comprueban `xz-utils` y los certificados
+  TLS antes de descargar Node, evitando un fallo que podía quedar oculto en
+  sistemas WSL más completos.
+- En Debian y Ubuntu, el modo `--sistema` comprueba `apt-get`, `sudo` y los
+  certificados después de instalar, y explica cuándo debe intervenir el
+  profesor o administrador.
+
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
 ## En desarrollo - 2026-09-13

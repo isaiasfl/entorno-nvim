@@ -9,6 +9,7 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 
 sistema_auto=0
 solo_comprobar=0
+perfil=si
 
 mostrar_logo() {
   if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ]; then
@@ -24,19 +25,20 @@ mostrar_logo() {
 ██║  ██║       ███████╗
 ╚═╝  ╚═╝       ╚══════╝
 
-Entorno de desarrollo IFL para Sistemas Informáticos
-Neovim · Node 24 · Bash/Python LSP · tmux · búsqueda · IA opcional
+Entorno de desarrollo IFL para alumnado
+Neovim · Node 24 · LSP por asignatura · tmux · búsqueda · IA opcional
 EOF
 }
 
 uso() {
   cat <<'EOF'
-Uso: scripts/instalar-alumno.sh [--sistema] [--comprobar]
+Uso: scripts/instalar-alumno.sh [--perfil si|dwec] [--sistema] [--comprobar]
 
 Prepara el entorno esencial del alumno: Neovim y Node locales verificados,
-plugins, LSP de Bash y Python, busqueda, tmux e IA. No instala PDF ni las
-herramientas exclusivas del perfil completo del profesor.
+plugins, LSP del perfil elegido, busqueda, tmux e IA opcional. No instala PDF
+ni las herramientas exclusivas del perfil completo del profesor.
 
+  --perfil    si: Bash/Python; dwec: HTML/CSS/JSON/JavaScript/TypeScript
   --sistema    ofrece instalar con sudo solo los paquetes basicos que falten
   --comprobar  diagnostica sin descargar ni modificar nada
 EOF
@@ -44,6 +46,11 @@ EOF
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --perfil)
+      [ "$#" -ge 2 ] || { printf '%s\n' 'Error: falta el perfil.' >&2; exit 2; }
+      perfil=$2
+      shift
+      ;;
     --sistema) sistema_auto=1 ;;
     --comprobar) solo_comprobar=1 ;;
     -h | --help) mostrar_logo; printf '\n'; uso; exit 0 ;;
@@ -51,6 +58,11 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+
+case "$perfil" in
+  si | dwec) ;;
+  *) printf 'Error: perfil de alumno desconocido: %s (use si o dwec).\n' "$perfil" >&2; exit 2 ;;
+esac
 
 mostrar_logo
 printf '\nEste instalador prepara el entorno dentro del repositorio y no sustituye\n'
@@ -66,9 +78,9 @@ else
   printf '\nModo: INSTALACIÓN LOCAL, sin sudo.\n'
   printf '%s\n' 'Si falta algún paquete del sistema, se detendrá y mostrará cómo resolverlo.'
   printf '%s\n' 'Para permitir la instalación asistida de esos paquetes, ejecuta:'
-  printf '%s\n' '  ./scripts/instalar-alumno.sh --sistema'
+  printf '  ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
   printf '%s\n' 'Para diagnosticar sin modificar nada, ejecuta:'
-  printf '%s\n' '  ./scripts/instalar-alumno.sh --comprobar'
+  printf '  ./scripts/instalar-alumno.sh --perfil %s --comprobar\n' "$perfil"
 fi
 printf '\n'
 
@@ -87,10 +99,13 @@ case "$ENTORNO_OS:$ENTORNO_ARCH" in
 esac
 
 faltan=
-for herramienta in git tmux curl tar fzf rg shellcheck; do
+herramientas='git tmux curl tar xz fzf rg'
+[ "$perfil" = si ] && herramientas="$herramientas shellcheck"
+for herramienta in $herramientas; do
   command -v "$herramienta" >/dev/null 2>&1 || faltan="$faltan $herramienta"
 done
 entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
+[ -s /etc/ssl/certs/ca-certificates.crt ] || faltan="$faltan ca-certificates"
 faltan=${faltan# }
 
 printf 'Entorno alumno - %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
@@ -106,6 +121,7 @@ if [ -n "$faltan" ]; then
         case "$herramienta" in
           fd) paquetes="$paquetes fd-find" ;;
           rg) paquetes="$paquetes ripgrep" ;;
+          xz) paquetes="$paquetes xz-utils" ;;
           *) paquetes="$paquetes $herramienta" ;;
         esac
       done
@@ -130,6 +146,19 @@ if [ -n "$faltan" ]; then
     exit 1
   fi
 
+  case "$ENTORNO_DISTRO" in
+    debian | ubuntu | pop)
+      command -v apt-get >/dev/null 2>&1 || {
+        printf '%s\n' 'Error: apt-get no esta disponible en esta instalacion Debian/Ubuntu.' >&2
+        exit 1
+      }
+      command -v sudo >/dev/null 2>&1 || {
+        printf '%s\n' 'Error: falta sudo. Pide al profesor o administrador que instale los paquetes mostrados.' >&2
+        exit 1
+      }
+      ;;
+  esac
+
   printf '¿Ejecutar este comando? [s/N]: '
   respuesta=
   if [ -r /dev/tty ]; then read -r respuesta < /dev/tty || respuesta=; fi
@@ -138,13 +167,17 @@ if [ -n "$faltan" ]; then
     *) printf '%s\n' "Cancelado. No se ha modificado el sistema." >&2; exit 1 ;;
   esac
   sh -c "$comando"
-  for herramienta in git tmux curl tar fzf rg shellcheck; do
+  for herramienta in $herramientas; do
     command -v "$herramienta" >/dev/null 2>&1 || {
       printf 'Error: %s sigue sin estar disponible.\n' "$herramienta" >&2
       exit 1
     }
   done
   entorno_fd_bin >/dev/null 2>&1 || { printf '%s\n' "Error: fd/fdfind sigue sin estar disponible." >&2; exit 1; }
+  [ -s /etc/ssl/certs/ca-certificates.crt ] || {
+    printf '%s\n' 'Error: siguen faltando los certificados TLS del sistema.' >&2
+    exit 1
+  }
 fi
 
 NVIM_LOCAL="$ENTORNO_TOOLS_ROOT/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
@@ -166,8 +199,12 @@ version_instalada=$("$NVIM_LOCAL" --version | sed -n '1s/^NVIM v//p')
 
 if [ "$solo_comprobar" -eq 0 ]; then
   "$SCRIPT_DIR/instalar-node.sh"
-  "$SCRIPT_DIR/instalar-lsp-bash.sh"
-  "$SCRIPT_DIR/instalar-lsp-python.sh"
+  if [ "$perfil" = dwec ]; then
+    ENTORNO_SIN_FIXTURES=1 "$SCRIPT_DIR/instalar-lsp-web.sh"
+  else
+    "$SCRIPT_DIR/instalar-lsp-bash.sh"
+    "$SCRIPT_DIR/instalar-lsp-python.sh"
+  fi
 fi
 
 if [ "$solo_comprobar" -eq 1 ]; then
@@ -184,19 +221,31 @@ EOF
     exit 1
   }
   NODE_LOCAL=$(entorno_node_dir)/bin/node
-  BASHLS_LOCAL="$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin/bash-language-server"
-  PYRIGHT_LOCAL="$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
   [ -x "$NODE_LOCAL" ] && [ "$("$NODE_LOCAL" --version)" = "v$ENTORNO_NODE_VERSION" ] \
     || { printf '%s\n' "FALTA: Node local verificado." >&2; exit 1; }
-  [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
-  [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
-  printf '%s\n' "OK: tmux, busqueda, Node, Neovim, LSP y plugins preparados."
+  if [ "$perfil" = dwec ]; then
+    WEB_LSP_BIN="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
+    for ejecutable in typescript-language-server vscode-html-language-server \
+      vscode-css-language-server vscode-json-language-server tailwindcss-language-server
+    do
+      [ -x "$WEB_LSP_BIN/$ejecutable" ] || {
+        printf 'FALTA: servidor web %s.\n' "$ejecutable" >&2
+        exit 1
+      }
+    done
+  else
+    BASHLS_LOCAL="$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin/bash-language-server"
+    PYRIGHT_LOCAL="$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
+    [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
+    [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
+  fi
+  printf 'OK: perfil %s, tmux, busqueda, Node, Neovim, LSP y plugins preparados.\n' "$perfil"
   exit 0
 fi
 
-ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
+ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/instalar-plugins.sh"
-ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
+ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa
 printf '\n'
 "$SCRIPT_DIR/instalar-entorno-dev.sh"
@@ -210,8 +259,8 @@ cat <<EOF
 
 Instalacion esencial terminada. No se ha tocado ~/.config/nvim ni ~/.tmux.conf.
 
-Para abrir el entorno de Sistemas Informaticos con IA:
-  entorno-dev --perfil si --ia /ruta/al/proyecto
+Para abrir el entorno del perfil $perfil sin IA:
+  entorno-dev --perfil $perfil --sin-ia /ruta/al/proyecto
 
 La IA solo se abrira si ya hay un cliente compatible instalado (Codex,
 OpenCode, Claude, Pi o jarvis-coder). El instalador no instala ni configura

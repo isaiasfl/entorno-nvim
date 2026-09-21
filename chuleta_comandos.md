@@ -1,6 +1,6 @@
 # Chuleta de comandos: entorno IFL, tmux y Neovim
 
-Guía básica para trabajar con el entorno de Sistemas Informáticos. En los
+Guía básica para trabajar con los perfiles DWEC y Sistemas Informáticos. En los
 atajos escritos como `Ctrl-a d`, pulse primero `Ctrl+a`, suelte las teclas y
 después pulse `d`. En Neovim, `Espacio` es la tecla líder.
 
@@ -11,12 +11,13 @@ después pulse `d`. En Neovim, `Espacio` es la tecla líder.
 ```bash
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --sistema
+./scripts/instalar-alumno.sh --perfil dwec --sistema
 ```
 
 El instalador muestra el comando del gestor de paquetes y pide permiso antes de
-usar `sudo`. Prepara Git, tmux, búsqueda, Neovim, Node 24, Bash Language Server,
-ShellCheck, Pyright, plugins y el comando `entorno-dev`.
+usar `sudo`. Para DWEC prepara Git, tmux, búsqueda, Neovim, Node 24, plugins y
+los servidores de HTML, CSS, JSON, JavaScript, TypeScript y Tailwind. El perfil
+`si` prepara en su lugar Bash Language Server, ShellCheck y Pyright.
 
 No sustituye `~/.config/nvim` ni `~/.tmux.conf`. Tampoco instala o configura
 cuentas de inteligencia artificial.
@@ -25,9 +26,9 @@ cuentas de inteligencia artificial.
 
 | Orden | Resultado |
 | --- | --- |
-| `./scripts/instalar-alumno.sh --sistema` | Instala también los paquetes del sistema que falten, previa confirmación |
-| `./scripts/instalar-alumno.sh` | Prepara componentes locales; se detiene si faltan paquetes del sistema |
-| `./scripts/instalar-alumno.sh --comprobar` | Comprueba el estado sin modificar nada |
+| `./scripts/instalar-alumno.sh --perfil dwec --sistema` | Prepara DWEC e instala los paquetes del sistema que falten, previa confirmación |
+| `./scripts/instalar-alumno.sh --perfil si --sistema` | Prepara Sistemas Informáticos |
+| `./scripts/instalar-alumno.sh --perfil dwec --comprobar` | Comprueba DWEC sin modificar nada |
 | `./scripts/instalar-alumno.sh --help` | Muestra la ayuda |
 
 Si la terminal todavía no reconoce `entorno-dev`, ejecute:
@@ -41,7 +42,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ```bash
 cd ~/entorno-nvim
 git pull
-./scripts/instalar-alumno.sh --sistema
+./scripts/instalar-alumno.sh --perfil dwec --sistema
 ```
 
 El instalador es repetible: conserva lo que ya está preparado y completa lo
@@ -51,13 +52,13 @@ que falte.
 
 ```bash
 cd ~/ruta/del/proyecto
-entorno-dev --perfil si --ia .
+entorno-dev --perfil dwec --sin-ia .
 ```
 
 También puede indicar la ruta sin entrar antes:
 
 ```bash
-entorno-dev --perfil si --ia ~/ruta/del/proyecto
+entorno-dev --perfil dwec --sin-ia ~/ruta/del/proyecto
 ```
 
 ### Opciones principales
@@ -119,7 +120,7 @@ se pulsa la acción.
 | Objetivo | Acción |
 | --- | --- |
 | Salir conservando editor y procesos | `Ctrl-a d` |
-| Volver a la misma sesión | Repetir `entorno-dev --perfil si --ia RUTA` |
+| Volver a la misma sesión | Repetir `entorno-dev --perfil dwec --sin-ia RUTA` |
 | Cerrar el proyecto definitivamente | `Ctrl-a Q`, confirmar |
 | Listar sesiones desde la shell | `tmux -L entorno-nvim list-sessions` |
 | Cerrar todas las sesiones del entorno | `tmux -L entorno-nvim kill-server` |
@@ -230,10 +231,10 @@ confirmación para borrar. Pulse `g?` dentro del explorador para ver su ayuda.
 | Solicitar completado | `Ctrl-Espacio` |
 | Formatear con el LSP | `Espacio l f` |
 
-BashLS y ShellCheck detectan sintaxis, variables, comillas y patrones
-problemáticos. No marcan palabras arbitrarias como `ejemplo` o `saliendo`:
-para Bash son posibles nombres de comandos, funciones o alias que se resuelven
-al ejecutar.
+En DWEC, los servidores de lenguaje muestran errores de JavaScript, TypeScript,
+HTML, CSS y JSON. TypeScript aporta diagnósticos más precisos cuando el proyecto
+tiene `tsconfig.json`. El editor no ejecuta el programa por sí solo: utiliza el
+panel inferior de tmux para lanzar los comandos del proyecto.
 
 Comprobaciones de un script Bash:
 

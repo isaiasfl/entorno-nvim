@@ -3,6 +3,10 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+. "$SCRIPT_DIR/lib/versiones.sh"
+. "$SCRIPT_DIR/lib/rutas.sh"
+. "$SCRIPT_DIR/lib/plataforma.sh"
+entorno_preferir_node_vendor
 DEFAULT_NVIM_BIN="$PROJECT_ROOT/scripts/arrancar.sh"
 
 tmux_session_environment() {
@@ -79,6 +83,17 @@ case "$ENTORNO_PERFIL:$ENTORNO_IA" in
   inicial:0 | inicial:1 | dwec:0 | dwec:1 | si:0 | si:1 | profesor:0 | profesor:1) ;;
   *) printf '%s\n' 'Error: perfil o estado IA incorrecto.' >&2; exit 2 ;;
 esac
+
+# Los perfiles web pueden ejecutar el mismo compilador TypeScript fijado que
+# utiliza el LSP. Un proyecto que necesite otra version debe declararla en sus
+# devDependencies y usar npm exec/npx desde ese proyecto.
+case "$ENTORNO_PERFIL" in
+  inicial | dwec | profesor)
+    web_bin="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
+    if [ -x "$web_bin/tsc" ]; then PATH="$web_bin:$PATH"; fi
+    ;;
+esac
+export PATH
 MAX_DEPTH=${ENTORNO_TMUX_PROJECT_DEPTH:-5}
 
 tmux_cmd() {
@@ -276,6 +291,7 @@ tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_SOCKET "$TMUX_SOCKET"
 tmux_cmd set-environment -t "=$session" ENTORNO_NVIM_ROOT "$PROJECT_ROOT"
 tmux_cmd set-environment -t "=$session" ENTORNO_PERFIL "$ENTORNO_PERFIL"
 tmux_cmd set-environment -t "=$session" ENTORNO_IA "$ENTORNO_IA"
+tmux_cmd set-environment -t "=$session" PATH "$PATH"
 tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_DEPTH "$MAX_DEPTH"
 if [ -n "${ENTORNO_TMUX_PROJECT_ROOTS:-}" ]; then
   tmux_cmd set-environment -t "=$session" ENTORNO_TMUX_PROJECT_ROOTS "$ENTORNO_TMUX_PROJECT_ROOTS"

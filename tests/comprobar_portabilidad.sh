@@ -2,6 +2,9 @@
 set -eu
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+. "$PROJECT_ROOT/scripts/lib/versiones.sh"
+. "$PROJECT_ROOT/scripts/lib/rutas.sh"
+. "$PROJECT_ROOT/scripts/lib/plataforma.sh"
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/entorno-portable.XXXXXX")
 TEST_SOCKET=entorno-portable-$$
 cleanup() {
@@ -78,6 +81,16 @@ if command -v tmux >/dev/null 2>&1; then
     [ "$(tmux -L "$TEST_SOCKET" list-panes -t "=$session" | wc -l)" -eq 2 ]
     [ "$(tmux -L "$TEST_SOCKET" list-panes -t "=$session" -F '#{@entorno_role}' | sort | tr '\n' ' ')" = 'editor terminal ' ]
     [ "$(tmux -L "$TEST_SOCKET" show-environment -t "=$session" ENTORNO_PERFIL)" = "ENTORNO_PERFIL=$profile" ]
+    case "$(tmux -L "$TEST_SOCKET" show-environment -t "=$session" PATH)" in
+      *"/.tools/node-$ENTORNO_NODE_VERSION-$ENTORNO_NODE_PLATFORM/bin"*) ;;
+      *) printf '%s\n' 'Error: la terminal tmux no recibe el Node local.' >&2; exit 1 ;;
+    esac
+    if [ "$profile" = dwec ]; then
+      case "$(tmux -L "$TEST_SOCKET" show-environment -t "=$session" PATH)" in
+        *"/tools/lsp-web/node_modules/.bin"*) ;;
+        *) printf '%s\n' 'Error: la terminal DWEC no recibe el compilador TypeScript.' >&2; exit 1 ;;
+      esac
+    fi
   done
   [ "$(tmux -L "$TEST_SOCKET" list-sessions | wc -l)" -eq 2 ]
 fi
