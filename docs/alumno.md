@@ -29,11 +29,13 @@ el estado sin modificar nada:
 Para abrir el perfil de Sistemas Informáticos con la integración de IA:
 
 ```sh
-./bin/entorno-dev --perfil si --ia /ruta/al/proyecto
+entorno-dev --perfil si --ia /ruta/al/proyecto
 ```
 
 La IA se podrá seleccionar solamente si el alumno ya tiene instalado y
-configurado un cliente compatible. El editor y tmux funcionan sin él.
+configurado un cliente compatible. El editor y tmux funcionan sin él. El
+instalador crea `~/.local/bin/entorno-dev` sin sobrescribir contenido ajeno y
+avisa si hace falta añadir `~/.local/bin` al `PATH` de la terminal actual.
 
 ## Instalación completa (avanzada)
 

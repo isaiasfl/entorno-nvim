@@ -35,7 +35,7 @@ Para una primera clase en Ubuntu, Pop!_OS o WSL2 usa el carril mínimo:
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
 ./scripts/instalar-alumno.sh --sistema
-./bin/entorno-dev --perfil si --ia
+entorno-dev --perfil si --ia
 ```
 
 Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, Neovim y Node 24 locales,
@@ -47,12 +47,15 @@ Windows desde WSL2.
 El último comando abre la carpeta actual. Para abrir un proyecto concreto:
 
 ```sh
-./bin/entorno-dev --perfil si --ia /ruta/a/mi-proyecto
+entorno-dev --perfil si --ia /ruta/a/mi-proyecto
 ```
 
 La IA solo se abre si ya existe un cliente compatible configurado; el editor y
-tmux funcionan sin él. `./scripts/instalar-alumno.sh --comprobar` diagnostica
-esta instalación sin modificar nada.
+tmux funcionan sin él. El instalador crea de forma segura el comando en
+`~/.local/bin/entorno-dev` y no sobrescribe archivos ajenos. Si la terminal
+actual todavía no incluye esa carpeta en `PATH`, muestra cómo activarla.
+`./scripts/instalar-alumno.sh --comprobar` diagnostica esta instalación sin
+modificar nada.
 
 ## Instalación completa
 

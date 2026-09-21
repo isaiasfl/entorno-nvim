@@ -10,6 +10,25 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 sistema_auto=0
 solo_comprobar=0
 
+mostrar_logo() {
+  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ]; then
+    # Secuencia ANSI portable: limpiar pantalla y situar el cursor arriba.
+    printf '\033[2J\033[H'
+  fi
+
+  cat <<'EOF'
+██╗  ███████╗  ██╗
+██║  ██╔════╝  ██║
+██║  █████╗    ██║
+██║  ██╔══╝    ██║
+██║  ██║       ███████╗
+╚═╝  ╚═╝       ╚══════╝
+
+Entorno de desarrollo IFL para Sistemas Informáticos
+Neovim · Node 24 · Bash/Python LSP · tmux · búsqueda · IA opcional
+EOF
+}
+
 uso() {
   cat <<'EOF'
 Uso: scripts/instalar-alumno.sh [--sistema] [--comprobar]
@@ -27,11 +46,31 @@ while [ "$#" -gt 0 ]; do
   case "$1" in
     --sistema) sistema_auto=1 ;;
     --comprobar) solo_comprobar=1 ;;
-    -h | --help) uso; exit 0 ;;
+    -h | --help) mostrar_logo; printf '\n'; uso; exit 0 ;;
     *) printf 'Error: opcion desconocida: %s\n' "$1" >&2; uso >&2; exit 2 ;;
   esac
   shift
 done
+
+mostrar_logo
+printf '\nEste instalador prepara el entorno dentro del repositorio y no sustituye\n'
+printf '%s\n' 'tu configuración personal de Neovim, tmux o shell.'
+if [ "$solo_comprobar" -eq 1 ]; then
+  printf '\nModo: COMPROBACIÓN. Solo leerá el estado; no instalará nada.\n'
+elif [ "$sistema_auto" -eq 1 ]; then
+  printf '\nModo: INSTALACIÓN ASISTIDA.\n'
+  printf '%s\n' '- Si faltan paquetes del sistema, mostrará el comando exacto.'
+  printf '%s\n' '- Pedirá confirmación antes de usar sudo.'
+  printf '%s\n' '- Después instalará herramientas locales con versiones fijadas.'
+else
+  printf '\nModo: INSTALACIÓN LOCAL, sin sudo.\n'
+  printf '%s\n' 'Si falta algún paquete del sistema, se detendrá y mostrará cómo resolverlo.'
+  printf '%s\n' 'Para permitir la instalación asistida de esos paquetes, ejecuta:'
+  printf '%s\n' '  ./scripts/instalar-alumno.sh --sistema'
+  printf '%s\n' 'Para diagnosticar sin modificar nada, ejecuta:'
+  printf '%s\n' '  ./scripts/instalar-alumno.sh --comprobar'
+fi
+printf '\n'
 
 [ "$(id -u)" -ne 0 ] || {
   printf '%s\n' "Error: no ejecutes este instalador como root." >&2
@@ -161,15 +200,32 @@ ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/instalar-plugins.sh"
 ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa
+"$SCRIPT_DIR/instalar-entorno-dev.sh"
+
+path_preparado=0
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) path_preparado=1 ;;
+esac
 
 cat <<EOF
 
 Instalacion esencial terminada. No se ha tocado ~/.config/nvim ni ~/.tmux.conf.
 
 Para abrir el entorno de Sistemas Informaticos con IA:
-  ./bin/entorno-dev --perfil si --ia /ruta/al/proyecto
+  entorno-dev --perfil si --ia /ruta/al/proyecto
 
 La IA solo se abrira si ya hay un cliente compatible instalado (Codex,
 OpenCode, Claude, Pi o jarvis-coder). El instalador no instala ni configura
 cuentas, tokens o credenciales.
 EOF
+
+if [ "$path_preparado" -eq 0 ]; then
+  cat <<'EOF'
+
+Tu shell actual todavia no incluye ~/.local/bin en PATH. Activalo ahora con:
+  export PATH="$HOME/.local/bin:$PATH"
+
+Despues podras ejecutar directamente `entorno-dev`. Las terminales nuevas de
+Ubuntu suelen incorporar ~/.local/bin automaticamente una vez que existe.
+EOF
+fi
