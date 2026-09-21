@@ -256,11 +256,19 @@ fzf_select() {
 
 run_fzf() {
   while :; do
-    selected=$(category_rows | fzf_select 'Categoria> ' 'Enter abrir   Esc/q cerrar') || return 0
+    selected=$(category_rows | fzf_select 'Categoria> ' 'Enter abrir   Esc/q cerrar') || {
+      status=$?
+      [ "$status" -eq 2 ] && return 2
+      return 0
+    }
     [ "$selected" = __quit__ ] && return 0
     category=${selected#*	}
     selected=$(action_rows "$category" | sed 's/$/\tinfo/' |
-      fzf_select "$category> " 'Esc volver   q cerrar' actions) || continue
+      fzf_select "$category> " 'Esc volver   q cerrar' actions) || {
+      status=$?
+      [ "$status" -eq 2 ] && return 2
+      continue
+    }
     [ "$selected" = __quit__ ] && return 0
   done
 }
@@ -304,10 +312,9 @@ read_key() {
 
 run_interface() {
   if command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ -t 2 ]; then
-    run_fzf
-  else
-    run_posix
+    run_fzf && return 0
   fi
+  run_posix
 }
 
 case "${1:-}" in

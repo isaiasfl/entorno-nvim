@@ -6,6 +6,9 @@
 **[Guía completa de teclas y uso](docs/guia-completa-teclas.md)**: editor,
 explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
 
+**[Chuleta para alumnado](chuleta_comandos.md)**: instalación, perfiles,
+sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
+
 ## Qué es
 
 La evolucion docente portable ya dispone de perfiles y arranque minimo sin
