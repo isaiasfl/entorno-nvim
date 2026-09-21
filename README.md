@@ -38,10 +38,11 @@ cd entorno-nvim
 ./bin/entorno-dev --perfil si --ia
 ```
 
-Solo prepara Git, tmux, un Neovim Linux local y verificado, los plugins fijados
-y la integración opcional con clientes de IA ya instalados. No instala Node,
-LSP, parsers, Pandoc, Chromium, Poppler ni herramientas PDF. Tampoco toca
-`~/.config/nvim` ni usa un posible Neovim de Windows desde WSL2.
+Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, Neovim y Node 24 locales,
+plugins fijados, Pyright y Bash Language Server. ShellCheck mejora los
+diagnósticos si está disponible. No instala Pandoc, Chromium, Poppler ni
+herramientas PDF. Tampoco toca `~/.config/nvim` ni usa un posible Neovim de
+Windows desde WSL2.
 
 El último comando abre la carpeta actual. Para abrir un proyecto concreto:
 
@@ -147,8 +148,8 @@ externo. Cabecera y pie usan `module`, `centre` y `teacher` del YAML. Véase
 
 ## LSP
 
-LuaLS 3.19.0, los servidores web fijados y Pyright 1.1.411 se instalan de forma
-aislada, sin Mason ni npm global. BashLS sigue aplazado. Véase
+LuaLS 3.19.0, los servidores web fijados, Pyright 1.1.411 y Bash Language
+Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 [LSP y completado](docs/lsp.md).
 
 ## Mappings principales

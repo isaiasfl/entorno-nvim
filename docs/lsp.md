@@ -100,7 +100,11 @@ paquetes, `package.json` y `.git`. Un proyecto sencillo con `package.json` pero
 sin lockfile queda aislado correctamente; los monorepos con lockfile conservan
 la raíz común. Los proyectos Deno siguen excluidos de `ts_ls`.
 
-`bashls` queda para una fase posterior. Tampoco existe format-on-save:
+El perfil `si` activa Bash Language Server 5.6.0 desde
+`tools/lsp-bash/node_modules/.bin`, instalado con
+`scripts/instalar-lsp-bash.sh`. Usa Node 24 local, no instala paquetes globales
+y puede aprovechar ShellCheck cuando existe. Zsh, Docker y Kubernetes quedan
+para una fase posterior. Tampoco existe format-on-save:
 `<leader>lf` sigue siendo una acción manual.
 
 ## Python: Pyright frente a BasedPyright

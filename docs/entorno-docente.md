@@ -51,13 +51,13 @@ permite elegir otras raices.
 | --- | --- | --- | --- | --- |
 | inicial | Web, para completado | Desactivados | No | Solo con `--ia` |
 | dwec | HTML/CSS/JSON, JS/TS/JSX/TSX y Tailwind | Si | No | Solo con `--ia` |
-| si | Python; edicion nativa de scripts y manifiestos | Si | No | Solo con `--ia` |
+| si | Bash y Python | Si | No | Solo con `--ia` |
 | profesor (predeterminado) | Web, Python y Lua | Si | Si | Si; desactivar con `--sin-ia` |
 
-La seleccion reside en `nvim/lua/config/profile.lua`. El perfil SI **aun no
-instala ni incorpora BashLS, validadores Zsh, Docker, kubectl ni Kubernetes**.
-No se anuncia ayuda de esos lenguajes que todavia no esta implementada.
-El bloqueo historico de BashLS debe reevaluarse antes de incorporarlo.
+La seleccion reside en `nvim/lua/config/profile.lua`. El perfil SI incorpora
+Bash Language Server 5.6.0 con Node 24 local y Pyright. ShellCheck amplía los
+diagnósticos si está instalado, pero no bloquea el entorno. Siguen pendientes
+las integraciones de Zsh, Docker, kubectl y Kubernetes.
 
 `:EntornoInfo` indica el perfil, la IA y los componentes pendientes. Si faltan
 plugins, funcionan el explorador nativo, la apertura de archivos, los buffers
@@ -70,7 +70,7 @@ instalados no se silencian: el modo nativo solo cubre componentes ausentes.
   `ENTORNO_TOOLS_ROOT` permite cambiar esa raiz; una ruta relativa se interpreta
   desde el repositorio. Los overrides individuales de los instaladores siguen
   disponibles, pero el arranque debe recibir las rutas correspondientes.
-- Los LSP web y Python mantienen sus `node_modules` dentro de `tools/`.
+- Los LSP web, Python y Bash mantienen sus `node_modules` dentro de `tools/`.
 - Los plugins y la cache permanecen en `.xdg/0.12.4/`. Estado, undo y swap se
   separan en `.xdg/0.12.4/state/<perfil>/nvim/`.
 - Se conserva `XDG_RUNTIME_DIR`: Wayland y el portapapeles necesitan el runtime

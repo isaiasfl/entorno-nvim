@@ -14,9 +14,9 @@ uso() {
   cat <<'EOF'
 Uso: scripts/instalar-alumno.sh [--sistema] [--comprobar]
 
-Prepara el entorno minimo del alumno: Neovim local verificado, plugins fijados
-y soporte para tmux e IA. No instala Node, LSP, parsers, PDF ni herramientas
-del perfil completo del profesor.
+Prepara el entorno esencial del alumno: Neovim y Node locales verificados,
+plugins, LSP de Bash y Python, busqueda, tmux e IA. No instala PDF ni las
+herramientas exclusivas del perfil completo del profesor.
 
   --sistema    ofrece instalar con sudo solo los paquetes basicos que falten
   --comprobar  diagnostica sin descargar ni modificar nada
@@ -48,9 +48,12 @@ case "$ENTORNO_OS:$ENTORNO_ARCH" in
 esac
 
 faltan=
-for herramienta in git tmux curl tar; do
+for herramienta in git tmux curl tar fzf rg; do
   command -v "$herramienta" >/dev/null 2>&1 || faltan="$faltan $herramienta"
 done
+entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
+[ -n "$(command -v shellcheck 2>/dev/null || true)" ] || \
+  printf '%s\n' "Aviso: ShellCheck no esta instalado; Bash LSP funcionara, pero con menos diagnosticos." >&2
 faltan=${faltan# }
 
 printf 'Entorno alumno - %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
@@ -61,10 +64,22 @@ if [ -n "$faltan" ]; then
   printf 'Faltan paquetes basicos: %s\n' "$faltan" >&2
   case "$ENTORNO_DISTRO" in
     debian | ubuntu | pop)
-      comando="sudo apt-get update && sudo apt-get install -y $faltan ca-certificates"
+      paquetes=
+      for herramienta in $faltan; do
+        case "$herramienta" in
+          fd) paquetes="$paquetes fd-find" ;;
+          rg) paquetes="$paquetes ripgrep" ;;
+          *) paquetes="$paquetes $herramienta" ;;
+        esac
+      done
+      comando="sudo apt-get update && sudo apt-get install -y${paquetes} ca-certificates"
       ;;
     arch | cachyos | omarchy)
-      comando="sudo pacman -S --needed $faltan ca-certificates"
+      paquetes=
+      for herramienta in $faltan; do
+        case "$herramienta" in rg) paquetes="$paquetes ripgrep" ;; *) paquetes="$paquetes $herramienta" ;; esac
+      done
+      comando="sudo pacman -S --needed${paquetes} ca-certificates"
       ;;
     *)
       printf '%s\n' "Instalalos con el gestor de paquetes de tu distribucion." >&2
@@ -86,12 +101,13 @@ if [ -n "$faltan" ]; then
     *) printf '%s\n' "Cancelado. No se ha modificado el sistema." >&2; exit 1 ;;
   esac
   sh -c "$comando"
-  for herramienta in git tmux curl tar; do
+  for herramienta in git tmux curl tar fzf rg; do
     command -v "$herramienta" >/dev/null 2>&1 || {
       printf 'Error: %s sigue sin estar disponible.\n' "$herramienta" >&2
       exit 1
     }
   done
+  entorno_fd_bin >/dev/null 2>&1 || { printf '%s\n' "Error: fd/fdfind sigue sin estar disponible." >&2; exit 1; }
 fi
 
 NVIM_LOCAL="$ENTORNO_TOOLS_ROOT/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
@@ -111,6 +127,12 @@ version_instalada=$("$NVIM_LOCAL" --version | sed -n '1s/^NVIM v//p')
   exit 1
 }
 
+if [ "$solo_comprobar" -eq 0 ]; then
+  "$SCRIPT_DIR/instalar-node.sh"
+  "$SCRIPT_DIR/instalar-lsp-bash.sh"
+  "$SCRIPT_DIR/instalar-lsp-python.sh"
+fi
+
 if [ "$solo_comprobar" -eq 1 ]; then
   plugins_faltan=0
   while IFS=' ' read -r plugin commit; do
@@ -124,7 +146,14 @@ EOF
     printf 'FALTA: plugins fijados; ejecuta ./scripts/instalar-alumno.sh\n' >&2
     exit 1
   }
-  printf '%s\n' "OK: tmux, Git, Neovim local y plugins preparados."
+  NODE_LOCAL=$(entorno_node_dir)/bin/node
+  BASHLS_LOCAL="$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin/bash-language-server"
+  PYRIGHT_LOCAL="$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
+  [ -x "$NODE_LOCAL" ] && [ "$("$NODE_LOCAL" --version)" = "v$ENTORNO_NODE_VERSION" ] \
+    || { printf '%s\n' "FALTA: Node local verificado." >&2; exit 1; }
+  [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
+  [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
+  printf '%s\n' "OK: tmux, busqueda, Node, Neovim, LSP y plugins preparados."
   exit 0
 fi
 
@@ -135,7 +164,7 @@ ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
 
 cat <<EOF
 
-Instalacion minima terminada. No se ha tocado ~/.config/nvim ni ~/.tmux.conf.
+Instalacion esencial terminada. No se ha tocado ~/.config/nvim ni ~/.tmux.conf.
 
 Para abrir el entorno de Sistemas Informaticos con IA:
   ./bin/entorno-dev --perfil si --ia /ruta/al/proyecto

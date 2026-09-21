@@ -31,6 +31,11 @@ function M.python_lsp_bin()
     or vim.fs.joinpath(repository_root(), "tools", "lsp-python", "node_modules", ".bin")
 end
 
+function M.bash_lsp_bin()
+  return vim.env.ENTORNO_NVIM_LSP_BASH_BIN
+    or vim.fs.joinpath(repository_root(), "tools", "lsp-bash", "node_modules", ".bin")
+end
+
 function M.luals_bin()
   return vim.env.ENTORNO_NVIM_LUALS_BIN
     or vim.fs.joinpath(M.tools(), "lua-language-server-3.19.0", "bin", "lua-language-server")

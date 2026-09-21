@@ -3,7 +3,7 @@ local M = { missing = {} }
 local profiles = {
   inicial = { web = true, diagnostics = false },
   dwec = { web = true, diagnostics = true },
-  si = { python = true, diagnostics = true },
+  si = { bash = true, python = true, diagnostics = true },
   profesor = { web = true, python = true, lua = true, pdf = true, diagnostics = true },
 }
 
@@ -36,7 +36,7 @@ function M.info()
     lines[#lines + 1] = component .. ": " .. M.missing[component]
   end
   if M.name == "si" then
-    lines[#lines + 1] = "Bash/Zsh, Docker y Kubernetes: integraciones avanzadas pendientes."
+    lines[#lines + 1] = "Zsh, Docker y Kubernetes: integraciones avanzadas pendientes."
   end
   return lines
 end

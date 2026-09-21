@@ -24,6 +24,7 @@ XDG_ROOT=${NVIM_XDG_ROOT:-"$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION"}
 TREE_SITTER_BIN=${TREE_SITTER_BIN:-"$ENTORNO_TOOLS_ROOT/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter"}
 LSP_WEB_BIN=${LSP_WEB_BIN:-"$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"}
 LSP_PYTHON_BIN=${LSP_PYTHON_BIN:-"$PROJECT_ROOT/tools/lsp-python/node_modules/.bin"}
+LSP_BASH_BIN=${LSP_BASH_BIN:-"$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin"}
 DEFAULT_LUALS_BIN="$ENTORNO_TOOLS_ROOT/lua-language-server-$ENTORNO_LUALS_VERSION/bin/lua-language-server"
 if [ ! -x "$DEFAULT_LUALS_BIN" ] && [ "$(uname -s)" = Darwin ]; then
   DEFAULT_LUALS_BIN=$(command -v lua-language-server 2>/dev/null || printf '%s' "$DEFAULT_LUALS_BIN")
@@ -43,6 +44,11 @@ esac
 case "$LSP_PYTHON_BIN" in
   /*) ;;
   *) LSP_PYTHON_BIN="$PROJECT_ROOT/$LSP_PYTHON_BIN" ;;
+esac
+
+case "$LSP_BASH_BIN" in
+  /*) ;;
+  *) LSP_BASH_BIN="$PROJECT_ROOT/$LSP_BASH_BIN" ;;
 esac
 
 if [ -x "$TREE_SITTER_BIN" ]; then
@@ -100,6 +106,7 @@ export ENTORNO_NVIM_XDG_ROOT="$XDG_ROOT"
 export ENTORNO_NVIM_TREE_SITTER_BIN="$TREE_SITTER_BIN"
 export ENTORNO_NVIM_LSP_WEB_BIN="$LSP_WEB_BIN"
 export ENTORNO_NVIM_LSP_PYTHON_BIN="$LSP_PYTHON_BIN"
+export ENTORNO_NVIM_LSP_BASH_BIN="$LSP_BASH_BIN"
 export ENTORNO_NVIM_LUALS_BIN="$LUALS_BIN"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 export PATH

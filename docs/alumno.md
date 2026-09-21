@@ -1,9 +1,9 @@
 # Guía del alumno
 
-> **Para la primera clase usa la instalación mínima.** El instalador completo
-> se conserva para prácticas posteriores que necesiten LSP, parsers o PDF.
+> **Para la primera clase usa la instalación esencial.** El instalador completo
+> se conserva para prácticas posteriores que necesiten LSP web, parsers o PDF.
 
-## Instalación mínima recomendada (Ubuntu, Pop!_OS y WSL2)
+## Instalación esencial recomendada (Ubuntu, Pop!_OS y WSL2)
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
@@ -11,14 +11,16 @@ cd entorno-nvim
 ./scripts/instalar-alumno.sh --sistema
 ```
 
-Este carril instala únicamente los paquetes básicos que falten (`git`, `tmux`,
-`curl`, `tar` y certificados), descarga un Neovim Linux local y verificado e
-instala los plugins fijados. No requiere el Neovim antiguo de Ubuntu y no usa
-un posible `nvim.exe` de Windows heredado por WSL2.
+Este carril instala los paquetes básicos que falten (`git`, `tmux`, `fzf`,
+`fd-find`, `ripgrep`, `curl`, `tar` y certificados), descarga Neovim y Node 24
+locales y verificados e instala los plugins, Pyright y Bash Language Server con
+versiones fijadas. No requiere el Neovim antiguo de Ubuntu y no usa un posible
+`nvim.exe` de Windows heredado por WSL2. ShellCheck es recomendable para obtener
+diagnósticos adicionales, pero su ausencia no bloquea la instalación.
 
-No instala Node, servidores LSP, Tree-sitter CLI, parsers, Pandoc, navegador,
-Poppler, LazyGit, `fzf`, `fd` ni `ripgrep`. Tampoco instala clientes de IA ni
-gestiona credenciales. Para comprobar el estado sin modificar nada:
+No instala Tree-sitter CLI, parsers externos, Pandoc, navegador, Poppler ni
+LazyGit. Tampoco instala clientes de IA ni gestiona credenciales. Para comprobar
+el estado sin modificar nada:
 
 ```sh
 ./scripts/instalar-alumno.sh --comprobar
@@ -112,7 +114,7 @@ O en un solo paso, desde cualquier carpeta:
 ```
 
 - Sin opciones abre el perfil `profesor` con tmux, editor, agente y terminal.
-- `--perfil dwec` (web), `--perfil si` (Python), `--perfil inicial` o
+- `--perfil dwec` (web), `--perfil si` (Bash y Python), `--perfil inicial` o
   `--perfil profesor` (predeterminado).
 - Para clase, añade `--perfil dwec --sin-ia` a cualquiera de los dos comandos
   anteriores si solo necesitas el editor y la terminal.

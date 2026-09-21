@@ -299,6 +299,19 @@ local function enable_python_server()
   })
 end
 
+local function enable_bash_server()
+  local executable = vim.fs.joinpath(paths.bash_lsp_bin(), "bash-language-server")
+  if vim.fn.executable(executable) ~= 1 then
+    profile.unavailable("bashls", "ejecute scripts/instalar-lsp-bash.sh")
+    return
+  end
+
+  M.enable("bashls", {
+    cmd = { executable, "start" },
+    filetypes = { "bash", "sh" },
+  })
+end
+
 function M.setup()
   vim.diagnostic.config({ update_in_insert = true })
   vim.diagnostic.enable(profile.has("diagnostics"))
@@ -319,6 +332,7 @@ function M.setup()
   if profile.has("web") then enable_web_servers() end
   if profile.has("lua") then enable_lua_server() end
   if profile.has("python") then enable_python_server() end
+  if profile.has("bash") then enable_bash_server() end
 end
 
 return M
