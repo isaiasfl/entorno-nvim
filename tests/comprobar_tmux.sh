@@ -107,6 +107,13 @@ command -v tmux >/dev/null 2>&1 || fail "tmux no esta instalado"
 command -v fzf >/dev/null 2>&1 || fail "fzf no esta disponible"
 grep -Fq 'nvim_command=${ENTORNO_EDITOR_COMMAND:-"$DEFAULT_NVIM_BIN"}' "$PROJECT_ROOT/scripts/proyecto.sh" ||
   fail "proyecto.sh no usa el wrapper aislado como editor predeterminado"
+if grep -Eq 'split-window .*-p[[:space:]]+[0-9]+' "$PROJECT_ROOT/scripts/proyecto.sh"; then
+  fail "proyecto.sh usa split-window -p, obsoleto en tmux reciente; debe usar -l PORCENTAJE%"
+fi
+grep -Fq 'split-window -v -l 15%' "$PROJECT_ROOT/scripts/proyecto.sh" ||
+  fail "el panel terminal no usa un tamano porcentual compatible"
+grep -Fq 'split-window -h -l 30%' "$PROJECT_ROOT/scripts/proyecto.sh" ||
+  fail "el panel IA no usa un tamano porcentual compatible"
 
 REPOSITORY="$WORK_DIR/proyecto principal"
 WORKTREE="$WORK_DIR/proyecto-worktree"

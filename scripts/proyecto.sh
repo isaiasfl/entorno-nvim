@@ -258,11 +258,11 @@ if ! tmux_cmd has-session -t "=$session" 2>/dev/null; then
     tmux_new_session -d -s "$session" -n code -c "$project"
   fi
   editor_pane=$(tmux_cmd display-message -p -t "=$session:1.1" '#{pane_id}')
-  terminal_pane=$(tmux_cmd split-window -v -p 15 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+  terminal_pane=$(tmux_cmd split-window -v -l 15% -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
   tmux_cmd set-option -p -t "$editor_pane" @entorno_role editor
   tmux_cmd set-option -p -t "$terminal_pane" @entorno_role terminal
   if [ "$ENTORNO_IA" = 1 ]; then
-    agent_pane=$(tmux_cmd split-window -h -p 30 -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
+    agent_pane=$(tmux_cmd split-window -h -l 30% -t "$editor_pane" -c "$project" -P -F '#{pane_id}')
     tmux_cmd set-option -p -t "$agent_pane" @entorno_role agent
     start_agent_selector "$agent_pane"
   fi

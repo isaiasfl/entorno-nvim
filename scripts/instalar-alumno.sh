@@ -200,6 +200,7 @@ ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/instalar-plugins.sh"
 ENTORNO_PERFIL=si ENTORNO_IA=1 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa
+printf '\n'
 "$SCRIPT_DIR/instalar-entorno-dev.sh"
 
 path_preparado=0
