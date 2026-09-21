@@ -27,27 +27,41 @@ La referencia probada es Debian 13 con Neovim 0.12.4.
 
 El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
-## Instalación rápida
+## Instalación rápida para alumnado
 
-Para descargar y preparar el entorno sin sustituir tu configuración de Neovim:
+Para una primera clase en Ubuntu, Pop!_OS o WSL2 usa el carril mínimo:
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/comprobar-requisitos.sh
-./scripts/instalar.sh
-./bin/entorno-dev --perfil dwec
+./scripts/instalar-alumno.sh --sistema
+./bin/entorno-dev --perfil si --ia
 ```
+
+Solo prepara Git, tmux, un Neovim Linux local y verificado, los plugins fijados
+y la integración opcional con clientes de IA ya instalados. No instala Node,
+LSP, parsers, Pandoc, Chromium, Poppler ni herramientas PDF. Tampoco toca
+`~/.config/nvim` ni usa un posible Neovim de Windows desde WSL2.
 
 El último comando abre la carpeta actual. Para abrir un proyecto concreto:
 
 ```sh
-./bin/entorno-dev --perfil dwec /ruta/a/mi-proyecto
+./bin/entorno-dev --perfil si --ia /ruta/a/mi-proyecto
 ```
 
-Si ya tienes Neovim 0.12+ y aún no has instalado los componentes opcionales,
-puedes probar el lanzador tras clonar: abre en modo nativo y `:EntornoInfo`
-muestra lo pendiente. El autocompletado requiere preparar los LSP.
+La IA solo se abre si ya existe un cliente compatible configurado; el editor y
+tmux funcionan sin él. `./scripts/instalar-alumno.sh --comprobar` diagnostica
+esta instalación sin modificar nada.
+
+## Instalación completa
+
+El perfil del profesor y las prácticas posteriores con LSP, parsers y PDF usan:
+
+```sh
+./scripts/comprobar-requisitos.sh
+./scripts/instalar.sh
+./bin/entorno-dev --perfil profesor
+```
 
 El instalador es idempotente, no usa `sudo`, no activa la configuración y no
 elimina instalaciones anteriores. Comprueba qué falta, separa imprescindibles de

@@ -1,5 +1,40 @@
 # Guía del alumno
 
+> **Para la primera clase usa la instalación mínima.** El instalador completo
+> se conserva para prácticas posteriores que necesiten LSP, parsers o PDF.
+
+## Instalación mínima recomendada (Ubuntu, Pop!_OS y WSL2)
+
+```sh
+git clone https://github.com/isaiasfl/entorno-nvim.git
+cd entorno-nvim
+./scripts/instalar-alumno.sh --sistema
+```
+
+Este carril instala únicamente los paquetes básicos que falten (`git`, `tmux`,
+`curl`, `tar` y certificados), descarga un Neovim Linux local y verificado e
+instala los plugins fijados. No requiere el Neovim antiguo de Ubuntu y no usa
+un posible `nvim.exe` de Windows heredado por WSL2.
+
+No instala Node, servidores LSP, Tree-sitter CLI, parsers, Pandoc, navegador,
+Poppler, LazyGit, `fzf`, `fd` ni `ripgrep`. Tampoco instala clientes de IA ni
+gestiona credenciales. Para comprobar el estado sin modificar nada:
+
+```sh
+./scripts/instalar-alumno.sh --comprobar
+```
+
+Para abrir el perfil de Sistemas Informáticos con la integración de IA:
+
+```sh
+./bin/entorno-dev --perfil si --ia /ruta/al/proyecto
+```
+
+La IA se podrá seleccionar solamente si el alumno ya tiene instalado y
+configurado un cliente compatible. El editor y tmux funcionan sin él.
+
+## Instalación completa (avanzada)
+
 Esta guía instala el entorno **sin `sudo`**, sin sustituir tu Neovim y sin tocar
 tu configuración personal de tmux, Neovim o shell. Todo queda dentro de la
 carpeta del repositorio clonado.

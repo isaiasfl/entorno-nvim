@@ -104,4 +104,7 @@ export ENTORNO_NVIM_LUALS_BIN="$LUALS_BIN"
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 export PATH
 
+if [ "${ENTORNO_SIN_LISTEN:-0}" = 1 ]; then
+  exec "$NVIM_BIN" "$@"
+fi
 exec "$NVIM_BIN" --listen "$XDG_ROOT/runtime/nvim-$$" "$@"
