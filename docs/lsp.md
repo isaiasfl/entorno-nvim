@@ -72,13 +72,11 @@ activo; `Enter` conserva la inserción de una línea nueva.
 
 ## Diagnósticos durante la escritura
 
-`vim.diagnostic.config({ update_in_insert = true })` permite refrescar signos,
-subrayados y mensajes mientras se permanece en modo insertar. No inicia
-procesos adicionales: los servidores ya reciben los cambios del documento y
-esta opción controla cuándo Neovim presenta los diagnósticos recibidos. Con los
-servidores web locales el coste observado es despreciable. Si resulta visualmente
-ruidoso, puede volver al comportamiento predeterminado cambiando el valor a
-`false`; los diagnósticos se actualizarán al salir de insertar.
+Los diagnósticos muestran signo, subrayado y texto virtual al final de la línea.
+`Espacio l d` abre el detalle flotante y `[d`/`]d` recorren los problemas. Se usa
+`update_in_insert = false` para que los mensajes no salten mientras el alumno
+escribe; se actualizan al volver al modo normal. Esta presentación se aplica por
+igual a Bash, Python, JavaScript y los demás servidores activos.
 
 ## Servidores web activos
 

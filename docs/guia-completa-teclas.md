@@ -381,6 +381,7 @@ El servidor del proyecto se llama `entorno-nvim` salvo override explícito.
 | `g` | Abrir/reutilizar ventana LazyGit |
 | `i` | Selector emergente de agente |
 | `d` | Desconectar conservando procesos |
+| `Q` | Cerrar definitivamente la sesión actual, con confirmación |
 | `:` | Indicador de comandos tmux |
 | `Ctrl+a` | Enviar Ctrl+a literal a la aplicación |
 
@@ -409,6 +410,7 @@ Wayland. El entorno no instala un sincronizador de portapapeles tmux.
 | Objetivo | Acción |
 | --- | --- |
 | Salir sin detener nada | `Ctrl+a` → `d` |
+| Cerrar proyecto completo con confirmación | `Ctrl+a` → `Q` |
 | Terminar shell del panel | `exit` o Ctrl+d con línea vacía |
 | Cerrar panel a la fuerza | `Ctrl+a` → `x`, confirmar |
 | Cerrar ventana con sus paneles | `Ctrl+a` → `&`, confirmar |

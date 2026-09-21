@@ -313,7 +313,21 @@ local function enable_bash_server()
 end
 
 function M.setup()
-  vim.diagnostic.config({ update_in_insert = true })
+  vim.diagnostic.config({
+    update_in_insert = false,
+    underline = true,
+    signs = true,
+    severity_sort = true,
+    virtual_text = {
+      spacing = 2,
+      source = "if_many",
+      prefix = "●",
+    },
+    float = {
+      border = "rounded",
+      source = true,
+    },
+  })
   vim.diagnostic.enable(profile.has("diagnostics"))
   if not require("config.lazy").available then
     profile.unavailable("LSP", "prepare plugins y servidores; :EntornoInfo muestra el perfil")

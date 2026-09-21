@@ -38,6 +38,7 @@ anterior o la pantalla principal. `:IFL` permite volver al inicio directamente.
 | Seleccionar/copiar en copy-mode | `v` / `y` |
 | Elegir sesión | `Ctrl-a s` |
 | Separarse sin cerrar | `Ctrl-a d` |
+| Cerrar proyecto definitivamente | `Ctrl-a Q`, confirmar |
 | Enviar `Ctrl-a` literal | `Ctrl-a Ctrl-a` |
 
 El ratón también permite seleccionar paneles y ventanas, redimensionar y hacer
@@ -65,6 +66,10 @@ tmux -L entorno-nvim kill-session -t nombre
 Cerrar SSH o separarse conserva las sesiones y sus procesos. Reiniciar la
 máquina no: la persistencia tras reinicios queda aplazada.
 
+Para salir y volver exactamente al mismo editor, use `Ctrl-a d` y después
+repita `entorno-dev --perfil si --ia /ruta/al/proyecto`. Para terminar todos los
+procesos de ese proyecto, guardar primero y usar `Ctrl-a Q`, confirmando.
+
 ## NEOVIM
 
 | Acción | Tecla |
@@ -78,6 +83,8 @@ máquina no: la persistencia tras reinicios queda aplazada.
 | Definición / referencias / rename | `gd` / `grr` / `grn` |
 | Hover / completar | `K` / `Ctrl-Space` |
 | Formatear con LSP | `<leader>lf` |
+| Ver mensaje del error | `<leader>ld` |
+| Error anterior / siguiente | `[d` / `]d` |
 | Volver al dashboard | `:IFL` |
 
 ### Moverse

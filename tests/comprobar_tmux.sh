@@ -305,6 +305,12 @@ printf '%s\n' "$HELP_EDITOR" | grep -q '^h j k l.*Izquierda' ||
   fail "la ayuda Editor omite el movimiento basico"
 printf '%s\n' "$HELP_EDITOR" | grep -q '^SPACE d.*Duplicar linea' ||
   fail "la ayuda Editor omite la duplicacion de linea"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^yy / p.*Copiar linea' ||
+  fail "la ayuda Editor omite copiar y pegar lineas"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^dd / 3dd.*Borrar' ||
+  fail "la ayuda Editor omite borrar lineas"
+printf '%s\n' "$HELP_EDITOR" | grep -q '^ciw.*Cambiar palabra' ||
+  fail "la ayuda Editor omite cambiar palabras"
 printf '%s\n' "$HELP_EDITOR" | grep -q '^ALT-SHIFT j/k.*Mover linea' ||
   fail "la ayuda Editor omite el movimiento de lineas en Linux"
 printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
@@ -317,12 +323,16 @@ printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
   fail "Configuracion omite la integracion del portapapeles"
 "$HELP_SCRIPT" --actions WORKSPACE | grep -q '^PREFIX i / g.*Selector IA' ||
   fail "TMUX / Espacio de trabajo omite el selector IA"
+"$HELP_SCRIPT" --actions WORKSPACE | grep -q '^PREFIX Q.*Cerrar proyecto' ||
+  fail "TMUX / Espacio de trabajo omite el cierre definitivo"
 "$HELP_SCRIPT" --actions NAVIGATION | grep -q '^PREFIX h / j.*Izquierda' ||
   fail "la ayuda omite la navegacion entre paneles"
 "$HELP_SCRIPT" --actions TERMINAL | grep -q '^docker compose up' ||
   fail "la ayuda Terminal omite herramientas de desarrollo"
 "$HELP_SCRIPT" --actions AI | grep -q '^SPACE ac.*contexto' ||
   fail "la ayuda IA omite el flujo de contexto"
+tmux_test list-keys -T prefix | grep -q 'bind-key.* Q .*confirm-before.*kill-session' ||
+  fail "falta el cierre confirmado de la sesion con Prefix+Q"
 "$HELP_SCRIPT" --actions FLOW | grep -q '^REVISAR CAMBIOS$' ||
   fail "la ayuda omite el flujo diario de Git"
 "$HELP_SCRIPT" --actions GIT | grep -q 'git diff --staged' ||

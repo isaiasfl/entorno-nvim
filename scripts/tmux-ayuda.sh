@@ -102,11 +102,17 @@ action_rows() {
         'i / a / o       Insertar / anadir / nueva linea' \
         'v / V           Seleccion visual / por lineas' \
         'Esc o jk        Volver al modo normal' \
+        'yy / p          Copiar linea / pegar debajo' \
+        'dd / 3dd        Borrar una / tres lineas' \
+        'ciw             Cambiar palabra completa' \
+        'x / u / CTRL-r  Borrar caracter / deshacer / rehacer' \
         'MOVIMIENTO BASICO' \
         'h j k l         Izquierda, abajo, arriba, derecha' \
         'w / b / e       Palabra siguiente / anterior / final' \
         'gg / G          Inicio / final del archivo' \
-        '0 / $           Inicio / final de linea' \
+        '0 / ^ / $       Inicio / texto inicial / final de linea' \
+        'MOVER LINEAS' \
+        'ALT-SHIFT j/k   Linea o seleccion abajo / arriba' \
         'INTEGRACIONES' \
         'SPACE gg / ac   Lazygit / enviar contexto IA'
       ;;
@@ -145,6 +151,7 @@ action_rows() {
         'PREFIX 0-9        Ir a ventana por indice' \
         'SESIONES Y PROYECTOS' \
         'PREFIX s / d      Elegir / separar sesion' \
+        'PREFIX Q          Cerrar proyecto, confirmar' \
         'PREFIX P          Selector de proyectos' \
         'entorno-dev ruta  Abrir otra carpeta' \
         'ENTORNO' \
