@@ -86,6 +86,9 @@ action_rows() {
         'BUSCAR Y EXPLORAR' \
         'SPACE ff / fg   Archivos / texto del proyecto' \
         'SPACE fb        Buffers abiertos' \
+        ']b / [b         Archivo siguiente / anterior' \
+        ':bdelete        Cerrar archivo sin salir de Neovim' \
+        ':helpclose      Cerrar solo la ayuda de Neovim' \
         'dashboard r     Archivos recientes' \
         'SPACE ee / ef   Explorador / enfocar archivo' \
         'ARCHIVO Y CODIGO' \

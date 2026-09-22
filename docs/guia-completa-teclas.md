@@ -66,6 +66,8 @@ no reconstruye sus ventanas ni reinicia los editores.
 La ayuda de tmux se organiza por categorías: `Enter` abre, `Esc` vuelve,
 `q` cierra. Es una chuleta, no ejecuta las acciones descritas. Puede mostrar
 funciones no habilitadas en un perfil reducido.
+Para cerrar una ventana de ayuda de Neovim, use `:helpclose`; `:q` actúa sobre
+la ventana actual y puede cerrar el editor si ya no está en la ayuda.
 
 ## Cómo leer las teclas
 
@@ -277,14 +279,17 @@ Para resultados quickfix: `:copen`, `:cnext`, `:cprev`, `:cclose`.
 | Pestaña número 2 | `2gt` |
 | Cerrar pestaña | `:tabclose` |
 | Mover pestaña al final | `:tabmove` |
-| Mostrar buffers | `:ls` o `Espacio f b` |
-| Buffer siguiente/anterior | `:bnext` / `:bprevious` |
+| Mostrar buffers | Barra superior, `:ls` o `Espacio f b` |
+| Buffer siguiente/anterior | `]b` / `[b` o `:bnext` / `:bprevious` |
 | Elegir buffer por número | `:buffer 3` |
 | Buffer alternativo | `Ctrl+^` (según teclado) |
 | Cerrar buffer | `:bdelete`; no forzar si hay cambios |
 
-No hay una barra gráfica de pestañas tipo IDE añadida por el proyecto.
-Una pestaña Neovim puede mostrar varias ventanas y varios archivos.
+La barra superior muestra los buffers de archivo, resalta el actual y marca
+con `[+]` los cambios sin guardar. Permite abrir un archivo con clic izquierdo;
+los buffers sin nombre no aparecen. Usa funciones nativas y no instala plugins.
+Una pestaña Neovim puede mostrar varias ventanas y varios archivos; la barra
+superior muestra archivos, no las pestañas de Neovim.
 
 ## Autocompletado y lenguajes
 

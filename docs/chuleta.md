@@ -86,6 +86,9 @@ procesos de ese proyecto, guardar primero y usar `Ctrl-a Q`, confirmando.
 | Ver mensaje del error | `<leader>ld` |
 | Error anterior / siguiente | `[d` / `]d` |
 | Volver al dashboard | `:IFL` |
+| Ver archivos abiertos | Barra superior; el actual aparece resaltado y `[+]` indica cambios sin guardar |
+| Cambiar entre archivos abiertos | Clic en su nombre, `]b` / `[b`, o `Espacio f b` |
+| Cerrar el archivo actual | `:bdelete` (no descarta cambios sin guardar) |
 
 ### Moverse
 

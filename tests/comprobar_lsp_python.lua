@@ -58,6 +58,18 @@ for _, reference in ipairs(references) do
 end
 assert(reference_files[main_path] and reference_files[fixture .. "/helpers.py"], "las referencias no cubren ambos modulos")
 
+assert(vim.wait(10000, function()
+  local found_type_error = false
+  local found_undefined = false
+  for _, diagnostic in ipairs(vim.diagnostic.get(bufnr)) do
+    local message = diagnostic.message:lower()
+    found_type_error = found_type_error or message:find("list%[float%]") ~= nil
+    found_undefined = found_undefined or message:find("missing_student", 1, true) ~= nil
+    assert(message:find('import "helpers" could not be resolved', 1, true) == nil, "Pyright no resolvio el modulo local")
+  end
+  return found_type_error and found_undefined
+end, 50), "Pyright no publico los diagnosticos de tipo y variable indefinida")
+
 -- Renombrar desde la declaracion evita diferencias de Pyright entre plataformas
 -- al decidir si un alias importado es renombrable. Las referencias anteriores
 -- ya comprueban por separado que el simbolo se resuelve en ambos archivos.
@@ -83,18 +95,6 @@ for _, edit in ipairs(rename.documentChanges or {}) do
   end
 end
 assert(renamed_files[helpers_path], "rename no incluyo la declaracion de helpers.py")
-
-assert(vim.wait(10000, function()
-  local found_type_error = false
-  local found_undefined = false
-  for _, diagnostic in ipairs(vim.diagnostic.get(bufnr)) do
-    local message = diagnostic.message:lower()
-    found_type_error = found_type_error or message:find("list%[float%]") ~= nil
-    found_undefined = found_undefined or message:find("missing_student", 1, true) ~= nil
-    assert(message:find('import "helpers" could not be resolved', 1, true) == nil, "Pyright no resolvio el modulo local")
-  end
-  return found_type_error and found_undefined
-end, 50), "Pyright no publico los diagnosticos de tipo y variable indefinida")
 
 vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, { "", "student." })
 local completion = request(client, bufnr, "textDocument/completion", position_params(bufnr, 9, 8))

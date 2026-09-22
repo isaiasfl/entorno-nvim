@@ -37,4 +37,4 @@ for opening, pair in pairs(expected) do
   vim.api.nvim_buf_delete(bufnr, { force = true })
 end
 
-assert(vim.diagnostic.config().update_in_insert == true, "los diagnosticos deben actualizarse en insertar")
+assert(vim.diagnostic.config().update_in_insert == false, "los diagnosticos no deben cambiar mientras se escribe")
