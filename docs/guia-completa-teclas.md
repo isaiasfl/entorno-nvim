@@ -31,23 +31,25 @@ posibles de Vim, Git, Bash o de cada cliente de IA.
 Desde la carpeta del trabajo:
 
 ```bash
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev
+entorno-dev
 ```
 
-En otro equipo, sustituir esa ruta por la ubicación del repositorio.
-El nombre corto `entorno-dev` solo funciona si está instalado en el PATH.
+`entorno-dev` es el comando recomendado desde cualquier carpeta. Ambos
+instaladores preparan el lanzador en `~/.local/bin`. Si aparece «command not
+found», consulte [preparar el comando](../README.md#usar-entorno-dev-desde-cualquier-carpeta).
+No necesita escribir la ruta del repositorio cada vez.
 
 ```bash
 # Otra carpeta; las opciones van antes de la ruta
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev /ruta/proyecto
+entorno-dev /ruta/proyecto
 # Solo editor
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev --sin-tmux
+entorno-dev --sin-tmux
 # Sin integración ni panel IA
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev --sin-ia
+entorno-dev --sin-ia
 # Selector de proyectos
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev --elegir
+entorno-dev --elegir
 # Ayuda del lanzador
-/home/isaiasfl/Work/entorno-nvim/bin/entorno-dev --help
+entorno-dev --help
 ```
 
 Sin opciones y sin variables de perfil heredadas: perfil profesor y tres

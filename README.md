@@ -134,7 +134,7 @@ cambios locales, consérvelos y resuelva el aviso antes de continuar.
 
 Solo lee el estado y clasifica cada elemento como `OK`, `FALTA` u `OPCIONAL`.
 
-## Comandos en el PATH: opcional
+## Usar entorno-dev desde cualquier carpeta
 
 La instalación **no sustituye el comando `nvim` existente**. Puede empezar sin
 cambiar el PATH ni la configuración habitual:
@@ -144,8 +144,8 @@ cambiar el PATH ni la configuración habitual:
 ./scripts/arrancar.sh /ruta/a/archivo
 ```
 
-Para usar `entorno-dev` desde cualquier carpeta, el instalador de alumno ya
-prepara el lanzador. En la instalación completa, ejecútelo expresamente:
+Ambos instaladores preparan el lanzador en `~/.local/bin`. Para una instalación
+anterior o para repararlo, ejecute una sola vez desde el repositorio:
 
 ```sh
 ./scripts/instalar-entorno-dev.sh
@@ -154,6 +154,19 @@ prepara el lanzador. En la instalación completa, ejecútelo expresamente:
 `~/.local/bin` debe estar en su PATH. El instalador avisa si falta. En Bash/Zsh,
 para la terminal actual: `export PATH="$HOME/.local/bin:$PATH"`. En Fish:
 `fish_add_path "$HOME/.local/bin"`. Compruebe con `command -v entorno-dev`.
+
+Para conservarlo en Bash/Zsh, añada `export PATH="$HOME/.local/bin:$PATH"` a
+`~/.bashrc` o `~/.zshrc`, respectivamente, y abra otra terminal. Fish conserva
+la ruta con `fish_add_path`. El instalador no modifica esos archivos.
+
+Después, desde la carpeta del proyecto:
+
+```sh
+entorno-dev --perfil dwec --sin-ia .
+```
+
+Escribir solo `entorno-dev` también funciona, pero utiliza el perfil profesor
+si no hay otro perfil heredado. Para alumnado use el perfil explícito.
 
 ### Usar este entorno al escribir nvim
 
@@ -197,7 +210,7 @@ backup registrado. El backup histórico se conserva. Véase
 
 ```sh
 cd /ruta/al/proyecto
-/ruta/entorno-nvim/bin/entorno-dev --perfil dwec
+entorno-dev --perfil dwec
 ```
 
 Sin opciones recupera el perfil profesor, PDF y tmux con tres paneles.
@@ -205,8 +218,9 @@ Sin opciones recupera el perfil profesor, PDF y tmux con tres paneles.
 La [guia docente](docs/entorno-docente.md)
 describe los perfiles y la [chuleta diaria](docs/chuleta.md) los atajos.
 El lanzador acepta otra ruta con `entorno-dev /ruta` y abre el selector con
-`entorno-dev --elegir`. Use `./bin/entorno-dev` o su ruta absoluta; el enlace
-opcional en `~/.local/bin` solo se crea con `scripts/instalar-entorno-dev.sh`.
+`entorno-dev --elegir`. Use `entorno-dev` desde cualquier carpeta. Si no se encuentra el comando,
+consulte la sección de PATH anterior. `./bin/entorno-dev` es una alternativa
+desde el repositorio.
 
 ## Neovim
 

@@ -182,7 +182,7 @@ nativo/macOS para el perfil `profesor`. El resto del entorno funciona igual.
 El entorno admite rutas con espacios; escríbelas entre comillas.
 
 **Quiero que `entorno-dev` esté en el `PATH`.**
-Opcionalmente: `./scripts/instalar-entorno-dev.sh`. Crea el enlace en
+Los instaladores ya lo preparan. Para repararlo: `./scripts/instalar-entorno-dev.sh`. Crea el enlace en
 `~/.local/bin` sin sobrescribir nada ajeno.
 
 **Uso ARM (Apple Silicon o WSL2 sobre ARM).**

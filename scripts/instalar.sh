@@ -275,4 +275,6 @@ entorno_fase "Parsers"
 "$SCRIPT_DIR/instalar-parsers.sh"
 entorno_fase "Comprobación final de requisitos"
 "$SCRIPT_DIR/comprobar-requisitos.sh"
+entorno_fase "Lanzador entorno-dev"
+"$SCRIPT_DIR/instalar-entorno-dev.sh"
 entorno_resumen_instalacion profesor completa

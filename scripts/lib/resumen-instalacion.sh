@@ -127,9 +127,13 @@ entorno_resumen_instalacion() {
   printf '\n'; printf '%s\n' '  DENTRO DE NEOVIM:' '    Esc y Espacio ?   Ayuda de teclas' '    Espacio e        Explorador' '    Espacio w        Guardar' '    :bd              Cerrar archivo sin salir'
   printf '\n%s\n' '  COMANDOS EN EL PATH:'
   if [ "$resumen_tipo" = completa ]; then
-    printf '%s\n' '    Para disponer de entorno-dev desde cualquier carpeta:' '    ./scripts/instalar-entorno-dev.sh'
+    printf '%s\n' '    Lanzador entorno-dev preparado en ~/.local/bin.'
   fi
-  printf '%s\n' '    nvim no se sustituye automaticamente.' '    Activacion opcional de nvim y su configuracion: README.md.'
+  case ":$PATH:" in
+    *":$HOME/.local/bin:"*) printf '%s\n' '    Puede usar entorno-dev desde cualquier carpeta.' ;;
+    *) printf '%s\n' '    Falta ~/.local/bin en el PATH de esta terminal.' '    Bash/Zsh: export PATH="$HOME/.local/bin:$PATH"' '    Fish: fish_add_path "$HOME/.local/bin"' '    Para Bash/Zsh, conserve la linea en ~/.bashrc o ~/.zshrc.' ;;
+  esac
+  printf '%s\n' '    nvim no se sustituye automaticamente.'  '    Activacion opcional de nvim y su configuracion: README.md.'
   printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y repetir este instalador.'
   printf '%s\n' '  Lazygit utiliza la version del sistema; no se actualiza aqui.'
   printf '%s\n' '  La IA es opcional: no se instalan clientes ni credenciales.'
