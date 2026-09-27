@@ -1,3 +1,5 @@
+<img src="../IMG/logo.png" alt="entorno-nvim · IFL" width="560">
+
 # Entorno docente portable: primera fase
 
 ## Estado de esta fase

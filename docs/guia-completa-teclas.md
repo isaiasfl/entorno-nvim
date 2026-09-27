@@ -1,3 +1,5 @@
+<img src="../IMG/logo.png" alt="entorno-nvim · IFL" width="560">
+
 # Guía completa de teclas y uso del entorno
 
 Referencia del repositorio revisada el 13 de septiembre de 2026.

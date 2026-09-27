@@ -1,3 +1,5 @@
+<img src="IMG/logo.png" alt="entorno-nvim · IFL" width="560">
+
 # Chuleta de comandos: entorno IFL, tmux y Neovim
 
 Guía básica para trabajar con los perfiles DWEC y Sistemas Informáticos. En los

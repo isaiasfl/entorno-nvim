@@ -1,3 +1,5 @@
+<img src="../IMG/logo.png" alt="entorno-nvim · IFL" width="560">
+
 # Chuleta diaria
 
 Para la referencia extensa: [guía completa de teclas y uso](guia-completa-teclas.md),

@@ -1,3 +1,5 @@
+<img src="../IMG/logo.png" alt="entorno-nvim · IFL" width="560">
+
 # Guía del alumno
 
 > **Para la primera clase usa la instalación esencial.** El instalador completo
