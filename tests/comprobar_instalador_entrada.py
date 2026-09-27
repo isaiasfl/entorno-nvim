@@ -22,6 +22,9 @@ for script, args in [("instalar.sh", []), ("instalar-alumno.sh", ["--perfil", "d
         assert b"Pulse Enter" in output, (script, output)
         assert b"v" + version in output, (script, output)
         assert b"ANTES DE COMENZAR" in output
+        assert b"--sistema" in output
+        assert b"MODO LOCAL" in output
+        assert b"no autoriza sudo" in output
         os.write(master, b"cancelar\n")
         assert proc.wait(timeout=5) == 0
     finally:

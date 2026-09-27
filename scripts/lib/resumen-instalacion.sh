@@ -33,7 +33,14 @@ entorno_confirmar_inicio() {
   if [ "$sistema_auto" -eq 1 ]; then
     printf '%s\n' '  - Si faltan paquetes del sistema, mostrara el comando y pedira permiso para sudo.'
   else
-    printf '%s\n' '  - No ejecutara sudo; si faltan paquetes del sistema, mostrara como instalarlos.'
+    printf '%s\n' '  - MODO LOCAL: no instalara paquetes del sistema ni ejecutara sudo.'
+    printf '%s\n' '  - Si falta un requisito imprescindible del sistema, se detendra.'
+    printf '%s\n' '  Para ofrecer tambien la instalacion de esos paquetes, cancele y use:'
+    if [ "$2" = alumnado ]; then
+      printf '    ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
+    else
+      printf '%s\n' '    ./scripts/instalar.sh --sistema'
+    fi
   fi
   printf '%s\n' '  - No sustituira su configuracion habitual ni el comando nvim.'
   if [ "$2" = alumnado ]; then
@@ -49,6 +56,7 @@ entorno_confirmar_inicio() {
     printf '%s\n' 'No hay entrada interactiva. Use --yes si desea iniciar sin pausa.' >&2
     return 1
   fi
+  printf '\n%s\n' '  Enter confirma el inicio; no autoriza sudo ni activa --sistema.'
   printf '\n%s' 'Pulse Enter para comenzar, o Ctrl+C para cancelar: '
   IFS= read -r inicio_respuesta || return 1
   if [ -n "$inicio_respuesta" ]; then
