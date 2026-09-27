@@ -1,4 +1,4 @@
-# ![Entorno NVIM: Neovim de Isaías](IMG/logo.png)
+![entorno-nvim — entorno de programación de Isaías](IMG/logo.png)
 
 
 *Neovim de Isaías: desarrollo, docencia y Markdown/PDF.*

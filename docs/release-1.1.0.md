@@ -47,5 +47,7 @@ puede servir como distribución; no se genera un paquete .deb en esta fase.
 
 ## Identidad visual
 
-[Prompt para una nueva identidad](logo-prompt.md). El banner actual se conserva
-hasta elegir y revisar la propuesta.
+[Prompt para una nueva identidad](logo-prompt.md). El nuevo logo elegido se incorpora al README como PNG con canal alfa real,
+convertido localmente desde el JPEG con fondo blanco. El texto gráfico
+conserva «entorno nvim»; el nombre oficial del repositorio sigue siendo
+`entorno-nvim`.
