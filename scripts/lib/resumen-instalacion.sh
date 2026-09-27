@@ -27,6 +27,18 @@ BANNER
   printf '%s\n\n' 'Neovim · Node · LSP · tmux · búsqueda · Git'
 }
 entorno_confirmar_inicio() {
+  printf '\n%s\n' 'ELIJA LA FORMA DE INSTALAR'
+  printf '%s\n' '  SIN --sistema: instala componentes locales en el repositorio.'
+  printf '%s\n' '  CON --sistema: ademas ofrece instalar los paquetes del sistema que falten.'
+  if [ "$2" = alumnado ]; then
+    printf '%s\n' '    Ejemplos: Git, tmux, fzf, fd/fdfind, ripgrep, curl, tar, xz' '    y certificados TLS; en SI, tambien ShellCheck. No incluye PDF.'
+    printf '    Comando: ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
+  else
+    printf '%s\n' '    Ejemplos: Git, tmux, fzf, fd/fdfind, ripgrep, Lazygit, curl,' '    unzip, compilador y navegador para PDF; tambien ofrece opcionales' '    como Pandoc y Poppler si faltan y el gestor los admite.'
+    printf '%s\n' '    Comando: ./scripts/instalar.sh --sistema'
+  fi
+  printf '%s\n' '  --sistema muestra el comando del gestor y pide permiso antes de sudo.'
+  printf '%s\n' '  Neovim, Node, plugins y LSP se preparan localmente en ambos modos.'
   printf '\n%s\n' 'ANTES DE COMENZAR'
   printf '  Modalidad: %s\n' "$1"
   printf '%s\n' '  - Comprobara requisitos y reutilizara lo ya instalado.' '  - Descargara los componentes locales que falten dentro del repositorio.' '  - Preparara plugins y servidores de lenguaje de la modalidad elegida.'
