@@ -37,6 +37,23 @@ Cuando un servidor se conecta, Neovim también configura `K` para mostrar la
 documentación del símbolo, `Ctrl-]` para ir a una definición y `gq` para
 formatear el rango cuando el servidor lo permite.
 
+El entorno ajusta `K` para abrir esa información en una ventana flotante con
+borde y texto envuelto. En TypeScript, sitúe el cursor sobre el nombre de una
+variable para ver el tipo que infiere el servidor.
+
+Por ejemplo, CryptoJS declara que `AES.decrypt()` devuelve
+`CryptoJS.lib.WordArray`, no `string[]`. Puede dejar que TypeScript lo infiera o
+anotarlo explícitamente; para obtener texto UTF-8:
+
+```ts
+const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(texto, clave)
+const textoOriginal: string = CryptoJS.enc.Utf8.stringify(bytes)
+```
+
+`Utf8.stringify` recibe el `WordArray` y devuelve `string`. Para consultar el
+tipo inferido con `K`, coloque el cursor sobre `bytes` o sobre la llamada; sobre
+`CryptoJS.AES` verá la documentación del helper, no el tipo devuelto.
+
 El proyecto añade solo mapas locales al buffer conectado:
 
 | Mapa | Acción |
@@ -49,6 +66,13 @@ El proyecto añade solo mapas locales al buffer conectado:
 locales no afectan a buffers sin un cliente LSP.
 
 ## Completado
+
+Para generar JSDoc, escriba `/**` en una línea justo encima de la función y
+pulse `Enter`. El servidor debe estar conectado al archivo. Sin servidor,
+`Enter` mantiene la inserción normal de una línea nueva. También puede usar
+`Espacio l j` sobre la función o `docfn` + `Ctrl+j` encima de ella.
+La comprobación `tests/comprobar_jsdoc.lua` reproduce las teclas reales en un
+Neovim hijo con TypeScript y comprueba también el funcionamiento de Enter normal.
 
 Al conectarse un cliente que anuncie `textDocument/completion`, se llama a
 `vim.lsp.completion.enable()` con `autotrigger = true`. Los caracteres que
@@ -72,11 +96,15 @@ activo; `Enter` conserva la inserción de una línea nueva.
 
 ## Diagnósticos durante la escritura
 
-Los diagnósticos muestran signo, subrayado y texto virtual al final de la línea.
-`Espacio l d` abre el detalle flotante y `[d`/`]d` recorren los problemas. Se usa
-`update_in_insert = false` para que los mensajes no salten mientras el alumno
-escribe; se actualizan al volver al modo normal. Esta presentación se aplica por
-igual a Bash, Python, JavaScript y los demás servidores activos.
+Los diagnósticos muestran el signo en el margen y subrayan el código afectado;
+no imprimen mensajes largos al final de la línea. `gl` abre los diagnósticos de
+la línea actual; `Espacio l d` abre los del archivo completo. Las ventanas
+flotantes ajustan el texto a un máximo de 80 columnas y 20 líneas. `[d` y `]d`
+recorren los problemas y muestran su detalle. `K` consulta el tipo y la
+documentación del símbolo bajo el cursor cuando el servidor LSP lo proporciona.
+Se usa `update_in_insert = false` para que los mensajes no salten mientras se
+escribe; se actualizan al volver al modo normal. Esta presentación se aplica
+por igual a Bash, Python, JavaScript y los demás servidores activos.
 
 ## Servidores web activos
 

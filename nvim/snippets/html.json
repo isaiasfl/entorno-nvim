@@ -1,0 +1,245 @@
+{
+  "Documento HTML5": {
+    "prefix": "!",
+    "body": [
+      "<!doctype html>",
+      "<html lang=\"es\">",
+      "<head>",
+      "  <meta charset=\"UTF-8\">",
+      "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+      "  <title>${1:Documento}</title>",
+      "</head>",
+      "<body>",
+      "  $0",
+      "</body>",
+      "</html>"
+    ],
+    "description": "Estructura mínima HTML5"
+  },
+  "div": {
+    "prefix": "div",
+    "body": [
+      "<div>${1:contenido}</div>$0"
+    ],
+    "description": "Etiqueta div"
+  },
+  "section": {
+    "prefix": "section",
+    "body": [
+      "<section>${1:contenido}</section>$0"
+    ],
+    "description": "Etiqueta section"
+  },
+  "article": {
+    "prefix": "article",
+    "body": [
+      "<article>${1:contenido}</article>$0"
+    ],
+    "description": "Etiqueta article"
+  },
+  "header": {
+    "prefix": "header",
+    "body": [
+      "<header>${1:contenido}</header>$0"
+    ],
+    "description": "Etiqueta header"
+  },
+  "footer": {
+    "prefix": "footer",
+    "body": [
+      "<footer>${1:contenido}</footer>$0"
+    ],
+    "description": "Etiqueta footer"
+  },
+  "main": {
+    "prefix": "main",
+    "body": [
+      "<main>${1:contenido}</main>$0"
+    ],
+    "description": "Etiqueta main"
+  },
+  "nav": {
+    "prefix": "nav",
+    "body": [
+      "<nav>${1:contenido}</nav>$0"
+    ],
+    "description": "Etiqueta nav"
+  },
+  "p": {
+    "prefix": "p",
+    "body": [
+      "<p>${1:contenido}</p>$0"
+    ],
+    "description": "Etiqueta p"
+  },
+  "h1": {
+    "prefix": "h1",
+    "body": [
+      "<h1>${1:contenido}</h1>$0"
+    ],
+    "description": "Etiqueta h1"
+  },
+  "h2": {
+    "prefix": "h2",
+    "body": [
+      "<h2>${1:contenido}</h2>$0"
+    ],
+    "description": "Etiqueta h2"
+  },
+  "span": {
+    "prefix": "span",
+    "body": [
+      "<span>${1:contenido}</span>$0"
+    ],
+    "description": "Etiqueta span"
+  },
+  "ul": {
+    "prefix": "ul",
+    "body": [
+      "<ul>${1:contenido}</ul>$0"
+    ],
+    "description": "Etiqueta ul"
+  },
+  "ol": {
+    "prefix": "ol",
+    "body": [
+      "<ol>${1:contenido}</ol>$0"
+    ],
+    "description": "Etiqueta ol"
+  },
+  "li": {
+    "prefix": "li",
+    "body": [
+      "<li>${1:contenido}</li>$0"
+    ],
+    "description": "Etiqueta li"
+  },
+  "table": {
+    "prefix": "table",
+    "body": [
+      "<table>${1:contenido}</table>$0"
+    ],
+    "description": "Etiqueta table"
+  },
+  "thead": {
+    "prefix": "thead",
+    "body": [
+      "<thead>${1:contenido}</thead>$0"
+    ],
+    "description": "Etiqueta thead"
+  },
+  "tbody": {
+    "prefix": "tbody",
+    "body": [
+      "<tbody>${1:contenido}</tbody>$0"
+    ],
+    "description": "Etiqueta tbody"
+  },
+  "tr": {
+    "prefix": "tr",
+    "body": [
+      "<tr>${1:contenido}</tr>$0"
+    ],
+    "description": "Etiqueta tr"
+  },
+  "td": {
+    "prefix": "td",
+    "body": [
+      "<td>${1:contenido}</td>$0"
+    ],
+    "description": "Etiqueta td"
+  },
+  "th": {
+    "prefix": "th",
+    "body": [
+      "<th>${1:contenido}</th>$0"
+    ],
+    "description": "Etiqueta th"
+  },
+  "select": {
+    "prefix": "select",
+    "body": [
+      "<select>${1:contenido}</select>$0"
+    ],
+    "description": "Etiqueta select"
+  },
+  "option": {
+    "prefix": "option",
+    "body": [
+      "<option>${1:contenido}</option>$0"
+    ],
+    "description": "Etiqueta option"
+  },
+  "textarea": {
+    "prefix": "textarea",
+    "body": [
+      "<textarea>${1:contenido}</textarea>$0"
+    ],
+    "description": "Etiqueta textarea"
+  },
+  "button": {
+    "prefix": "button",
+    "body": [
+      "<button>${1:contenido}</button>$0"
+    ],
+    "description": "Etiqueta button"
+  },
+  "a": {
+    "prefix": "a",
+    "body": [
+      "<a href=\"${1:url}\">${2:texto}</a>$0"
+    ],
+    "description": "Enlace"
+  },
+  "img": {
+    "prefix": "img",
+    "body": [
+      "<img src=\"${1:ruta}\" alt=\"${2:descripcion}\">$0"
+    ],
+    "description": "Imagen"
+  },
+  "input": {
+    "prefix": "input",
+    "body": [
+      "<input type=\"${1:text}\" name=\"${2:nombre}\" id=\"${2:nombre}\">$0"
+    ],
+    "description": "Campo de formulario"
+  },
+  "form": {
+    "prefix": "form",
+    "body": [
+      "<form action=\"${1:url}\" method=\"${2:post}\">",
+      "  $0",
+      "</form>"
+    ],
+    "description": "Formulario"
+  },
+  "label": {
+    "prefix": "label",
+    "body": [
+      "<label for=\"${1:campo}\">${2:texto}</label>$0"
+    ],
+    "description": "Etiqueta de campo"
+  },
+  "link:css": {
+    "prefix": "link:css",
+    "body": [
+      "<link rel=\"stylesheet\" href=\"${1:style.css}\">$0"
+    ],
+    "description": "Hoja de estilos"
+  },
+  "script:src": {
+    "prefix": "script:src",
+    "body": [
+      "<script src=\"${1:script.js}\"></script>$0"
+    ],
+    "description": "Script externo"
+  },
+  "meta:vp": {
+    "prefix": "meta:vp",
+    "body": [
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">$0"
+    ],
+    "description": "Viewport móvil"
+  }
+}

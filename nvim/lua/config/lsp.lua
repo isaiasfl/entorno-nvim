@@ -195,7 +195,10 @@ M.web_servers = {
   ts_ls = {
     executable = "typescript-language-server",
     args = { "--stdio" },
-    config = { root_dir = typescript_root },
+    config = {
+      root_dir = typescript_root,
+      init_options = { preferences = { generateReturnInDocTemplate = true } },
+    },
   },
   html = {
     executable = "vscode-html-language-server",
@@ -216,6 +219,9 @@ end
 
 function M.attach(bufnr)
   if not profile.has("diagnostics") then return end
+  map(bufnr, "K", function()
+    vim.lsp.buf.hover({ border = "rounded", wrap = true, max_width = 80, max_height = 24 })
+  end, "LSP: Ver tipo y documentacion")
   map(bufnr, "gd", vim.lsp.buf.definition, "LSP: Ir a la definicion")
   map(bufnr, "gD", vim.lsp.buf.declaration, "LSP: Ir a la declaracion")
   map(bufnr, "<leader>lf", function()
@@ -318,14 +324,13 @@ function M.setup()
     underline = true,
     signs = true,
     severity_sort = true,
-    virtual_text = {
-      spacing = 2,
-      source = "if_many",
-      prefix = "●",
-    },
+    virtual_text = false,
     float = {
       border = "rounded",
       source = true,
+      wrap = true,
+      max_width = 80,
+      max_height = 20,
     },
   })
   vim.diagnostic.enable(profile.has("diagnostics"))

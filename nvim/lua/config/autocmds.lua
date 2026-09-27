@@ -57,6 +57,8 @@ vim.api.nvim_create_autocmd("FileType", {
     local ok, loaded = pcall(vim.treesitter.language.add, language or "")
     if language and ok and loaded then
       vim.treesitter.start(event.buf, language)
+      vim.opt_local.foldmethod = "expr"
+      vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
     end
   end,
 })

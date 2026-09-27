@@ -6,23 +6,52 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/rutas.sh"
 . "$SCRIPT_DIR/lib/plataforma.sh"
+. "$SCRIPT_DIR/lib/resumen-instalacion.sh"
+entorno_fase_actual="opciones y requisitos"
+trap entorno_instalacion_salida 0
 
 sistema_auto=0
+inicio_sin_pausa=0
 for argumento in "$@"; do
   case "$argumento" in
     --sistema) sistema_auto=1 ;;
+    -y | --yes) inicio_sin_pausa=1 ;;
     --sin-sistema) sistema_auto=0 ;;
     -h | --help)
       cat <<'EOF'
-Uso: scripts/instalar.sh [--sistema]
+INSTALACION DE ENTORNO-NVIM
+
+Entorno completo (profesor, desarrollo y Markdown/PDF):
+  ./scripts/instalar.sh [--sistema]
+
+Alumnado: elija uno de estos comandos en lugar del instalador completo:
+  ./scripts/instalar-alumno.sh --perfil dwec --sistema   # Web y React
+  ./scripts/instalar-alumno.sh --perfil si --sistema     # Bash y Python
+
+Solo comprobar la instalacion del alumno:
+  ./scripts/instalar-alumno.sh --perfil dwec --comprobar
+
+Ayuda detallada del instalador de alumno:
+  ./scripts/instalar-alumno.sh --help
 
 Sin opciones comprueba, descarga e instala todo lo que va dentro del
 repositorio (Node, Neovim, LuaLS, tree-sitter, plugins, parsers y LSP) sin usar
 sudo. Si faltan paquetes imprescindibles del sistema, muestra el comando exacto
 y se detiene.
 
+  -y, --yes   Omite la pausa inicial; no autoriza sudo.
+  -h, --help  Muestra esta ayuda sin instalar.
+  --sin-sistema  Prepara componentes locales sin ofrecer sudo (predeterminado).
   --sistema   Ademas ofrece ejecutar el comando del gestor de paquetes con sudo.
               Siempre muestra el comando y pide confirmacion antes de ejecutar.
+
+Despues de instalar, abra su proyecto desde este repositorio:
+  ./bin/entorno-dev --perfil profesor --sin-ia /ruta/a/mi-proyecto
+  ./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
+
+Para actualizar: git pull --ff-only y repita el instalador elegido.
+Lazygit utiliza el paquete del sistema; no se fija su ultima version de GitHub.
+Guia de instalacion y perfiles: README.md.
 EOF
       exit 0
       ;;
@@ -32,6 +61,10 @@ EOF
       ;;
   esac
 done
+
+entorno_banner "Instalación completa"
+entorno_confirmar_inicio "Completa: profesor y Markdown/PDF" completa
+entorno_fase "Requisitos del sistema"
 
 [ "$(id -u)" -ne 0 ] || {
   printf '%s\n' "Error: no ejecutes este instalador como root." >&2
@@ -192,6 +225,7 @@ fi
 # Node no se exige al sistema: se descarga una version LTS fijada y verificada
 # dentro de .tools/. Solo si esa plataforma carece de artefacto se usa el Node
 # del sistema, que entonces debe ser >=24 <25 y traer Corepack.
+entorno_fase "Node local"
 if ! "$SCRIPT_DIR/instalar-node.sh"; then
   printf '%s\n' "Aviso: no se pudo preparar el Node vendorizado; se intentara el del sistema." >&2
 fi
@@ -213,6 +247,7 @@ command -v corepack >/dev/null 2>&1 || {
   exit 1
 }
 
+entorno_fase "Neovim y LuaLS"
 if [ "$ENTORNO_OS" = Darwin ]; then
   NVIM_BIN=${NVIM_BIN:-"$(command -v nvim 2>/dev/null || true)"}
   LUALS_BIN=${LUALS_BIN:-"$(command -v lua-language-server 2>/dev/null || true)"}
@@ -228,11 +263,16 @@ else
   "$SCRIPT_DIR/instalar-neovim.sh"
   "$SCRIPT_DIR/instalar-luals.sh"
 fi
+entorno_fase "Tree-sitter"
 "$SCRIPT_DIR/instalar-tree-sitter.sh"
+entorno_fase "Servidores web"
 "$SCRIPT_DIR/instalar-lsp-web.sh"
+entorno_fase "Servidor Python"
 "$SCRIPT_DIR/instalar-lsp-python.sh"
+entorno_fase "Plugins fijados"
 "$SCRIPT_DIR/instalar-plugins.sh"
+entorno_fase "Parsers"
 "$SCRIPT_DIR/instalar-parsers.sh"
+entorno_fase "Comprobación final de requisitos"
 "$SCRIPT_DIR/comprobar-requisitos.sh"
-printf '\n%s\n' "Instalacion local preparada. No se ha activado ~/.config/nvim ni creado comandos globales."
-printf '%s\n' "Abre un proyecto con ./bin/entorno-dev --perfil dwec /ruta/al/proyecto."
+entorno_resumen_instalacion profesor completa

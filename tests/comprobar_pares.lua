@@ -6,7 +6,7 @@ local lockfile = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim/laz
 assert(plugin, "mini.nvim no esta registrado")
 assert(plugin.commit == "a995fe9cd4193fb492b5df69175a351a74b3d36b", "commit de mini.nvim incorrecto")
 assert(lockfile["mini.nvim"].commit == plugin.commit, "lazy-lock.json no fija el commit configurado")
-assert(plugin.event == "InsertEnter", "mini.pairs debe cargarse al entrar en insertar")
+assert(plugin.event == "VeryLazy", "mini.nvim debe cargar ayudas y edición en VeryLazy")
 assert(plugin.dependencies == nil, "mini.nvim no debe introducir dependencias")
 assert(plugin.build == nil, "mini.nvim no debe ejecutar builds")
 
@@ -15,7 +15,7 @@ assert(package.loaded["mini.pairs"], "mini.pairs no se pudo cargar")
 
 for name in pairs(package.loaded) do
   if name:match("^mini%.") then
-    assert(name == "mini.pairs", "se cargo un modulo mini no solicitado: " .. name)
+    assert(vim.tbl_contains({ "mini.pairs", "mini.snippets", "mini.clue" }, name), "se cargo un modulo mini no solicitado: " .. name)
   end
 end
 

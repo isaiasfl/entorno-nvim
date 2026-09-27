@@ -1,6 +1,19 @@
 # Changelog
 
-## En desarrollo
+## 1.1.0 — 2026-09-27
+
+- Ayuda de teclas con Espacio ? y F1, movimientos, edición, errores y snippets.
+- Snippets propios para HTML, JavaScript, TypeScript y componentes/hooks React.
+- JSDoc generado mediante TypeScript al escribir /** y Enter o Espacio lj.
+- Completado nativo solicitado al escribir letras de nombres de variables.
+- Líneas ajustadas al ancho, diagnósticos legibles en ventanas y hover delimitado.
+- Guías de indentación de colores con plugin fijado; pliegues nativos.
+- Instaladores con plan previo, Enter para iniciar, --yes para automatización,
+  fases, colores, resumen de resultados y aviso explícito de fallo.
+- README con rutas de instalación, diagrama Mermaid, opciones, actualización
+  y activación opcional del comando nvim.
+
+### Mejoras docentes incluidas desde la 1.0.0
 
 - El instalador esencial admite `--perfil dwec` e instala únicamente Node,
   Neovim, plugins y servidores web, sin herramientas de PDF ni fixtures de
@@ -18,7 +31,7 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## En desarrollo - 2026-09-13
+### Evolución portable — 2026-09-13
 
 - primera fase del entorno docente portable: perfiles inicial, DWEC, SI y
   profesor, con IA desactivada salvo opcion expresa;

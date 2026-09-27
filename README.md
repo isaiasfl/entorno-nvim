@@ -19,7 +19,7 @@ dependencias opcionales. Consulte [estado y uso actual](docs/entorno-docente.md)
 La V1 descrita mas abajo es la referencia historica completa en Debian;
 esta fase se prueba en Omarchy y aun no certifica WSL2.
 
-`entorno-nvim` v1.0.0 es una configuración de Neovim y tmux comprensible,
+`entorno-nvim` v1.1.0 es una configuración de Neovim y tmux comprensible,
 versionada y reversible para programación, docencia y documentos Markdown.
 La referencia probada es Debian 13 con Neovim 0.12.4.
 
@@ -33,57 +33,98 @@ La referencia probada es Debian 13 con Neovim 0.12.4.
 
 El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
-## Instalación rápida para alumnado
+## Empiece aquí: elegir la instalación
 
-Para una clase de DWEC en Ubuntu, Pop!_OS o WSL2 usa el carril web:
+Descargue el repositorio y consulte la ayuda si tiene dudas:
 
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --perfil dwec --sistema
-entorno-dev --perfil dwec --sin-ia ~/ruta/del/proyecto
+./scripts/instalar.sh --help
 ```
 
-Prepara Git, tmux, `fzf`, `fd/fdfind`, ripgrep, `xz`, Neovim y Node 24 locales,
-plugins fijados y los servidores de HTML, CSS, JSON, JavaScript, TypeScript y
-Tailwind. El perfil muestra diagnósticos de código y ofrece completado,
-navegación y renombrado. La terminal del entorno recibe automáticamente ese
-Node local, junto con `npm`, `npx` y Corepack. No instala Pandoc, Chromium,
-Poppler ni herramientas PDF. Tampoco toca `~/.config/nvim` ni usa un posible
-Neovim de Windows desde WSL2.
+**Para alumnado DWEC, use el instalador de alumno. Para el entorno completo
+con Markdown/PDF, use el instalador general.** Son alternativas; no necesita
+ejecutar los dos.
 
-El último comando abre la carpeta actual. Para abrir un proyecto concreto:
-
-```sh
-entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
+```mermaid
+flowchart TD
+    A[Descargar entorno-nvim] --> B{¿Qué necesita?}
+    B -->|Alumnado web| C[instalar-alumno.sh --perfil dwec --sistema]
+    B -->|Alumnado Bash y Python| D[instalar-alumno.sh --perfil si --sistema]
+    B -->|Entorno completo y PDF| E[instalar.sh --sistema]
+    C --> F[Abrir proyecto con perfil dwec]
+    D --> G[Abrir proyecto con perfil si]
+    E --> H[Abrir proyecto con perfil profesor]
 ```
 
-La IA solo se abre si ya existe un cliente compatible configurado; el editor y
-tmux funcionan sin él. El instalador crea de forma segura el comando en
-`~/.local/bin/entorno-dev` y no sobrescribe archivos ajenos. Si la terminal
-actual todavía no incluye esa carpeta en `PATH`, muestra cómo activarla.
-`./scripts/instalar-alumno.sh --perfil dwec --comprobar` diagnostica esta
-instalación sin modificar nada. Para Sistemas se conserva el carril
-`--perfil si`, con Bash Language Server, ShellCheck y Pyright.
+### Comandos para instalar y abrir
 
-## Instalación completa
+Ejecute desde la carpeta del repositorio la pareja que corresponda:
 
-El perfil del profesor y las prácticas posteriores con LSP, parsers y PDF usan:
+| Uso | Instalar | Abrir su proyecto |
+| --- | --- | --- |
+| Alumnado DWEC: HTML, CSS, JS, TS y React | `./scripts/instalar-alumno.sh --perfil dwec --sistema` | `./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto` |
+| Alumnado Sistemas: Bash y Python | `./scripts/instalar-alumno.sh --perfil si --sistema` | `./bin/entorno-dev --perfil si --sin-ia /ruta/a/mi-proyecto` |
+| Profesor: entorno completo y Markdown/PDF | `./scripts/instalar.sh --sistema` | `./bin/entorno-dev --perfil profesor --sin-ia /ruta/a/mi-proyecto` |
+
+Sustituya `/ruta/a/mi-proyecto` por la carpeta de su proyecto. Para abrir la
+carpeta actual, use `.`. `--sin-ia` permite empezar con editor y terminal;
+la IA es opcional y requiere un cliente ya instalado y configurado.
+
+Antes de instalar se muestra el plan y se pide **Enter para comenzar**;
+Ctrl+C cancela. La ayuda y la comprobación no inician una instalación.
+
+### Qué significan las opciones
+
+| Opción | Dónde se usa | Efecto |
+| --- | --- | --- |
+| `--yes` o `-y` | Ambos instaladores | Omite solo la pausa inicial para automatización; no autoriza sudo |
+| `--help` o `-h` | Ambos instaladores | Muestra ayuda y termina sin instalar |
+| `--perfil dwec` | Instalador de alumno | Prepara herramientas web |
+| `--perfil si` | Instalador de alumno | Prepara herramientas Bash/Python |
+| `--sistema` | Ambos instaladores | Ofrece instalar los paquetes del sistema que falten; muestra el comando y pide confirmación antes de usar sudo |
+| `--comprobar` | Instalador de alumno | Comprueba la instalación sin descargar ni modificar |
+
+Sin `--sistema`, los instaladores preparan sus componentes locales y muestran
+cómo resolver los paquetes del sistema que falten. El instalador general no
+acepta `--perfil` ni `--comprobar`. Para comprobar requisitos generales:
 
 ```sh
 ./scripts/comprobar-requisitos.sh
-./scripts/instalar.sh
-./bin/entorno-dev --perfil profesor
 ```
 
-El instalador es idempotente, no usa `sudo`, no activa la configuración y no
-elimina instalaciones anteriores. Comprueba qué falta, separa imprescindibles de
-opcionales y descarga Node 24 LTS verificado dentro del repositorio, así que no
-hace falta preparar Node a mano. Si faltan paquetes del sistema, muestra el
-comando exacto y se detiene; con `./scripts/instalar.sh --sistema` ofrece
-ejecutarlo con `sudo` tras pedir confirmación. Pensado para WSL2, Debian/Ubuntu
-y Arch/CachyOS; guía paso a paso en [alumno.md](docs/alumno.md). Véase también
-[instalación V1](docs/instalacion.md).
+### Qué cambia en su equipo
+
+Ambas instalaciones mantienen Neovim separado: **no sustituyen
+`~/.config/nvim` ni `~/.tmux.conf`**. Neovim, Node, plugins y servidores de
+lenguaje se preparan dentro del repositorio. El instalador de alumno también
+prepara el lanzador `entorno-dev` en `~/.local/bin`; puede usar siempre
+`./bin/entorno-dev` sin depender de su PATH.
+
+El alumnado no necesita las herramientas PDF. La instalación completa las
+incluye en su flujo. Los paquetes del sistema se obtienen del gestor de la
+plataforma: **Lazygit usa la versión disponible en el sistema, no descarga
+necesariamente la última publicación de GitHub ni actualiza una ya instalada**.
+Las versiones de los componentes locales se controlan mediante las referencias
+y lockfiles del proyecto.
+
+Para detalles y resolución de incidencias, consulte [la guía de alumnado](docs/alumno.md)
+y [la instalación completa](docs/instalacion.md).
+
+### Actualizar una instalación existente
+
+Cierre Neovim, entre en la carpeta de `entorno-nvim` y actualice:
+
+```sh
+git pull --ff-only
+./scripts/instalar-alumno.sh --perfil dwec --sistema
+```
+
+Para Sistemas, sustituya `dwec` por `si`. Para el entorno completo, ejecute
+`./scripts/instalar.sh --sistema` después del pull. Los instaladores reutilizan
+los componentes ya preparados y comprueban los plugins fijados. Si Git avisa de
+cambios locales, consérvelos y resuelva el aviso antes de continuar.
 
 ## Comprobar requisitos
 
@@ -93,18 +134,54 @@ y Arch/CachyOS; guía paso a paso en [alumno.md](docs/alumno.md). Véase tambié
 
 Solo lee el estado y clasifica cada elemento como `OK`, `FALTA` u `OPCIONAL`.
 
-## Activación histórica V1 (no necesaria para el entorno docente)
+## Comandos en el PATH: opcional
 
-Este procedimiento sustituye el Neovim habitual. **No usarlo para convivir
-con Omarchy**; el lanzador separado de arriba no necesita activacion.
+La instalación **no sustituye el comando `nvim` existente**. Puede empezar sin
+cambiar el PATH ni la configuración habitual:
 
 ```sh
-./scripts/activar.sh
+./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
+./scripts/arrancar.sh /ruta/a/archivo
 ```
 
-Crea un backup fechado y enlaza `~/.config/nvim` al directorio `nvim/` del
-repositorio. No modifica la configuración tmux personal. Detalles en
-[activación](docs/activacion.md).
+Para usar `entorno-dev` desde cualquier carpeta, el instalador de alumno ya
+prepara el lanzador. En la instalación completa, ejecútelo expresamente:
+
+```sh
+./scripts/instalar-entorno-dev.sh
+```
+
+`~/.local/bin` debe estar en su PATH. El instalador avisa si falta. En Bash/Zsh,
+para la terminal actual: `export PATH="$HOME/.local/bin:$PATH"`. En Fish:
+`fish_add_path "$HOME/.local/bin"`. Compruebe con `command -v entorno-dev`.
+
+### Usar este entorno al escribir nvim
+
+**`activar.sh` cambia tanto el comando como la configuración habitual de
+Neovim**, no solo el PATH. Crea una copia fechada y enlaza `~/.config/nvim`
+y `~/.local/bin/nvim`. Es opcional; si quiere conservar Omarchy u otra
+configuración, utilice los lanzadores anteriores.
+
+Para la instalación local de Linux descrita aquí, desde el repositorio:
+
+```sh
+# Bash/Zsh: ~/.local/bin debe ir antes de las rutas del sistema.
+export PATH="$HOME/.local/bin:$PATH"
+ENTORNO_NVIM_TARGET="$PWD/.tools/nvim-0.12.4/bin/nvim" ./scripts/activar.sh
+command -v nvim
+nvim --version
+```
+
+La variable indica el binario instalado en el repositorio: el valor
+predeterminado de `activar.sh` corresponde a la ubicación histórica en
+`~/.local/opt`. Si usa otra ubicación o plataforma, indique la ruta real de su
+binario compatible. En Fish use `fish_add_path --prepend "$HOME/.local/bin"`
+y `env ENTORNO_NVIM_TARGET="$PWD/.tools/nvim-0.12.4/bin/nvim" ./scripts/activar.sh`.
+
+El script no edita la configuración de su shell. Para conservar el PATH en
+Bash/Zsh, añada la línea apropiada al archivo de inicio de su shell.
+Detalles y copias en [activación](docs/activacion.md); para deshacer la
+activación, consulte [restauración](docs/restauracion.md).
 
 ## Restaurar
 
@@ -168,7 +245,11 @@ Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 
 | Mapa | Acción |
 | --- | --- |
+| `<leader>?` / F1 en modo normal | Chuleta de teclas, errores, movimientos y snippets |
 | `<leader>w` | Guardar |
+| `]b` / `[b` / `:bd` | Archivo siguiente / anterior / cerrar archivo |
+| `gl` / `[d` / `]d` | Errores de la línea / anterior / siguiente |
+| `Ctrl-j` en insertar | Elegir o expandir snippets del lenguaje |
 | `<leader>d` | Duplicar la línea actual |
 | `Alt-Shift-j/k` / `Cmd-Shift-↓/↑` | Mover líneas o selecciones |
 | `<leader>gg` | Lazygit |

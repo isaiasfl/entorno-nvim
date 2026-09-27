@@ -6,28 +6,17 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/versiones.sh"
 . "$SCRIPT_DIR/lib/rutas.sh"
 . "$SCRIPT_DIR/lib/plataforma.sh"
+. "$SCRIPT_DIR/lib/resumen-instalacion.sh"
+entorno_fase_actual="opciones y requisitos"
+trap entorno_instalacion_salida 0
 
 sistema_auto=0
+inicio_sin_pausa=0
 solo_comprobar=0
 perfil=si
 
 mostrar_logo() {
-  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ]; then
-    # Secuencia ANSI portable: limpiar pantalla y situar el cursor arriba.
-    printf '\033[2J\033[H'
-  fi
-
-  cat <<'EOF'
-██╗  ███████╗  ██╗
-██║  ██╔════╝  ██║
-██║  █████╗    ██║
-██║  ██╔══╝    ██║
-██║  ██║       ███████╗
-╚═╝  ╚═╝       ╚══════╝
-
-Entorno de desarrollo IFL para alumnado
-Neovim · Node 24 · LSP por asignatura · tmux · búsqueda · IA opcional
-EOF
+  entorno_banner "Instalación para alumnado"
 }
 
 uso() {
@@ -41,6 +30,21 @@ ni las herramientas exclusivas del perfil completo del profesor.
   --perfil    si: Bash/Python; dwec: HTML/CSS/JSON/JavaScript/TypeScript
   --sistema    ofrece instalar con sudo solo los paquetes basicos que falten
   --comprobar  diagnostica sin descargar ni modificar nada
+  -y, --yes    omite la pausa inicial; no autoriza sudo
+  -h, --help   muestra esta ayuda sin instalar
+
+Ejemplos:
+  ./scripts/instalar-alumno.sh --perfil dwec --sistema
+  ./scripts/instalar-alumno.sh --perfil si --sistema
+  ./scripts/instalar-alumno.sh --perfil dwec --comprobar
+
+Para el entorno completo con Markdown/PDF:
+  ./scripts/instalar.sh --sistema
+
+Despues de instalar:
+  ./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
+
+Guia de instalacion, opciones y actualizacion: README.md.
 EOF
 }
 
@@ -52,6 +56,7 @@ while [ "$#" -gt 0 ]; do
       shift
       ;;
     --sistema) sistema_auto=1 ;;
+    -y | --yes) inicio_sin_pausa=1 ;;
     --comprobar) solo_comprobar=1 ;;
     -h | --help) mostrar_logo; printf '\n'; uso; exit 0 ;;
     *) printf 'Error: opcion desconocida: %s\n' "$1" >&2; uso >&2; exit 2 ;;
@@ -99,6 +104,10 @@ case "$ENTORNO_OS:$ENTORNO_ARCH" in
 esac
 
 faltan=
+if [ "$solo_comprobar" -eq 0 ]; then
+  entorno_confirmar_inicio "Alumnado: $perfil" alumnado
+fi
+
 herramientas='git tmux curl tar xz fzf rg'
 [ "$perfil" = si ] && herramientas="$herramientas shellcheck"
 for herramienta in $herramientas; do
@@ -180,6 +189,7 @@ if [ -n "$faltan" ]; then
   }
 fi
 
+entorno_fase "Neovim local"
 NVIM_LOCAL="$ENTORNO_TOOLS_ROOT/nvim-$ENTORNO_NVIM_VERSION/bin/nvim"
 if [ -x "$NVIM_LOCAL" ]; then
   printf 'OK: Neovim local %s\n' "$NVIM_LOCAL"
@@ -198,6 +208,7 @@ version_instalada=$("$NVIM_LOCAL" --version | sed -n '1s/^NVIM v//p')
 }
 
 if [ "$solo_comprobar" -eq 0 ]; then
+  entorno_fase "Node y servidores del perfil"
   "$SCRIPT_DIR/instalar-node.sh"
   if [ "$perfil" = dwec ]; then
     ENTORNO_SIN_FIXTURES=1 "$SCRIPT_DIR/instalar-lsp-web.sh"
@@ -243,11 +254,14 @@ EOF
   exit 0
 fi
 
+entorno_fase "Plugins fijados"
 ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/instalar-plugins.sh"
+entorno_fase "Arranque de Neovim"
 ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa
 printf '\n'
+entorno_fase "Lanzador entorno-dev"
 "$SCRIPT_DIR/instalar-entorno-dev.sh"
 
 path_preparado=0
@@ -255,17 +269,7 @@ case ":$PATH:" in
   *":$HOME/.local/bin:"*) path_preparado=1 ;;
 esac
 
-cat <<EOF
-
-Instalacion esencial terminada. No se ha tocado ~/.config/nvim ni ~/.tmux.conf.
-
-Para abrir el entorno del perfil $perfil sin IA:
-  entorno-dev --perfil $perfil --sin-ia /ruta/al/proyecto
-
-La IA solo se abrira si ya hay un cliente compatible instalado (Codex,
-OpenCode, Claude, Pi o jarvis-coder). El instalador no instala ni configura
-cuentas, tokens o credenciales.
-EOF
+entorno_resumen_instalacion "$perfil" alumnado
 
 if [ "$path_preparado" -eq 0 ]; then
   cat <<'EOF'

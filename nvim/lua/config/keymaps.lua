@@ -141,8 +141,16 @@ end, {
   desc = "Diagnostico anterior",
 })
 
-map("n", "<leader>ld", vim.diagnostic.open_float, {
+map("n", "<leader>ld", function()
+  vim.diagnostic.open_float({ scope = "buffer" })
+end, {
   desc = "Mostrar diagnostico",
+})
+
+map("n", "gl", function()
+  vim.diagnostic.open_float({ scope = "line" })
+end, {
+  desc = "Mostrar diagnosticos de esta linea",
 })
 
 -- Sin nowait: mantener tambien las secuencias historicas ee y ef.

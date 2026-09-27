@@ -149,9 +149,13 @@ Para abrir un archivo concreto sin tmux:
 | `Ctrl-a P` | Selector de proyectos (popup) |
 | `Ctrl-a h/j/k/l` | Navegar entre paneles de tmux |
 | `Ctrl-h/j/k/l` | Navegar entre splits de Neovim |
+| `Espacio` y esperar | Ver ayuda de los atajos disponibles |
 | `<leader>w` | Guardar (`leader` es `Espacio`) |
 | `<leader>gg` | Lazygit desde Neovim |
 | `gd`, `grr`, `grn`, `K` | Definición, referencias, renombrar, ayuda |
+| `gl` / `<leader>ld` | Diagnósticos de la línea / de todo el archivo |
+| `<leader>lj` o `/**` + `Enter` | Generar JSDoc desde la función JS/TS |
+| `cabts` o `!` + `Ctrl+j` | Insertar cabecera TypeScript o plantilla HTML |
 | `<leader>ut` | Cambiar tema visual |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y ver |
 
@@ -191,3 +195,29 @@ fijado para Linux/Windows x86_64 y macOS. Instálalos aparte y pásalos con
 - No descarga scripts remotos tipo `curl | sh`; cada descarga se verifica con
   SHA-256.
 - No actualiza nada de forma automática.
+
+### Ayuda, bloques y plantillas habituales
+
+`Espacio ?` o F1 abre una ayuda de teclas; q o Esc la cierra. Puede desplazarse
+con j/k. En modo normal, `ciw` cambia la palabra y permite escribir; `diw` la
+borra; `viw` la selecciona. Dentro de las llaves de una función, `di{` borra su
+contenido y `ci{` lo cambia. `da{` incluye las llaves, pero no la declaración.
+`c` significa cambiar, `d` borrar y `v` seleccionar visualmente.
+
+`za` alterna el pliegue bajo el cursor; `zc` cierra, `zo` abre, `zM` cierra todos
+y `zR` abre todos. Inicialmente el código se muestra abierto.
+
+En HTML: `!`, div, section, article, header, footer, main, nav, p, h1, h2, span,
+ul, ol, li, table, thead, tbody, tr, td, th, form, input, label, select, option,
+textarea, button, a, img, link:css, script:src y meta:vp.
+En JSX/TSX: `rafce`, `rfce`, `rafc`, `rfc`, `us`/useState, `ue`/useEffect,
+`ur`/useRef, `um`/useMemo, `uc`/useCallback, imp y clg. Los hooks requieren
+importar su nombre desde react. Use Ctrl+j en insertar para ver o expandir
+plantillas y Ctrl+l/Ctrl+h para pasar entre sus campos. No es Emmet: las
+expresiones como `ul>li*5` no se expanden.
+
+La ayuda incluye el esquema `h ← j ↓ k ↑ l →`, movimientos por palabras (`w`,
+`b`, `e`), búsquedas en una línea (`f`, `t`, `;`, `,`) y `jk` rápido para salir
+de insertar, además de Esc. El completado LSP se solicita también al escribir
+letras, conservando los disparadores propios del servidor. Ctrl+Space solicita
+sugerencias; Ctrl+n/Ctrl+p permite completar palabras del texto sin LSP.

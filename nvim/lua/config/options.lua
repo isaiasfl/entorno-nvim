@@ -19,8 +19,11 @@ opt.inccommand = "split"
 
 opt.splitbelow = true
 opt.splitright = true
-opt.wrap = false
+opt.wrap = true
 opt.linebreak = true
+opt.foldmethod = "indent"
+opt.foldlevel = 99
+opt.foldlevelstart = 99
 
 opt.mouse = "a"
 opt.confirm = true

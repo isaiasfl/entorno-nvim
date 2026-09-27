@@ -297,3 +297,19 @@ la distribucion detectada. La opcion `--sistema` muestra ese comando, pide
 confirmacion por terminal y solo entonces lo ejecuta con `sudo`; nunca instala
 paquetes en silencio. `comprobar-requisitos.sh` queda como diagnostico de solo
 lectura. Se mantiene la regla de no usar `sudo` sin consentimiento explicito.
+
+## 2026-09-27: productividad y descubrimiento
+
+Se incorporan snippets propios en formato VS Code para HTML y React, sin una
+colección externa ni Emmet. Los componentes no importan React por defecto
+(runtime JSX moderno); los hooks indican el import necesario. Las plantillas
+son editables en `nvim/snippets/`. `rafce` y `rfce` incluyen export default.
+
+Se añade la dependencia directa indent-blankline.nvim, fijada por commit:
+representa cada nivel de indentación con una guía de color. La alternativa
+mini.indentscope solo representa el bloque activo; no resuelve la visualización
+de todos los niveles solicitada. No requiere herramientas externas.
+
+Los pliegues usan Tree-sitter cuando existe parser y la indentación como
+alternativa. Arrancan abiertos. La ayuda `Espacio ?` / F1 muestra operaciones
+nativas, plantillas, diagnósticos y pliegues sin multiplicar menús principales.

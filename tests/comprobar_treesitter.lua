@@ -69,7 +69,7 @@ for _, fixture in ipairs(fixtures) do
   assert(trees[1] and not trees[1]:root():has_error(), fixture.file .. ": el arbol contiene errores")
   parsers[fixture.file] = parser
 
-  assert(vim.wo.foldmethod == "manual", fixture.file .. ": no debe activar plegado Treesitter")
+  assert(vim.wo.foldmethod == (fixture.filetype == "markdown" and "indent" or "expr"), fixture.file .. ": método de plegado incorrecto")
   assert(not vim.bo.indentexpr:find("nvim%-treesitter"), fixture.file .. ": no debe activar indentacion Treesitter")
 end
 

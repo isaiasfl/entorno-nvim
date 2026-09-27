@@ -1,0 +1,231 @@
+{
+  "Cabecera de ejercicio TypeScript": {
+    "prefix": "cabts",
+    "body": [
+      "// Enunciado: ${1:Descripción del ejercicio}",
+      "// Autor: ${2:Nombre y apellidos}",
+      "// Investigación: ${3:Fuentes consultadas}",
+      "//",
+      "",
+      "$0"
+    ],
+    "description": "Cabecera para un ejercicio de TypeScript"
+  },
+  "Documentación JSDoc de función": {
+    "prefix": "docfn",
+    "body": [
+      "/**",
+      " * ${1:Descripción de la función}",
+      " * @param ${2:parametro} ${3:descripción}",
+      " * @returns ${4:descripción del resultado}",
+      " */"
+    ],
+    "description": "JSDoc automático de la función situada debajo"
+  },
+  "rafce": {
+    "prefix": "rafce",
+    "body": [
+      "const ${1:Componente} = () => {",
+      "  return (",
+      "    <div>$0</div>",
+      "  )",
+      "}",
+      "",
+      "export default ${1:Componente}"
+    ],
+    "description": "Componente React flecha con export default"
+  },
+  "rafc": {
+    "prefix": "rafc",
+    "body": [
+      "const ${1:Componente} = () => {",
+      "  return (",
+      "    <div>$0</div>",
+      "  )",
+      "}"
+    ],
+    "description": "Componente React flecha"
+  },
+  "rfce": {
+    "prefix": "rfce",
+    "body": [
+      "function ${1:Componente}() {",
+      "  return (",
+      "    <div>$0</div>",
+      "  )",
+      "}",
+      "",
+      "export default ${1:Componente}"
+    ],
+    "description": "Componente React función con export default"
+  },
+  "rfc": {
+    "prefix": "rfc",
+    "body": [
+      "function ${1:Componente}() {",
+      "  return (",
+      "    <div>$0</div>",
+      "  )",
+      "}"
+    ],
+    "description": "Componente React función"
+  },
+  "useState": {
+    "prefix": [
+      "us",
+      "useState"
+    ],
+    "body": [
+      "const [${1:valor}, ${2:setValor}] = useState(${3:valorInicial})$0"
+    ],
+    "description": "Estado React; importar useState de react"
+  },
+  "useEffect": {
+    "prefix": [
+      "ue",
+      "useEffect"
+    ],
+    "body": [
+      "useEffect(() => {",
+      "  $0",
+      "}, [${1:dependencias}])"
+    ],
+    "description": "Efecto React; importar useEffect de react"
+  },
+  "useRef": {
+    "prefix": [
+      "ur",
+      "useRef"
+    ],
+    "body": [
+      "const ${1:referencia} = useRef(${2:null})$0"
+    ],
+    "description": "Referencia React; importar useRef de react"
+  },
+  "useMemo": {
+    "prefix": [
+      "um",
+      "useMemo"
+    ],
+    "body": [
+      "const ${1:valor} = useMemo(() => ${2:calculo}, [${3:dependencias}])$0"
+    ],
+    "description": "Memo React; importar useMemo de react"
+  },
+  "useCallback": {
+    "prefix": [
+      "uc",
+      "useCallback"
+    ],
+    "body": [
+      "const ${1:accion} = useCallback(() => {",
+      "  $0",
+      "}, [${2:dependencias}])"
+    ],
+    "description": "Callback React; importar useCallback de react"
+  },
+  "import": {
+    "prefix": "imp",
+    "body": [
+      "import ${1:nombre} from \"${2:modulo}\"$0"
+    ],
+    "description": "Importar módulo"
+  },
+  "console": {
+    "prefix": "clg",
+    "body": [
+      "console.log(${1:valor})$0"
+    ],
+    "description": "Mostrar valor en consola"
+  },
+  "if": {
+    "prefix": "if",
+    "body": [
+      "if (${1:condicion}) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Condicional"
+  },
+  "ife": {
+    "prefix": "ife",
+    "body": [
+      "if (${1:condicion}) {",
+      "  ${2}",
+      "} else {",
+      "  $0",
+      "}"
+    ],
+    "description": "Condicional con alternativa"
+  },
+  "for": {
+    "prefix": "for",
+    "body": [
+      "for (let ${1:i} = 0; ${1:i} < ${2:limite}; ${1:i}++) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Bucle con contador"
+  },
+  "forof": {
+    "prefix": "forof",
+    "body": [
+      "for (const ${1:elemento} of ${2:coleccion}) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Recorrer colección"
+  },
+  "while": {
+    "prefix": "while",
+    "body": [
+      "while (${1:condicion}) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Bucle while"
+  },
+  "fn": {
+    "prefix": "fn",
+    "body": [
+      "function ${1:nombre}(${2:parametros}) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Declarar función"
+  },
+  "afn": {
+    "prefix": "afn",
+    "body": [
+      "const ${1:nombre} = (${2:parametros}) => {",
+      "  $0",
+      "}"
+    ],
+    "description": "Función flecha"
+  },
+  "try": {
+    "prefix": "try",
+    "body": [
+      "try {",
+      "  ${1}",
+      "} catch (${2:error}) {",
+      "  $0",
+      "}"
+    ],
+    "description": "Capturar errores"
+  },
+  "clg": {
+    "prefix": "clg",
+    "body": [
+      "console.log(${1:valor})$0"
+    ],
+    "description": "Mostrar valor en consola"
+  },
+  "imp": {
+    "prefix": "imp",
+    "body": [
+      "import ${1:nombre} from \"${2:modulo}\"$0"
+    ],
+    "description": "Importar módulo"
+  }
+}

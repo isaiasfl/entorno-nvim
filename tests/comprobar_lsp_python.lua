@@ -68,7 +68,7 @@ assert(vim.wait(10000, function()
     assert(message:find('import "helpers" could not be resolved', 1, true) == nil, "Pyright no resolvio el modulo local")
   end
   return found_type_error and found_undefined
-end, 50), "Pyright no publico los diagnosticos de tipo y variable indefinida")
+end, 50), "Pyright no publico los diagnosticos de tipo y variable indefinida: " .. vim.inspect(vim.diagnostic.get(bufnr)))
 
 -- Renombrar desde la declaracion evita diferencias de Pyright entre plataformas
 -- al decidir si un alias importado es renombrable. Las referencias anteriores

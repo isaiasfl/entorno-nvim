@@ -19,7 +19,7 @@ end
 
 local enter = mapping("i", "<CR>")
 assert(enter.desc == "Aceptar completado o nueva linea", "Enter no confirma el completado")
-assert(enter.expr == 1 and enter.silent == 1, "Enter debe ser expresivo y silencioso")
+assert(enter.expr == 0 and enter.silent == 1, "Enter debe ejecutarse tras insertar el texto pendiente y ser silencioso")
 assert(next(mapping("i", "<C-n>")) == nil, "Ctrl+n debe conservar su comportamiento nativo")
 assert(next(mapping("i", "<C-p>")) == nil, "Ctrl+p debe conservar su comportamiento nativo")
 

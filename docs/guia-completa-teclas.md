@@ -128,9 +128,12 @@ Estas teclas sueltas solo tienen este significado en el inicio IFL:
 | `Espacio g g` | Normal | Abrir LazyGit |
 | `Espacio u l` | Normal | Alternar caracteres invisibles |
 | `Espacio u t` | Normal | Elegir Catppuccin, Tokyo Night o Kanagawa |
-| `Espacio l d` | Normal | Diagnóstico flotante |
+| `Espacio` y esperar | Normal/visual | Ver las teclas disponibles y sus descripciones |
+| `gl` | Normal | Diagnósticos de la línea actual |
+| `Espacio l d` | Normal | Diagnósticos de todo el archivo |
 | `]d` / `[d` | Normal | Diagnóstico siguiente/anterior |
 | `Espacio l f` | Normal con LSP | Solicitar formato al servidor |
+| `Espacio l j` | Normal con LSP JS/TS | Generar documentación de la función |
 | `Espacio m p` / `Espacio m v` | Normal, profesor | PDF / PDF y visor |
 | `Espacio a c` | Normal o visual, IA activa | Preparar contexto y petición para el agente |
 | `jk` | Inserción | Volver a normal; escribir las dos letras seguidas |
@@ -175,6 +178,34 @@ Estas teclas sueltas solo tienen este significado en el inicio IFL:
 Se pueden anteponer números: `5j`, `3dd`, `2yy`. Los registros internos no
 son necesariamente el portapapeles del escritorio. `"+y` en visual copia al
 portapapeles y `"+p` pega si hay proveedor de portapapeles disponible.
+
+Para cambiar apariciones iguales sin un plugin de multicursor, coloque el
+cursor sobre la palabra y use `*` para buscar las siguientes; `cgn` cambia la
+siguiente coincidencia y `.` repite el cambio en la siguiente. Para sustituir
+todas las apariciones de una vez, use `:%s/palabra/otra/gc` y confirme
+cada una. `Ctrl+d` en este editor conserva su función de bajar media pantalla;
+la selección de ocurrencias con `Ctrl+d` de VS Code no está configurada.
+
+### Ayuda por teclas y snippets
+
+Pulsa `Espacio` y espera medio segundo para ver las acciones disponibles; las
+teclas `g`, `[` y `]` también muestran sus comandos. En insertar, `Ctrl+x`
+muestra las opciones de completado.
+
+Los snippets propios están en `nvim/snippets/`, con un archivo JSON por tipo de
+archivo. En TypeScript, escribe `cabts` y pulsa `Ctrl+j` para insertar una
+cabecera, `docfn` justo encima de una función para generar su JSDoc con los
+nombres de parámetros reales; en HTML, `!` y `Ctrl+j` insertan un
+documento HTML5. Durante la edición, `Ctrl+l` y `Ctrl+h` avanzan y retroceden
+por los campos; `Esc` o `Ctrl+c` terminan la plantilla y eliminan sus marcas.
+Los campos vacíos no muestran puntos ni cuadrados. Los archivos usan la forma
+`prefix`/`body`/`description` de los snippets de VS Code, aunque las
+transformaciones y el campo `scope` de VS Code no se aplican automáticamente.
+
+En JavaScript y TypeScript también puede escribir `/**` justo encima de una
+función y pulsar `Enter`, o usar `Espacio l j` desde la línea de la función.
+El servidor TypeScript genera los nombres de parámetros y el retorno cuando
+corresponde; el alumno rellena las descripciones. Requiere el servidor activo.
 
 ### Guardar, buscar y sustituir
 
