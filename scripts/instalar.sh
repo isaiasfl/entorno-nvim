@@ -278,3 +278,6 @@ entorno_fase "Comprobación final de requisitos"
 entorno_fase "Lanzador entorno-dev"
 "$SCRIPT_DIR/instalar-entorno-dev.sh"
 entorno_resumen_instalacion profesor completa
+
+# Consentimiento separado: --yes no autoriza cambiar la shell.
+sh "$SCRIPT_DIR/configurar-path.sh"

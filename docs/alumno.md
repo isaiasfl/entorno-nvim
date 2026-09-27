@@ -223,3 +223,12 @@ La ayuda incluye el esquema `h ← j ↓ k ↑ l →`, movimientos por palabras 
 de insertar, además de Esc. El completado LSP se solicita también al escribir
 letras, conservando los disparadores propios del servidor. Ctrl+Space solicita
 sugerencias; Ctrl+n/Ctrl+p permite completar palabras del texto sin LSP.
+
+### Acceso permanente al comando
+
+Al terminar, ambos instaladores ofrecen añadir `~/.local/bin` al PATH.
+Muestran el archivo de Bash, Zsh o Fish que se modificará y piden `s` para
+aceptar. Enter rechaza. Guardan copia de un archivo existente y no duplican
+su propia entrada. Abra una terminal nueva para usar `entorno-dev`.
+En ejecuciones no interactivas o con una shell desconocida, no lo modifican.
+`--yes` solo omite la pausa de inicio; no acepta este cambio de la shell.

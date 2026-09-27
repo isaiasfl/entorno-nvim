@@ -71,7 +71,8 @@ esac
 
 mostrar_logo
 printf '\nEste instalador prepara el entorno dentro del repositorio y no sustituye\n'
-printf '%s\n' 'tu configuración personal de Neovim, tmux o shell.'
+printf '%s\n' 'tu configuración personal de Neovim ni tmux.'
+printf '%s\n' 'Al terminar ofrece añadir el comando al PATH de la shell, solo si acepta.'
 if [ "$solo_comprobar" -eq 1 ]; then
   printf '\nModo: COMPROBACIÓN. Solo leerá el estado; no instalará nada.\n'
 elif [ "$sistema_auto" -eq 1 ]; then
@@ -281,3 +282,6 @@ Despues podras ejecutar directamente `entorno-dev`. Las terminales nuevas de
 Ubuntu suelen incorporar ~/.local/bin automaticamente una vez que existe.
 EOF
 fi
+
+# Consentimiento separado: --yes no autoriza cambiar la shell.
+sh "$SCRIPT_DIR/configurar-path.sh"

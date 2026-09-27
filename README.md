@@ -157,7 +157,9 @@ para la terminal actual: `export PATH="$HOME/.local/bin:$PATH"`. En Fish:
 
 Para conservarlo en Bash/Zsh, añada `export PATH="$HOME/.local/bin:$PATH"` a
 `~/.bashrc` o `~/.zshrc`, respectivamente, y abra otra terminal. Fish conserva
-la ruta con `fish_add_path`. El instalador no modifica esos archivos.
+la ruta con `fish_add_path`. El instalador ofrece al terminar configurar el PATH permanentemente, con
+confirmación separada y copia previa. `--yes` no acepta esa modificación.
+Si responde que no, puede usar estas instrucciones manuales.
 
 Después, desde la carpeta del proyecto:
 
