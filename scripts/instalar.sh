@@ -271,6 +271,9 @@ entorno_fase "Servidor Python"
 "$SCRIPT_DIR/instalar-lsp-python.sh"
 entorno_fase "Plugins fijados"
 "$SCRIPT_DIR/instalar-plugins.sh"
+entorno_fase "Diccionario de ortografía"
+entorno_ortografia_ok=1
+"$SCRIPT_DIR/instalar-ortografia.sh" || entorno_ortografia_ok=0
 entorno_fase "Parsers"
 "$SCRIPT_DIR/instalar-parsers.sh"
 entorno_fase "Comprobación final de requisitos"

@@ -35,6 +35,11 @@ map("n", "<leader>ul", function()
   vim.wo.list = not vim.wo.list
 end, { desc = "Alternar caracteres invisibles" })
 
+map("n", "<leader>us", function()
+  vim.wo.spell = not vim.wo.spell
+  vim.notify("Ortografía " .. (vim.wo.spell and "activada (" .. vim.o.spelllang .. ")" or "desactivada"))
+end, { desc = "Alternar corrector ortográfico" })
+
 
 -- Navegación entre ventanas Neovim
 map("n", "<C-h>", "<C-w>h", { desc = "Ventana izquierda" })

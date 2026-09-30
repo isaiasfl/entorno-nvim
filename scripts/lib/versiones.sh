@@ -20,3 +20,9 @@ ENTORNO_NODE_DARWIN_ARM64_SHA256=bed7eea5325e1108f32ce5228ddd6a5f0f08a499ee42aa7
 ENTORNO_NODE_DARWIN_X64_SHA256=1462cb3b3046b815cf8ea436d3da450ec1a9f11dac7e5a46b0ada5305d7e8097
 ENTORNO_PYRIGHT_VERSION=1.1.411
 ENTORNO_PARSERS="bash python javascript typescript tsx json html css"
+# Diccionario español de Neovim/Vim (formato .spl propio, independiente de la
+# distribucion; no usa hunspell). El ingles viene incluido en Neovim.
+# Origen: https://ftp.nluug.nl/pub/vim/runtime/spell/ (el mismo que usa Neovim).
+ENTORNO_SPELL_URL=https://ftp.nluug.nl/pub/vim/runtime/spell
+ENTORNO_SPELL_ES_SPL_SHA256=963637ac925cf8a51bf207fac392d6b4c69795711dcc2d4809b78846ae367be3
+ENTORNO_SPELL_ES_SUG_SHA256=e70f3478aa653c2ae905086328fbff4e43bd646d76534645f50a65344801bd6c

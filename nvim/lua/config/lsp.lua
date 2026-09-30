@@ -316,6 +316,20 @@ local function enable_bash_server()
     cmd = { executable, "start" },
     filetypes = { "bash", "sh" },
   })
+
+  -- bash-language-server delega en ShellCheck todos los errores y avisos:
+  -- sin él no se marca ni un error de sintaxis, así que se avisa al abrir.
+  if vim.fn.executable("shellcheck") ~= 1 then
+    local instruction = "instale el paquete shellcheck: sin él no se marcan errores de Bash"
+    profile.unavailable("ShellCheck", instruction)
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = { "bash", "sh" },
+      once = true,
+      callback = function()
+        vim.notify("ShellCheck no está instalado: " .. instruction .. ".", vim.log.levels.WARN)
+      end,
+    })
+  end
 end
 
 function M.setup()

@@ -155,3 +155,24 @@ entorno_comando_sistema() {
     *) printf 'instala manualmente: %s\n' "$*" ;;
   esac
 }
+
+# WSL2: las carpetas de Windows (/mnt/c...) no admiten sockets Unix, ignoran
+# permisos y son muy lentas desde Linux. Devuelve 0 si la ruta esta en una.
+entorno_ruta_windows_wsl() {
+  [ "${ENTORNO_IS_WSL:-0}" = 1 ] || return 1
+  case "$1" in
+    /mnt/[a-zA-Z] | /mnt/[a-zA-Z]/*) return 0 ;;
+  esac
+  return 1
+}
+
+entorno_explicar_ruta_windows() {
+  printf '%s\n' \
+    "AVISO: entorno-nvim está en una carpeta de Windows ($1)." \
+    '  Desde WSL2 esas carpetas son lentas y no admiten los sockets que usa' \
+    '  Neovim, así que pueden aparecer errores al abrir el editor o tmux.' \
+    '  Recomendado: clonarlo en tu carpeta de Linux y repetir la instalación:' \
+    '    cd ~ && git clone https://github.com/isaiasfl/entorno-nvim.git' \
+    '    cd ~/entorno-nvim && ./scripts/instalar-alumno.sh' \
+    '  Tus proyectos también funcionan mejor dentro de ~ que en /mnt/c.'
+}

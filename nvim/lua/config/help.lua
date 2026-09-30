@@ -63,6 +63,12 @@ function M.setup()
       "Ctrl+l/h   Campo siguiente/anterior del snippet",
       "           Esc termina la edición del snippet",
       "",
+      "ORTOGRAFÍA (español e inglés; activa en Markdown y texto)",
+      "Espacio us Activar/desactivar en este archivo",
+      "]s / [s    Falta siguiente / anterior",
+      "z=         Sugerencias para la palabra",
+      "zg / zw    Añadir palabra como correcta / incorrecta",
+      "",
       "Espacio    Menú de acciones; z muestra ayuda de pliegues",
       "q / Esc    Cerrar esta ayuda",
     }

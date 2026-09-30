@@ -154,6 +154,19 @@ printf 'Sistema: %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
 [ "$ENTORNO_IS_WSL" = 1 ] && printf ' (WSL2)'
 printf '\n'
 
+if entorno_ruta_windows_wsl "$PROJECT_ROOT"; then
+  printf '\n'
+  entorno_explicar_ruta_windows "$PROJECT_ROOT"
+  if [ "$solo_comprobar" -eq 0 ] && [ -t 0 ]; then
+    printf '%s' '¿Continuar aquí de todos modos? [s/N]: '
+    IFS= read -r respuesta_ruta || respuesta_ruta=
+    case "$respuesta_ruta" in
+      s | S | si | Si | SI | sí | Sí) ;;
+      *) printf '%s\n' 'Cancelado. No se ha instalado nada.'; exit 0 ;;
+    esac
+  fi
+fi
+
 if [ "$solo_comprobar" -eq 1 ]; then
   printf '\n%s\n' 'Modo COMPROBACIÓN: solo se revisa el estado; no se instala nada.'
 else
@@ -334,6 +347,11 @@ EOF
     [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
     [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
   fi
+  if [ -f "${NVIM_XDG_ROOT:-$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION}/data/nvim/site/spell/es.utf-8.spl" ]; then
+    printf '%s\n' 'OK: diccionario español de ortografía.'
+  else
+    printf '%s\n' 'AVISO: falta el diccionario español; se corrige solo en inglés. Repite el instalador.'
+  fi
   printf 'OK: perfil %s, tmux, busqueda, Node, Neovim, LSP y plugins preparados.\n' "$perfil"
   exit 0
 fi
@@ -341,6 +359,9 @@ fi
 entorno_fase "Plugins fijados"
 ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/instalar-plugins.sh"
+entorno_fase "Diccionario de ortografía"
+entorno_ortografia_ok=1
+"$SCRIPT_DIR/instalar-ortografia.sh" || entorno_ortografia_ok=0
 entorno_fase "Arranque de Neovim"
 ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL" \
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa

@@ -59,6 +59,18 @@ opt.undofile = true
 opt.undodir = vim.fn.stdpath("state") .. "/undo//"
 opt.directory = vim.fn.stdpath("state") .. "/swap//"
 
+-- Ortografía en español e inglés. El diccionario español lo instala
+-- scripts/instalar-ortografia.sh; si falta, solo inglés y sin descargas.
+local spell_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "spell")
+if #vim.api.nvim_get_runtime_file("spell/es.utf-8.spl", false) > 0 then
+  opt.spelllang = { "es", "en" }
+else
+  opt.spelllang = { "en" }
+end
+opt.spellfile = vim.fs.joinpath(spell_dir, "propias.utf-8.add")
+opt.spelloptions = { "camel", "noplainbuffer" }
+opt.spellsuggest = { "best", 9 }
+
 opt.list = false
 opt.listchars = {
   tab = "> ",

@@ -94,6 +94,11 @@ entorno_resumen_instalacion() {
   printf '%s\n' '  [##########] Neovim y Node: fases completadas'
   printf '%s\n' '  [##########] Plugins: revisiones del lockfile preparadas'
   printf '%s\n' '  [##########] Servidores de lenguaje: fase completada'
+  if [ "${entorno_ortografia_ok:-1}" -eq 1 ]; then
+    printf '%s\n' '  [##########] Ortografía: español e inglés'
+  else
+    printf '%s[AVISO] Ortografía solo en inglés: no se pudo descargar el diccionario español%s\n' "$entorno_color_aviso" "$entorno_color_reset"
+  fi
   if [ "$resumen_tipo" = completa ]; then
     printf '%s\n' '  [##########] Tree-sitter: herramientas y parsers preparados'
     if [ -n "${faltan_opcionales:-}" ]; then
