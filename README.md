@@ -6,7 +6,7 @@
 **[Guía completa de teclas y uso](docs/guia-completa-teclas.md)**: editor,
 explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
 
-**[Chuleta para alumnado](chuleta_comandos.md)**: instalación, perfiles,
+**[Chuleta para alumnado](chuleta_comandos.md)**: instalación,
 sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
 
 **[Fragmento HTML para Moodle DWEC](docs/moodle-dwec.html)**: entrada breve con
@@ -43,7 +43,9 @@ cd ~/entorno-nvim
 ```
 
 Descarga la versión nueva, ofrece cerrar las sesiones abiertas y reinstala
-todo lo nuevo. Pulse Enter si pregunta.
+todo lo nuevo. Pulse Enter si pregunta. **No hace falta reinstalar a mano:**
+aunque instalara antes solo DWEC o solo SI, la actualización completa lo que
+falte (web, Bash, Python y Docker).
 
 ### Caso 3: ya lo tenía instalado, pero su copia no tiene `actualizar.sh`
 
@@ -57,6 +59,23 @@ git restore . && git pull --ff-only && sh scripts/actualizar.sh
 `git restore .` descarta cambios accidentales en archivos del entorno (por
 ejemplo, `^M` de Windows o `lazy-lock.json`). No afecta a sus proyectos.
 Desde entonces, use el caso 2.
+
+### Caso 4: empezar de cero (si algo sigue fallando)
+
+Guarde su trabajo y descargue una copia limpia; la antigua se conserva por
+si acaso:
+
+```sh
+tmux -L entorno-nvim kill-server
+cd ~
+mv entorno-nvim entorno-nvim.antiguo
+git clone https://github.com/isaiasfl/entorno-nvim.git
+cd entorno-nvim
+./scripts/instalar-alumno.sh
+```
+
+El comando `entorno-dev` se redirige solo a la copia nueva. Cuando compruebe
+que todo funciona, puede borrar la antigua: `rm -rf ~/entorno-nvim.antiguo`.
 
 ### Trabajar cada día
 
@@ -190,8 +209,7 @@ Guarde su trabajo, entre en la carpeta de `entorno-nvim` y ejecute:
 
 Corrige archivos alterados por finales de línea de Windows, restaura
 `nvim/lazy-lock.json` si cambió sin querer, ofrece cerrar las sesiones tmux
-antiguas, hace `git pull --ff-only` y repite la instalación con el perfil
-recordado. Para el entorno completo del profesor: `./scripts/actualizar.sh --completo`.
+antiguas, hace `git pull --ff-only` y repite la instalación. Para el entorno completo del profesor: `./scripts/actualizar.sh --completo`.
 
 **Primera vez en copias anteriores a `actualizar.sh`** (descarta cambios locales
 en archivos del entorno, que no deben editarse):
@@ -245,8 +263,8 @@ Después, desde la carpeta del proyecto:
 entorno-dev .
 ```
 
-Escribir solo `entorno-dev` usa el perfil elegido con `instalar-alumno.sh`;
-si no hay ninguno, el perfil profesor.
+Escribir solo `entorno-dev` usa el perfil del alumnado si se instaló con
+`instalar-alumno.sh`; si no, el perfil profesor.
 
 ### Usar este entorno al escribir nvim
 
@@ -293,7 +311,8 @@ cd /ruta/al/proyecto
 entorno-dev
 ```
 
-Sin opciones recupera el perfil profesor, PDF y tmux con tres paneles.
+Sin opciones usa el perfil instalado: alumnado (editor y terminal) o
+profesor (PDF y tmux con tres paneles).
 `--sin-tmux` abre solo Neovim; `--sin-ia` omite el agente.
 La [guia docente](docs/entorno-docente.md)
 describe los perfiles y la [chuleta diaria](docs/chuleta.md) los atajos.
