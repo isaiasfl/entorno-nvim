@@ -16,7 +16,8 @@ return {
 
       local clue = require("mini.clue")
       clue.setup({
-        window = { delay = 500 },
+        -- Ancho según el texto: las descripciones no se cortan con "…".
+        window = { delay = 500, config = { width = "auto" } },
         triggers = {
           { mode = "n", keys = "<Leader>" },
           { mode = "x", keys = "<Leader>" },

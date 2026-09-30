@@ -140,7 +140,14 @@ map("n", "<leader>ty", "yy", { desc = "Copiar línea (yy)" })
 map("n", "<leader>tp", "p", { desc = "Pegar debajo (p)" })
 map("n", "<leader>tj", "<cmd>m .+1<cr>==", { desc = "Bajar línea (Alt+Shift+j)" })
 map("n", "<leader>tk", "<cmd>m .-2<cr>==", { desc = "Subir línea (Alt+Shift+k)" })
-map("n", "<leader>tc", "gcc", { desc = "Comentar o descomentar (gcc)", remap = true })
+map("n", "<leader>tc", "gcc", { desc = "Comentar línea (gcc)", remap = true })
+map("x", "<leader>tc", "gc", { desc = "Comentar selección (gc)", remap = true })
+-- Ctrl+/ como en VS Code. Muchos terminales lo envían como Ctrl+_.
+for _, lhs in ipairs({ "<C-/>", "<C-_>" }) do
+  map("n", lhs, "gcc", { desc = "Comentar línea", remap = true })
+  map("x", lhs, "gc", { desc = "Comentar selección", remap = true })
+  map("i", lhs, "<Esc>gcca", { desc = "Comentar línea", remap = true })
+end
 map("n", "<leader>ta", "ggVG", { desc = "Seleccionar todo (ggVG)" })
 map("n", "<leader>tu", "u", { desc = "Deshacer (u)" })
 map("n", "<leader>tr", "<C-r>", { desc = "Rehacer (Ctrl+r)" })
@@ -148,7 +155,7 @@ map("n", "<leader>ts", function()
   local word = vim.fn.expand("<cword>")
   vim.api.nvim_feedkeys(":%s/\\<" .. word .. "\\>//gc", "n", false)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
-end, { desc = "Reemplazar esta palabra en el archivo (:%s)" })
+end, { desc = "Reemplazar palabra (:%s)" })
 
 
 -- =========================

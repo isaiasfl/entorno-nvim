@@ -89,6 +89,12 @@ La primera vez, si tu copia aún no tiene `actualizar.sh`:
 | `Espacio u` | Opciones: tema, formato al guardar, ortografía |
 | `Espacio ?` | Ayuda completa de teclas |
 
+**Comentar:** `Ctrl+/` comenta la línea o la selección (como en VS Code);
+también `gcc` (línea) y `gc` tras seleccionar con `v` o `V`.
+
+**Documentar funciones (JS/TS):** escribe `/**` justo encima de una función
+real (no comentada) y pulsa Enter: se genera el JSDoc con sus parámetros.
+
 Las opciones de `Espacio t` muestran entre paréntesis la tecla nativa de Vim
 (`dd`, `yy`, `gcc`...): así puedes aprenderla y usarla directamente.
 `Espacio uf` desactiva el formato al guardar si alguna vez molesta.

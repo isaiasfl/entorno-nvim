@@ -8,6 +8,8 @@ function M.setup()
       "Espacio r  Ejecutar este archivo en la terminal de abajo",
       "Espacio s  Insertar plantilla (lista con buscador)",
       "Espacio t  Texto: duplicar, borrar, copiar, mover, comentar",
+      "Ctrl+/     Comentar línea o selección (como VS Code)",
+      "gcc / gc   Comentar línea / selección visual (v o V)",
       "Espacio b  Archivos abiertos: lista, siguiente, cerrar",
       "",
       "Esc        Volver a modo normal",

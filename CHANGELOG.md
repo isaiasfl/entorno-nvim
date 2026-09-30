@@ -8,6 +8,10 @@
   `t` texto y edición (con la tecla nativa entre paréntesis), `r` ejecutar
   el archivo (Bash, Python, JS, TS) en la terminal de abajo. `Esc` limpia la
   búsqueda; salen del menú `Espacio d`, `h` y `q` (ahora `Espacio t d`).
+- WSL: el pegado desde el portapapeles de Windows ya no deja `^M` (se quitan
+  los `\r`, receta de `:help clipboard-wsl`).
+- Comentar como en VS Code con `Ctrl+/` (línea o selección); `Espacio t c`
+  también en modo visual. El menú ajusta su ancho y no corta descripciones.
 - Avisos cortos para que Neovim no pida ENTER y no se coma teclas.
 
 - Reinstalar tras mover o borrar la carpeta del repositorio ya no falla:

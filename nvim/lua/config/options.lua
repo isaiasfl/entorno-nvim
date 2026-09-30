@@ -42,11 +42,14 @@ if vim.fn.has("wsl") == 1 then
       cache_enabled = true,
     }
   elseif vim.fn.executable("clip.exe") == 1 and vim.fn.executable("powershell.exe") == 1 then
-    local powershell = { "powershell.exe", "-NoProfile", "-Command", "Get-Clipboard" }
+    -- Get-Clipboard devuelve finales \r\n de Windows: sin quitarlos, cada
+    -- pegado (p, yyp, Espacio t d...) deja ^M. Receta de :help clipboard-wsl.
+    local paste = 'powershell.exe -NoLogo -NoProfile -c '
+      .. '[Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))'
     vim.g.clipboard = {
       name = "WSL-clip",
-      copy = { ["+"] = { "clip.exe" }, ["*"] = { "clip.exe" } },
-      paste = { ["+"] = vim.deepcopy(powershell), ["*"] = vim.deepcopy(powershell) },
+      copy = { ["+"] = "clip.exe", ["*"] = "clip.exe" },
+      paste = { ["+"] = paste, ["*"] = paste },
       cache_enabled = false,
     }
   end
