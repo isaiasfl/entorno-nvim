@@ -24,12 +24,12 @@ INSTALACION DE ENTORNO-NVIM
 Entorno completo (profesor, desarrollo y Markdown/PDF):
   ./scripts/instalar.sh [--sistema]
 
-Alumnado: elija uno de estos comandos en lugar del instalador completo:
-  ./scripts/instalar-alumno.sh --perfil dwec --sistema   # Web y React
-  ./scripts/instalar-alumno.sh --perfil si --sistema     # Bash y Python
+Alumnado (DWEC o SI): use este comando en lugar del instalador completo;
+pregunta el perfil y lo recuerda:
+  ./scripts/instalar-alumno.sh
 
 Solo comprobar la instalacion del alumno:
-  ./scripts/instalar-alumno.sh --perfil dwec --comprobar
+  ./scripts/instalar-alumno.sh --comprobar
 
 Ayuda detallada del instalador de alumno:
   ./scripts/instalar-alumno.sh --help

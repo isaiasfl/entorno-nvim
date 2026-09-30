@@ -159,6 +159,7 @@ for perfil in dwec si; do
   for intento in 1 2; do
     HOME="$TEST_HOME" PATH="$TEST_ROOT/bin:$PATH" ENTORNO_TOOLS_ROOT="$SOURCE_TOOLS" \
       NVIM_XDG_ROOT="$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION" \
+      ENTORNO_PERFIL_GUARDADO="$TEST_ROOT/perfil-alumno" \
       "$PROJECT_ROOT/scripts/instalar-alumno.sh" --yes --perfil "$perfil" \
       >"$TEST_ROOT/instalador-$perfil-$intento.log"
   done
@@ -168,6 +169,7 @@ grep -q 'Node .* ya esta instalado y verificado' "$TEST_ROOT/instalador-dwec-2.l
 grep -q 'Servidores LSP web ya instalados' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'Plugins Neovim ya instalados' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'INSTALACION PREPARADA' "$TEST_ROOT/instalador-si-1.log"
+[ "$(sed -n '1p' "$TEST_ROOT/perfil-alumno")" = si ]
 grep -q 'Bash Language Server ya esta instalado' "$TEST_ROOT/instalador-si-2.log"
 grep -q 'Pyright ya esta instalado' "$TEST_ROOT/instalador-si-2.log"
 

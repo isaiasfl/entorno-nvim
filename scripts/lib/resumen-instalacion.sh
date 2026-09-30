@@ -30,13 +30,8 @@ entorno_confirmar_inicio() {
   printf '\n%s\n' 'ELIJA LA FORMA DE INSTALAR'
   printf '%s\n' '  SIN --sistema: instala componentes locales en el repositorio.'
   printf '%s\n' '  CON --sistema: ademas ofrece instalar los paquetes del sistema que falten.'
-  if [ "$2" = alumnado ]; then
-    printf '%s\n' '    Ejemplos: Git, tmux, fzf, fd/fdfind, ripgrep, curl, tar, xz' '    y certificados TLS; en SI, tambien ShellCheck. No incluye PDF.'
-    printf '    Comando: ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
-  else
-    printf '%s\n' '    Ejemplos: Git, tmux, fzf, fd/fdfind, ripgrep, Lazygit, curl,' '    unzip, compilador y navegador para PDF; tambien ofrece opcionales' '    como Pandoc y Poppler si faltan y el gestor los admite.'
-    printf '%s\n' '    Comando: ./scripts/instalar.sh --sistema'
-  fi
+  printf '%s\n' '    Ejemplos: Git, tmux, fzf, fd/fdfind, ripgrep, Lazygit, curl,' '    unzip, compilador y navegador para PDF; tambien ofrece opcionales' '    como Pandoc y Poppler si faltan y el gestor los admite.'
+  printf '%s\n' '    Comando: ./scripts/instalar.sh --sistema'
   printf '%s\n' '  --sistema muestra el comando del gestor y pide permiso antes de sudo.'
   printf '%s\n' '  Neovim, Node, plugins y LSP se preparan localmente en ambos modos.'
   printf '\n%s\n' 'ANTES DE COMENZAR'
@@ -48,18 +43,10 @@ entorno_confirmar_inicio() {
     printf '%s\n' '  - MODO LOCAL: no instalara paquetes del sistema ni ejecutara sudo.'
     printf '%s\n' '  - Si falta un requisito imprescindible del sistema, se detendra.'
     printf '%s\n' '  Para ofrecer tambien la instalacion de esos paquetes, cancele y use:'
-    if [ "$2" = alumnado ]; then
-      printf '    ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
-    else
-      printf '%s\n' '    ./scripts/instalar.sh --sistema'
-    fi
+    printf '%s\n' '    ./scripts/instalar.sh --sistema'
   fi
   printf '%s\n' '  - No sustituira su configuracion habitual ni el comando nvim.'
-  if [ "$2" = alumnado ]; then
-    printf '%s\n' '  - Creara el lanzador entorno-dev en ~/.local/bin sin sobrescribir archivos ajenos.' '  - No instalara las herramientas PDF.'
-  else
-    printf '%s\n' '  - Preparara el entorno completo, incluidos parsers y requisitos para Markdown/PDF.'
-  fi
+  printf '%s\n' '  - Preparara el entorno completo, incluidos parsers y requisitos para Markdown/PDF.'
   if [ "$inicio_sin_pausa" -eq 1 ]; then
     printf '\n%s\n' '[INFO] Inicio sin pausa solicitado con --yes.'
     return 0
@@ -125,8 +112,14 @@ entorno_resumen_instalacion() {
     fi
     printf '%s\n' '  [INFO] Este perfil no instala las herramientas de Markdown/PDF'
   fi
-  printf '\n%s\n' '  EMPIECE AQUI (desde la carpeta del repositorio):'
-  printf '    ./bin/entorno-dev --perfil %s --sin-ia /ruta/a/mi-proyecto\n' "$resumen_perfil"
+  if [ "$resumen_tipo" = alumnado ]; then
+    printf '\n'
+    printf '%s\n' '  EMPIECE AQUI (su perfil queda recordado):' '    cd /ruta/a/mi-proyecto' '    entorno-dev .'
+    printf '%s\n' '  Si la terminal no encuentra entorno-dev, desde esta carpeta:' '    ./bin/entorno-dev /ruta/a/mi-proyecto'
+  else
+    printf '\n%s\n' '  EMPIECE AQUI (desde la carpeta del repositorio):'
+    printf '    ./bin/entorno-dev --perfil %s --sin-ia /ruta/a/mi-proyecto\n' "$resumen_perfil"
+  fi
   printf '\n'; printf '%s\n' '  SOLO EL EDITOR:' '    ./scripts/arrancar.sh /ruta/a/archivo'
   printf '\n'; printf '%s\n' '  DENTRO DE NEOVIM:' '    Esc y Espacio ?   Ayuda de teclas' '    Espacio e        Explorador' '    Espacio w        Guardar' '    :bd              Cerrar archivo sin salir'
   printf '\n%s\n' '  COMANDOS EN EL PATH:'
@@ -140,7 +133,11 @@ entorno_resumen_instalacion() {
     *) printf '%s\n' '    Falta ~/.local/bin en el PATH de esta terminal.' '    Bash/Zsh: export PATH="$HOME/.local/bin:$PATH"' '    Fish: fish_add_path "$HOME/.local/bin"' '    Para Bash/Zsh, conserve la linea en ~/.bashrc o ~/.zshrc.' ;;
   esac
   printf '%s\n' '    nvim no se sustituye automaticamente.'  '    Activacion opcional de nvim y su configuracion: README.md.'
-  printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y repetir este instalador.'
+  if [ "$resumen_tipo" = alumnado ]; then
+    printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y ./scripts/instalar-alumno.sh (Enter).'
+  else
+    printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y repetir este instalador.'
+  fi
   printf '%s\n' '  Lazygit utiliza la version del sistema; no se actualiza aqui.'
   printf '%s\n' '  La IA es opcional: no se instalan clientes ni credenciales.'
   printf '%s\n' '  Documentacion: README.md y docs/alumno.md'

@@ -32,7 +32,7 @@
 <pre class="bg-light border rounded p-3"><code>cd ~
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --perfil dwec --sistema</code></pre>
+./scripts/instalar-alumno.sh --perfil dwec</code></pre>
 
 <p>
   El instalador mostrará los paquetes que falten y pedirá confirmación antes de
@@ -43,7 +43,7 @@ cd entorno-nvim
 <h4 class="mt-4">2. Abrir la carpeta de trabajo</h4>
 <pre class="bg-light border rounded p-3"><code>mkdir -p ~/DWEC
 cd ~/entorno-nvim
-./bin/entorno-dev --perfil dwec --sin-ia ~/DWEC</code></pre>
+./bin/entorno-dev ~/DWEC</code></pre>
 <p>
   Para abrir otro proyecto, sustituya <code>~/DWEC</code> por la ruta de su
   carpeta. El entorno mostrará Neovim arriba y una terminal debajo.
@@ -51,8 +51,8 @@ cd ~/entorno-nvim
 
 <h4 class="mt-4">3. Actualizar más adelante</h4>
 <pre class="bg-light border rounded p-3"><code>cd ~/entorno-nvim
-git pull
-./scripts/instalar-alumno.sh --perfil dwec --sistema</code></pre>
+git pull --ff-only
+./scripts/instalar-alumno.sh --perfil dwec</code></pre>
 
 <h4 class="mt-4">4. Chuleta esencial</h4>
 <div class="table-responsive">
@@ -87,7 +87,7 @@ git pull
   <h4 class="alert-heading">Si aparece un error</h4>
   <p>Ejecute la comprobación y copie el mensaje completo de la terminal:</p>
   <pre class="bg-white border rounded p-3 mb-2"><code>cd ~/entorno-nvim
-./scripts/instalar-alumno.sh --perfil dwec --comprobar</code></pre>
+./scripts/instalar-alumno.sh --comprobar</code></pre>
   <p class="mb-0">
     Si Neovim parece bloqueado, pulse <kbd>Esc</kbd>. Tras una actualización,
     cierre la sesión antigua con <kbd>Ctrl</kbd>+<kbd>a</kbd>, suelte y pulse

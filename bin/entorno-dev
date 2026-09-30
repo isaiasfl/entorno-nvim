@@ -24,7 +24,15 @@ project_launcher=$project_root/scripts/proyecto.sh
 
 mode=tmux
 choose=0
-profile=${ENTORNO_PERFIL:-profesor}
+# Sin --perfil se usa el elegido en instalar-alumno.sh; si no hay, profesor.
+saved_profile=${ENTORNO_PERFIL_GUARDADO:-"$project_root/.xdg/perfil-alumno"}
+if [ -n "${ENTORNO_PERFIL:-}" ]; then
+  profile=$ENTORNO_PERFIL
+elif [ -r "$saved_profile" ]; then
+  profile=$(sed -n '1p' "$saved_profile")
+else
+  profile=profesor
+fi
 ai=${ENTORNO_IA:-}
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -33,8 +41,9 @@ while [ "$#" -gt 0 ]; do
 Uso:
   entorno-dev [opciones] [RUTA]
 
-Sin opciones conserva el entorno completo y tmux con tres paneles.
-  --perfil inicial|dwec|si|profesor   Perfil (predeterminado: profesor)
+Sin opciones usa el perfil elegido al instalar con instalar-alumno.sh;
+si no lo hay, el perfil profesor con tmux y tres paneles.
+  --perfil inicial|dwec|si|profesor   Perfil (predeterminado: el instalado)
   --tmux                            Sesion tmux (predeterminado)
   --sin-tmux                        Solo el editor
   --sin-ia                          Deshabilita IA y su panel

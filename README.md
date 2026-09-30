@@ -43,18 +43,16 @@ cd entorno-nvim
 ./scripts/instalar.sh --help
 ```
 
-**Para alumnado DWEC, use el instalador de alumno. Para el entorno completo
+**Para alumnado DWEC o SI, use el instalador de alumno. Para el entorno completo
 con Markdown/PDF, use el instalador general.** Son alternativas; no necesita
 ejecutar los dos.
 
 ```mermaid
 flowchart TD
     A[Descargar entorno-nvim] --> B{¿Qué necesita?}
-    B -->|Alumnado web| C[instalar-alumno.sh --perfil dwec --sistema]
-    B -->|Alumnado Bash y Python| D[instalar-alumno.sh --perfil si --sistema]
+    B -->|Alumnado DWEC o SI| C[instalar-alumno.sh: elegir 1 o 2]
     B -->|Entorno completo y PDF| E[instalar.sh --sistema]
-    C --> F[Abrir proyecto con perfil dwec]
-    D --> G[Abrir proyecto con perfil si]
+    C --> F[entorno-dev . con el perfil recordado]
     E --> H[Abrir proyecto con perfil profesor]
 ```
 
@@ -64,8 +62,7 @@ Ejecute desde la carpeta del repositorio la pareja que corresponda:
 
 | Uso | Instalar | Abrir su proyecto |
 | --- | --- | --- |
-| Alumnado DWEC: HTML, CSS, JS, TS y React | `./scripts/instalar-alumno.sh --perfil dwec --sistema` | `./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto` |
-| Alumnado Sistemas: Bash y Python | `./scripts/instalar-alumno.sh --perfil si --sistema` | `./bin/entorno-dev --perfil si --sin-ia /ruta/a/mi-proyecto` |
+| Alumnado DWEC (web) o SI (Bash y Python) | `./scripts/instalar-alumno.sh` y elegir 1 o 2 | `./bin/entorno-dev /ruta/a/mi-proyecto` |
 | Profesor: entorno completo y Markdown/PDF | `./scripts/instalar.sh --sistema` | `./bin/entorno-dev --perfil profesor --sin-ia /ruta/a/mi-proyecto` |
 
 Sustituya `/ruta/a/mi-proyecto` por la carpeta de su proyecto. Para abrir la
@@ -81,13 +78,15 @@ Ctrl+C cancela. La ayuda y la comprobación no inician una instalación.
 | --- | --- | --- |
 | `--yes` o `-y` | Ambos instaladores | Omite solo la pausa inicial para automatización; no autoriza sudo |
 | `--help` o `-h` | Ambos instaladores | Muestra ayuda y termina sin instalar |
-| `--perfil dwec` | Instalador de alumno | Prepara herramientas web |
-| `--perfil si` | Instalador de alumno | Prepara herramientas Bash/Python |
-| `--sistema` | Ambos instaladores | Ofrece instalar los paquetes del sistema que falten; muestra el comando y pide confirmación antes de usar sudo |
+| `--perfil dwec` / `--perfil si` | Instalador de alumno | Elige el perfil sin preguntar; sin la opción se muestra un menú y se recuerda la elección |
+| `--sistema` | Instalador general | Ofrece instalar los paquetes del sistema que falten; muestra el comando y pide confirmación antes de usar sudo |
+| `--sin-sistema` | Instalador de alumno | Nunca usa sudo; solo indica qué paquetes faltan. Sin esta opción pregunta antes de instalarlos |
 | `--comprobar` | Instalador de alumno | Comprueba la instalación sin descargar ni modificar |
 
-Sin `--sistema`, los instaladores preparan sus componentes locales y muestran
-cómo resolver los paquetes del sistema que falten. El instalador general no
+El instalador de alumno pregunta antes de instalar paquetes del sistema que
+falten; acepta `--sistema` por compatibilidad. Sin `--sistema`, el instalador
+general prepara sus componentes locales y muestra cómo resolver los paquetes
+del sistema que falten. El instalador general no
 acepta `--perfil` ni `--comprobar`. Para comprobar requisitos generales:
 
 ```sh
@@ -118,10 +117,10 @@ Cierre Neovim, entre en la carpeta de `entorno-nvim` y actualice:
 
 ```sh
 git pull --ff-only
-./scripts/instalar-alumno.sh --perfil dwec --sistema
+./scripts/instalar-alumno.sh
 ```
 
-Para Sistemas, sustituya `dwec` por `si`. Para el entorno completo, ejecute
+El instalador de alumno recuerda el perfil: basta con pulsar Enter. Para el entorno completo, ejecute
 `./scripts/instalar.sh --sistema` después del pull. Los instaladores reutilizan
 los componentes ya preparados y comprueban los plugins fijados. Si Git avisa de
 cambios locales, consérvelos y resuelva el aviso antes de continuar.
@@ -140,7 +139,7 @@ La instalación **no sustituye el comando `nvim` existente**. Puede empezar sin
 cambiar el PATH ni la configuración habitual:
 
 ```sh
-./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
+./bin/entorno-dev /ruta/a/mi-proyecto
 ./scripts/arrancar.sh /ruta/a/archivo
 ```
 
@@ -164,11 +163,11 @@ Si responde que no, puede usar estas instrucciones manuales.
 Después, desde la carpeta del proyecto:
 
 ```sh
-entorno-dev --perfil dwec --sin-ia .
+entorno-dev .
 ```
 
-Escribir solo `entorno-dev` también funciona, pero utiliza el perfil profesor
-si no hay otro perfil heredado. Para alumnado use el perfil explícito.
+Escribir solo `entorno-dev` usa el perfil elegido con `instalar-alumno.sh`;
+si no hay ninguno, el perfil profesor.
 
 ### Usar este entorno al escribir nvim
 

@@ -13,11 +13,12 @@ después pulse `d`. En Neovim, `Espacio` es la tecla líder.
 ```bash
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --perfil dwec --sistema
+./scripts/instalar-alumno.sh
 ```
 
-El instalador muestra el comando del gestor de paquetes y pide permiso antes de
-usar `sudo`. Para DWEC prepara Git, tmux, búsqueda, Neovim, Node 24, plugins y
+El instalador pregunta la asignatura (**1 = DWEC**, **2 = SI**) y la recuerda
+para las siguientes veces. Si faltan programas del sistema, muestra el comando
+y pregunta antes de usar `sudo`. Para DWEC prepara Git, tmux, búsqueda, Neovim, Node 24, plugins y
 los servidores de HTML, CSS, JSON, JavaScript, TypeScript y Tailwind. El perfil
 `si` prepara en su lugar Bash Language Server, ShellCheck y Pyright.
 
@@ -28,9 +29,9 @@ cuentas de inteligencia artificial.
 
 | Orden | Resultado |
 | --- | --- |
-| `./scripts/instalar-alumno.sh --perfil dwec --sistema` | Prepara DWEC e instala los paquetes del sistema que falten, previa confirmación |
-| `./scripts/instalar-alumno.sh --perfil si --sistema` | Prepara Sistemas Informáticos |
-| `./scripts/instalar-alumno.sh --perfil dwec --comprobar` | Comprueba DWEC sin modificar nada |
+| `./scripts/instalar-alumno.sh` | Pregunta el perfil y lo instala o actualiza |
+| `./scripts/instalar-alumno.sh --perfil dwec` | Igual, sin preguntar el perfil (también `--perfil si`) |
+| `./scripts/instalar-alumno.sh --comprobar` | Comprueba la instalación sin modificar nada |
 | `./scripts/instalar-alumno.sh --help` | Muestra la ayuda |
 
 Si la terminal todavía no reconoce `entorno-dev`, ejecute:
@@ -43,24 +44,25 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ```bash
 cd ~/entorno-nvim
-git pull
-./scripts/instalar-alumno.sh --perfil dwec --sistema
+git pull --ff-only
+./scripts/instalar-alumno.sh
 ```
 
-El instalador es repetible: conserva lo que ya está preparado y completa lo
-que falte.
+Pulse Enter en la pregunta del perfil: recuerda el de la última vez. El
+instalador es repetible: conserva lo que ya está preparado y completa lo que
+falte.
 
 ## 2. Abrir un proyecto
 
 ```bash
 cd ~/ruta/del/proyecto
-entorno-dev --perfil dwec --sin-ia .
+entorno-dev .
 ```
 
 También puede indicar la ruta sin entrar antes:
 
 ```bash
-entorno-dev --perfil dwec --sin-ia ~/ruta/del/proyecto
+entorno-dev ~/ruta/del/proyecto
 ```
 
 ### Opciones principales
@@ -122,7 +124,7 @@ se pulsa la acción.
 | Objetivo | Acción |
 | --- | --- |
 | Salir conservando editor y procesos | `Ctrl-a d` |
-| Volver a la misma sesión | Repetir `entorno-dev --perfil dwec --sin-ia RUTA` |
+| Volver a la misma sesión | Repetir `entorno-dev RUTA` |
 | Cerrar el proyecto definitivamente | `Ctrl-a Q`, confirmar |
 | Listar sesiones desde la shell | `tmux -L entorno-nvim list-sessions` |
 | Cerrar todas las sesiones del entorno | `tmux -L entorno-nvim kill-server` |

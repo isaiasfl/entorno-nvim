@@ -7,13 +7,15 @@
 
 ## Instalación esencial recomendada (Ubuntu, Pop!_OS y WSL2)
 
-Elige el perfil de la asignatura. Para **DWEC**:
-
 ```sh
 git clone https://github.com/isaiasfl/entorno-nvim.git
 cd entorno-nvim
-./scripts/instalar-alumno.sh --perfil dwec --sistema
+./scripts/instalar-alumno.sh
 ```
+
+El instalador pregunta la asignatura (**1 = DWEC**, **2 = SI**) y la recuerda:
+para actualizar basta con repetir el comando y pulsar Enter. Si faltan
+programas del sistema, muestra el comando y pregunta antes de usar `sudo`.
 
 Este carril instala los paquetes básicos que falten (`git`, `tmux`, `fzf`,
 `fd-find`, `ripgrep`, `curl`, `tar`, `xz-utils` y certificados), descarga
@@ -22,21 +24,21 @@ HTML, CSS, JSON, JavaScript, TypeScript y Tailwind con versiones fijadas. No
 requiere el Neovim antiguo de Ubuntu y no usa un posible `nvim.exe` de Windows
 heredado por WSL2.
 
-Para **Sistemas Informáticos**, sustituye `dwec` por `si`; ese perfil instala
-Bash Language Server, ShellCheck y Pyright.
+El perfil **SI** (Sistemas Informáticos) instala en su lugar Bash Language
+Server, ShellCheck y Pyright.
 
 No instala Tree-sitter CLI, parsers externos, Pandoc, navegador, Poppler ni
 LazyGit. Tampoco instala clientes de IA ni gestiona credenciales. Para comprobar
 el estado sin modificar nada:
 
 ```sh
-./scripts/instalar-alumno.sh --perfil dwec --comprobar
+./scripts/instalar-alumno.sh --comprobar
 ```
 
-Para abrir un proyecto de DWEC sin IA:
+Para abrir un proyecto (usa el perfil instalado, sin IA):
 
 ```sh
-entorno-dev --perfil dwec --sin-ia /ruta/al/proyecto
+entorno-dev /ruta/al/proyecto
 ```
 
 La terminal del perfil incluye `node`, `npm`, `npx` y el compilador `tsc`
@@ -128,11 +130,10 @@ O en un solo paso, desde cualquier carpeta:
 /ruta/a/entorno-nvim/bin/entorno-dev /ruta/a/mi-proyecto
 ```
 
-- Sin opciones abre el perfil `profesor` con tmux, editor, agente y terminal.
+- Sin opciones usa el perfil elegido en `instalar-alumno.sh`, sin IA: editor
+  arriba y terminal abajo.
 - `--perfil dwec` (web), `--perfil si` (Bash y Python), `--perfil inicial` o
-  `--perfil profesor` (predeterminado).
-- Para clase, añade `--perfil dwec --sin-ia` a cualquiera de los dos comandos
-  anteriores si solo necesitas el editor y la terminal.
+  `--perfil profesor` cambian el perfil solo para esa sesión.
 - `--sin-tmux` abre solo Neovim; `--sin-ia` omite el panel de agente.
 - `--elegir` abre el selector de proyectos.
 

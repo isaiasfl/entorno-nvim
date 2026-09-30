@@ -8,12 +8,15 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/plataforma.sh"
 . "$SCRIPT_DIR/lib/resumen-instalacion.sh"
 entorno_fase_actual="opciones y requisitos"
-trap entorno_instalacion_salida 0
 
-sistema_auto=0
+# preguntar: si faltan paquetes y hay terminal, se ofrece instalarlos.
+# si: igual, pero explicito (--sistema). no: nunca usa sudo (--sin-sistema).
+sistema=preguntar
 inicio_sin_pausa=0
 solo_comprobar=0
-perfil=si
+perfil=
+# Perfil de la ultima instalacion: lo reutilizan este instalador y entorno-dev.
+PERFIL_GUARDADO=${ENTORNO_PERFIL_GUARDADO:-"$PROJECT_ROOT/.xdg/perfil-alumno"}
 
 mostrar_logo() {
   entorno_banner "Instalación para alumnado"
@@ -21,96 +24,166 @@ mostrar_logo() {
 
 uso() {
   cat <<'EOF'
-Uso: scripts/instalar-alumno.sh [--perfil si|dwec] [--sistema] [--comprobar]
+USO RÁPIDO
+  ./scripts/instalar-alumno.sh
 
-Prepara el entorno esencial del alumno: Neovim y Node locales verificados,
-plugins, LSP del perfil elegido, busqueda, tmux e IA opcional. No instala PDF
-ni las herramientas exclusivas del perfil completo del profesor.
+  Te preguntará tu asignatura (DWEC o SI) y, si faltan programas del
+  sistema, te ofrecerá instalarlos. La próxima vez recordará tu elección:
+  para actualizar basta con repetir el mismo comando y pulsar Enter.
 
-  --perfil    si: Bash/Python; dwec: HTML/CSS/JSON/JavaScript/TypeScript
-  --sistema    ofrece instalar con sudo solo los paquetes basicos que falten
-  --comprobar  diagnostica sin descargar ni modificar nada
-  -y, --yes    omite la pausa inicial; no autoriza sudo
-  -h, --help   muestra esta ayuda sin instalar
+PERFILES
+  dwec   Desarrollo web: HTML, CSS, JavaScript, TypeScript y React
+  si     Sistemas: Bash y Python
 
-Ejemplos:
-  ./scripts/instalar-alumno.sh --perfil dwec --sistema
-  ./scripts/instalar-alumno.sh --perfil si --sistema
-  ./scripts/instalar-alumno.sh --perfil dwec --comprobar
+OPCIONES (no son obligatorias)
+  --perfil dwec|si   elige el perfil sin preguntar (también: ... dwec)
+  --comprobar        solo revisa la instalación; no descarga ni cambia nada
+  --sin-sistema      no instala paquetes del sistema ni usa sudo
+  --sistema          acepta la opción antigua; equivale al comportamiento normal
+  -y, --yes          empieza sin pedir Enter (no autoriza sudo)
+  -h, --help         muestra esta ayuda
 
-Para el entorno completo con Markdown/PDF:
-  ./scripts/instalar.sh --sistema
+DESPUÉS DE INSTALAR
+  cd /ruta/a/mi-proyecto
+  entorno-dev .
 
-Despues de instalar:
-  ./bin/entorno-dev --perfil dwec --sin-ia /ruta/a/mi-proyecto
-
-Guia de instalacion, opciones y actualizacion: README.md.
+Instalación completa del profesor (Markdown/PDF): ./scripts/instalar.sh
+Más ayuda: docs/alumno.md
 EOF
+}
+
+normalizar_perfil() {
+  case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+    dwec | web | 1) printf '%s\n' dwec ;;
+    si | sistemas | 2) printf '%s\n' si ;;
+    *) return 1 ;;
+  esac
+}
+
+nombre_perfil() {
+  case "$1" in
+    dwec) printf '%s\n' 'DWEC (desarrollo web)' ;;
+    si) printf '%s\n' 'SI (Bash y Python)' ;;
+  esac
+}
+
+error_uso() {
+  printf '\nError: %s\n' "$1" >&2
+  printf '%s\n' 'Lo más sencillo es ejecutar sin opciones y responder a las preguntas:' \
+    '  ./scripts/instalar-alumno.sh' 'Ayuda: ./scripts/instalar-alumno.sh --help' >&2
+  exit 2
+}
+
+elegir_perfil() {
+  printf '%s\n\n' '¿Para qué asignatura preparas el entorno?'
+  printf '%s\n' '  1) DWEC   Desarrollo web: HTML, CSS, JavaScript, TypeScript y React'
+  printf '%s\n\n' '  2) SI     Sistemas: Bash y Python'
+  while :; do
+    if [ -n "$1" ]; then
+      printf 'Escribe 1 o 2 y pulsa Enter [Enter = %s, tu última elección]: ' "$1"
+    else
+      printf '%s' 'Escribe 1 o 2 y pulsa Enter: '
+    fi
+    IFS= read -r respuesta || return 1
+    if [ -z "$respuesta" ] && [ -n "$1" ]; then
+      perfil=$1
+      return 0
+    fi
+    perfil=$(normalizar_perfil "$respuesta") && return 0
+    printf '%s\n' 'Respuesta no válida: escribe 1 (DWEC) o 2 (SI).'
+  done
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --perfil)
-      [ "$#" -ge 2 ] || { printf '%s\n' 'Error: falta el perfil.' >&2; exit 2; }
-      perfil=$2
+      [ "$#" -ge 2 ] || error_uso 'falta el nombre del perfil después de --perfil (dwec o si).'
+      perfil=$(normalizar_perfil "$2") || error_uso "perfil desconocido: $2 (usa dwec o si)."
       shift
       ;;
-    --sistema) sistema_auto=1 ;;
+    --perfil=*)
+      perfil=$(normalizar_perfil "${1#--perfil=}") || error_uso "perfil desconocido: ${1#--perfil=} (usa dwec o si)."
+      ;;
+    dwec | DWEC | si | SI | web | sistemas) perfil=$(normalizar_perfil "$1") ;;
+    --sistema) sistema=si ;;
+    --sin-sistema) sistema=no ;;
     -y | --yes) inicio_sin_pausa=1 ;;
     --comprobar) solo_comprobar=1 ;;
-    -h | --help) mostrar_logo; printf '\n'; uso; exit 0 ;;
-    *) printf 'Error: opcion desconocida: %s\n' "$1" >&2; uso >&2; exit 2 ;;
+    -h | --help | --ayuda) mostrar_logo; uso; exit 0 ;;
+    *) error_uso "opción desconocida: $1" ;;
   esac
   shift
 done
 
-case "$perfil" in
-  si | dwec) ;;
-  *) printf 'Error: perfil de alumno desconocido: %s (use si o dwec).\n' "$perfil" >&2; exit 2 ;;
-esac
-
-mostrar_logo
-printf '\nEste instalador prepara el entorno dentro del repositorio y no sustituye\n'
-printf '%s\n' 'tu configuración personal de Neovim ni tmux.'
-printf '%s\n' 'Al terminar ofrece añadir el comando al PATH de la shell, solo si acepta.'
-if [ "$solo_comprobar" -eq 1 ]; then
-  printf '\nModo: COMPROBACIÓN. Solo leerá el estado; no instalará nada.\n'
-elif [ "$sistema_auto" -eq 1 ]; then
-  printf '\nModo: INSTALACIÓN ASISTIDA.\n'
-  printf '%s\n' '- Si faltan paquetes del sistema, mostrará el comando exacto.'
-  printf '%s\n' '- Pedirá confirmación antes de usar sudo.'
-  printf '%s\n' '- Después instalará herramientas locales con versiones fijadas.'
-else
-  printf '\nModo: INSTALACIÓN LOCAL, sin sudo.\n'
-  printf '%s\n' 'Si falta algún paquete del sistema, se detendrá y mostrará cómo resolverlo.'
-  printf '%s\n' 'Para permitir la instalación asistida de esos paquetes, ejecuta:'
-  printf '  ./scripts/instalar-alumno.sh --perfil %s --sistema\n' "$perfil"
-  printf '%s\n' 'Para diagnosticar sin modificar nada, ejecuta:'
-  printf '  ./scripts/instalar-alumno.sh --perfil %s --comprobar\n' "$perfil"
-fi
-printf '\n'
-
 [ "$(id -u)" -ne 0 ] || {
-  printf '%s\n' "Error: no ejecutes este instalador como root." >&2
+  printf '%s\n' 'Error: no ejecutes este instalador como root ni con sudo.' \
+    'Ejecútalo como tu usuario normal: ./scripts/instalar-alumno.sh' \
+    'Si hace falta sudo para algún paquete, el instalador te lo pedirá.' >&2
   exit 1
 }
 
 case "$ENTORNO_OS:$ENTORNO_ARCH" in
   Linux:x86_64) ;;
   *)
-    printf 'Error: el instalador minimo auditado admite Linux x86_64; detectado %s %s.\n' \
+    printf 'Error: el instalador de alumnado admite Linux x86_64; detectado %s %s.\n' \
       "$ENTORNO_OS" "$ENTORNO_ARCH" >&2
     exit 1
     ;;
 esac
 
-faltan=
-if [ "$solo_comprobar" -eq 0 ]; then
-  entorno_confirmar_inicio "Alumnado: $perfil" alumnado
+# Los errores de uso ya se explican solos; desde aqui se resume cualquier fallo.
+trap entorno_instalacion_salida 0
+mostrar_logo
+
+guardado=
+if [ -r "$PERFIL_GUARDADO" ]; then
+  guardado=$(normalizar_perfil "$(sed -n '1p' "$PERFIL_GUARDADO")") || guardado=
+fi
+if [ -z "$perfil" ]; then
+  if [ -t 0 ]; then
+    elegir_perfil "$guardado" || exit 1
+  elif [ -n "$guardado" ]; then
+    perfil=$guardado
+  else
+    error_uso 'falta el perfil y no hay terminal para preguntarlo. Usa --perfil dwec o --perfil si.'
+  fi
+fi
+
+printf '\nPerfil: %s\n' "$(nombre_perfil "$perfil")"
+printf 'Sistema: %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
+[ "$ENTORNO_IS_WSL" = 1 ] && printf ' (WSL2)'
+printf '\n'
+
+if [ "$solo_comprobar" -eq 1 ]; then
+  printf '\n%s\n' 'Modo COMPROBACIÓN: solo se revisa el estado; no se instala nada.'
+else
+  printf '\n%s\n' 'QUÉ VA A PASAR'
+  printf '%s\n' \
+    '  1. Se revisan los programas del sistema necesarios (git, tmux, fzf...).' \
+    '  2. Se descargan Neovim, Node, plugins y servidores de lenguaje dentro de' \
+    '     esta carpeta, con versiones fijadas y verificadas.' \
+    '  3. Se prepara el comando entorno-dev para abrir tus proyectos.'
+  case "$sistema" in
+    no) printf '%s\n' '  Con --sin-sistema: si falta algún programa, se indicará cómo instalarlo.' ;;
+    *) printf '%s\n' '  Si falta algún programa del sistema, se te preguntará antes de instalarlo.' ;;
+  esac
+  printf '%s\n' '  No cambia tu Neovim ni tu tmux habituales.'
+  if [ "$inicio_sin_pausa" -eq 0 ]; then
+    [ -t 0 ] || error_uso 'no hay terminal para confirmar. Usa --yes para empezar sin pausa.'
+    printf '\n%s' 'Pulsa Enter para comenzar (Ctrl+C cancela): '
+    IFS= read -r inicio_respuesta || exit 1
+    if [ -n "$inicio_respuesta" ]; then
+      printf '%s\n' 'Cancelado: solo Enter confirma el inicio.'
+      exit 0
+    fi
+  fi
+  mkdir -p "$(dirname "$PERFIL_GUARDADO")"
+  printf '%s\n' "$perfil" > "$PERFIL_GUARDADO"
 fi
 
 herramientas='git tmux curl tar xz fzf rg'
 [ "$perfil" = si ] && herramientas="$herramientas shellcheck"
+faltan=
 for herramienta in $herramientas; do
   command -v "$herramienta" >/dev/null 2>&1 || faltan="$faltan $herramienta"
 done
@@ -118,12 +191,9 @@ entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
 [ -s /etc/ssl/certs/ca-certificates.crt ] || faltan="$faltan ca-certificates"
 faltan=${faltan# }
 
-printf 'Entorno alumno - %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
-[ "$ENTORNO_IS_WSL" = 1 ] && printf ' (WSL2)'
-printf '\n'
-
 if [ -n "$faltan" ]; then
-  printf 'Faltan paquetes basicos: %s\n' "$faltan" >&2
+  entorno_fase "Programas del sistema"
+  printf 'Faltan estos programas del sistema: %s\n' "$faltan"
   case "$ENTORNO_DISTRO" in
     debian | ubuntu | pop)
       paquetes=
@@ -145,21 +215,25 @@ if [ -n "$faltan" ]; then
       comando="sudo pacman -S --needed${paquetes} ca-certificates"
       ;;
     *)
-      printf '%s\n' "Instalalos con el gestor de paquetes de tu distribucion." >&2
+      printf '%s\n' 'Instálalos con el gestor de paquetes de tu distribución y repite:' \
+        '  ./scripts/instalar-alumno.sh' >&2
       exit 1
       ;;
   esac
 
-  printf 'Comando propuesto:\n  %s\n' "$comando"
-  if [ "$solo_comprobar" -eq 1 ] || [ "$sistema_auto" -eq 0 ]; then
-    printf '%s\n' "No se ha modificado el sistema. Usa --sistema para ejecutarlo con confirmacion." >&2
+  printf 'Comando para instalarlos:\n  %s\n' "$comando"
+  if [ "$solo_comprobar" -eq 1 ] || [ "$sistema" = no ] || [ ! -r /dev/tty ] \
+    || { [ "$sistema" = preguntar ] && [ ! -t 0 ]; }; then
+    printf '\n%s\n' 'No se ha modificado el sistema.' >&2
+    printf '%s\n' 'Ejecuta ese comando (o pide ayuda al profesor) y repite:' \
+      '  ./scripts/instalar-alumno.sh' >&2
     exit 1
   fi
 
   case "$ENTORNO_DISTRO" in
     debian | ubuntu | pop)
       command -v apt-get >/dev/null 2>&1 || {
-        printf '%s\n' 'Error: apt-get no esta disponible en esta instalacion Debian/Ubuntu.' >&2
+        printf '%s\n' 'Error: apt-get no está disponible en esta instalación Debian/Ubuntu.' >&2
         exit 1
       }
       command -v sudo >/dev/null 2>&1 || {
@@ -169,12 +243,21 @@ if [ -n "$faltan" ]; then
       ;;
   esac
 
-  printf '¿Ejecutar este comando? [s/N]: '
+  printf '\n%s\n' '¿Instalarlos ahora? Se te pedirá tu contraseña de Linux (sudo).'
+  printf '%s' 'Enter o s = sí; n = no: '
   respuesta=
-  if [ -r /dev/tty ]; then read -r respuesta < /dev/tty || respuesta=; fi
+  if [ -t 0 ]; then
+    read -r respuesta || respuesta=n
+  else
+    read -r respuesta < /dev/tty 2>/dev/null || respuesta=n
+  fi
   case "$respuesta" in
-    s | S | si | Si | SI) ;;
-    *) printf '%s\n' "Cancelado. No se ha modificado el sistema." >&2; exit 1 ;;
+    '' | s | S | si | Si | SI | sí | Sí | y | Y) ;;
+    *)
+      printf '%s\n' 'No se ha modificado el sistema. Cuando los instales, repite:' \
+        '  ./scripts/instalar-alumno.sh' >&2
+      exit 1
+      ;;
   esac
   sh -c "$comando"
   for herramienta in $herramientas; do

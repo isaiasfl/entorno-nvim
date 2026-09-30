@@ -7,6 +7,15 @@
   Si apunta a otra copia existente, se pregunta antes de cambiarlo.
 - Si el comando `entorno-dev` no se puede actualizar, la instalación termina
   con un aviso y la alternativa `./bin/entorno-dev`, no con un error genérico.
+- `instalar-alumno.sh` sin opciones muestra un menú (1 = DWEC, 2 = SI),
+  recuerda la elección y la propone con Enter al actualizar. `entorno-dev`
+  usa ese perfil por defecto.
+- El instalador de alumno pregunta antes de instalar paquetes del sistema que
+  falten, sin necesidad de `--sistema`; `--sin-sistema` lo impide.
+- Mensajes más claros ante opciones erróneas, ejecución como root o falta de
+  paquetes, con el comando exacto para continuar.
+- `.gitattributes` fuerza finales de línea LF aunque Git use `core.autocrlf`,
+  evitando `^M` en Neovim y archivos marcados como modificados en WSL2.
 
 ## 1.1.0 — 2026-09-27
 
