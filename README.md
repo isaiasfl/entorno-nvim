@@ -12,6 +12,72 @@ sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
 **[Fragmento HTML para Moodle DWEC](docs/moodle-dwec.html)**: entrada breve con
 instalación, enlaces, bloques de comandos, atajos e incidencias.
 
+## Alumnado: empiece aquí
+
+Elija **su caso** y copie los comandos en una terminal de Linux (en Windows,
+en la terminal de **WSL2/Ubuntu**, dentro de su carpeta personal `~`, nunca en
+`/mnt/c`).
+
+### Caso 1: primera vez (nunca lo ha instalado)
+
+```sh
+cd ~
+git clone https://github.com/isaiasfl/entorno-nvim.git
+cd entorno-nvim
+./scripts/instalar-alumno.sh
+```
+
+El instalador pregunta la asignatura: **1 = DWEC** (web) o **2 = SI**
+(Bash y Python). Si faltan programas del sistema, los muestra y pregunta
+antes de instalarlos (pedirá su contraseña). Al terminar ofrece añadir
+`entorno-dev` al PATH: responda `s`.
+
+### Caso 2: ya lo tenía instalado y tiene `scripts/actualizar.sh`
+
+Guarde su trabajo y ejecute:
+
+```sh
+cd ~/entorno-nvim
+./scripts/actualizar.sh
+```
+
+Descarga la versión nueva, ofrece cerrar las sesiones abiertas y reinstala
+con la asignatura que eligió (pulse Enter si pregunta).
+
+### Caso 3: ya lo tenía instalado, pero su copia no tiene `actualizar.sh`
+
+Solo la primera vez:
+
+```sh
+cd ~/entorno-nvim
+git restore . && git pull --ff-only && sh scripts/actualizar.sh
+```
+
+`git restore .` descarta cambios accidentales en archivos del entorno (por
+ejemplo, `^M` de Windows o `lazy-lock.json`). No afecta a sus proyectos.
+Desde entonces, use el caso 2.
+
+### Trabajar cada día
+
+```sh
+cd ~/ruta/de/mi-proyecto
+entorno-dev .
+```
+
+Abre Neovim arriba y una terminal abajo con su asignatura. Dentro de Neovim,
+`Espacio ?` muestra la ayuda de teclas. Si la terminal dice que no encuentra
+`entorno-dev`, abra una terminal nueva o use `~/entorno-nvim/bin/entorno-dev .`
+
+### Si algo falla
+
+```sh
+cd ~/entorno-nvim
+./scripts/instalar-alumno.sh --comprobar
+```
+
+Copie el mensaje completo y envíelo al profesor. Problemas habituales en
+[la guía del alumno](docs/alumno.md#5-solución-de-problemas).
+
 ## Qué es
 
 La evolucion docente portable ya dispone de perfiles y arranque minimo sin
@@ -30,6 +96,8 @@ La referencia probada es Debian 13 con Neovim 0.12.4.
 - Tree-sitter con ocho parsers externos fijados.
 - sesiones tmux por proyecto en el socket dedicado `entorno-nvim`;
 - Markdown → HTML/CSS → Chromium → PDF A4 (Pandoc opcional, sólo para PDF).
+- Ortografía en español e inglés en Markdown y texto (`Espacio us`).
+- `scripts/actualizar.sh` para actualizar con un solo comando.
 
 El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.
 
