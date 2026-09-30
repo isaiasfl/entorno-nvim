@@ -313,3 +313,35 @@ de todos los niveles solicitada. No requiere herramientas externas.
 Los pliegues usan Tree-sitter cuando existe parser y la indentación como
 alternativa. Arrancan abiertos. La ayuda `Espacio ?` / F1 muestra operaciones
 nativas, plantillas, diagnósticos y pliegues sin multiplicar menús principales.
+
+## Docker, formato al guardar y ayuda para el alumnado (2026-09-30)
+
+Se añaden dos dependencias directas en `tools/lsp-docker`, fijadas en su
+lockfile y con la misma política pnpm que el resto (`minimumReleaseAge` de 7
+días, sin scripts de construcción aprobados):
+
+- `dockerfile-language-server-nodejs` 0.15.0 (MIT): errores y completado de
+  instrucciones en Dockerfile. Alternativa sencilla: ninguna nativa.
+- `@microsoft/compose-language-service` 1.0.0 (MIT): completado y ayuda en
+  `compose.yaml`. No valida todo el esquema; sí completa claves y servicios.
+
+Total de 17 paquetes, ninguno con scripts de instalación.
+
+El formato al guardar, antes descartado, se activa a petición del profesor.
+No añade Prettier ni conform.nvim: usa el formateo de los servidores ya
+presentes (TypeScript, HTML, CSS, JSON, Docker) y, si existen como paquetes
+del sistema, `shfmt` (vía bash-language-server) y `ruff server` para Python.
+`Espacio uf` lo desactiva. `shfmt` y `ruff` son opcionales: el instalador SI
+los ofrece solo si el gestor de paquetes los tiene.
+
+TypeScript recibe `locale = "es"` para dar sus mensajes en español. ShellCheck,
+Pyright y los servidores de Docker no tienen traducción.
+
+Si falta un servidor del perfil, Neovim avisa al abrir ese tipo de archivo:
+antes solo lo registraba `:EntornoInfo` y el alumno creía que no había errores.
+Los diagnósticos muestran letra en el margen, subrayado simple y el mensaje en
+la línea del cursor, porque Windows Terminal y tmux no dibujan undercurl.
+
+Snippets propios para Bash, Python, Dockerfile, Docker Compose y CSS, en el
+mismo formato VS Code. `compose*.yaml` se detecta como `yaml.docker-compose`.
+El menú `Espacio l` repite `gd`, `K`, `grr`, `grn` y `gra` con nombres claros.

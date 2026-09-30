@@ -1,0 +1,93 @@
+{
+  "Centrar con flexbox": {
+    "prefix": "centrar",
+    "body": [
+      "display: flex;",
+      "justify-content: center;",
+      "align-items: center;$0"
+    ],
+    "description": "Centrar con flexbox"
+  },
+  "Contenedor flex": {
+    "prefix": "flex",
+    "body": [
+      "display: flex;",
+      "flex-direction: ${1|row,column|};",
+      "gap: ${2:1rem};$0"
+    ],
+    "description": "Contenedor flex"
+  },
+  "Rejilla adaptable": {
+    "prefix": "grid",
+    "body": [
+      "display: grid;",
+      "grid-template-columns: repeat(auto-fit, minmax(${1:200px}, 1fr));",
+      "gap: ${2:1rem};$0"
+    ],
+    "description": "Rejilla adaptable"
+  },
+  "Media query (móvil primero)": {
+    "prefix": "media",
+    "body": [
+      "@media (min-width: ${1:768px}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Media query (móvil primero)"
+  },
+  "Variables CSS en :root": {
+    "prefix": "vars",
+    "body": [
+      ":root {",
+      "\t--color-primario: ${1:#2563eb};",
+      "\t--color-texto: ${2:#1f2937};",
+      "\t--espacio: ${3:1rem};",
+      "}$0"
+    ],
+    "description": "Variables CSS en :root"
+  },
+  "Reset básico": {
+    "prefix": "reset",
+    "body": [
+      "*,",
+      "*::before,",
+      "*::after {",
+      "\tbox-sizing: border-box;",
+      "\tmargin: 0;",
+      "\tpadding: 0;",
+      "}",
+      "",
+      "img {",
+      "\tmax-width: 100%;",
+      "\tdisplay: block;",
+      "}$0"
+    ],
+    "description": "Reset básico"
+  },
+  "Transición suave": {
+    "prefix": "trans",
+    "body": [
+      "transition: ${1:all} ${2:0.3s} ${3:ease};$0"
+    ],
+    "description": "Transición suave"
+  },
+  "Animación con @keyframes": {
+    "prefix": "anim",
+    "body": [
+      "@keyframes ${1:aparecer} {",
+      "\tfrom { opacity: 0; }",
+      "\tto { opacity: 1; }",
+      "}",
+      "",
+      "animation: ${1:aparecer} ${2:0.5s} ${3:ease-in};$0"
+    ],
+    "description": "Animación con @keyframes"
+  },
+  "Importar Tailwind CSS 4": {
+    "prefix": "tw",
+    "body": [
+      "@import \"tailwindcss\";$0"
+    ],
+    "description": "Importar Tailwind CSS 4"
+  }
+}

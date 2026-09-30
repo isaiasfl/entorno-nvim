@@ -63,6 +63,23 @@ Guarda tu trabajo y, desde la carpeta `entorno-nvim`:
 La primera vez, si tu copia aún no tiene `actualizar.sh`:
 `git restore . && git pull --ff-only && sh scripts/actualizar.sh`.
 
+### Qué te ayuda en cada perfil
+
+| | SI | DWEC |
+| --- | --- | --- |
+| Errores y completado | Bash, Python, Dockerfile, Compose | HTML, CSS, JSON, JS, TS, JSX/TSX, Tailwind, Dockerfile, Compose |
+| Snippets (`Ctrl+j`) | Bash, Python, Dockerfile, Compose | HTML, JS, TS, React, CSS, Dockerfile, Compose |
+| Formato al guardar | Bash (con shfmt), Python (con ruff), Docker | Todos los lenguajes web y Docker |
+
+Pulsa `Espacio` y espera: el menú muestra las acciones. `Espacio l` agrupa lo
+de código (ir a la definición, documentación, renombrar, arreglos rápidos) y
+`Espacio ?` enseña todos los atajos y snippets. `Espacio uf` desactiva el
+formato al guardar si alguna vez molesta.
+
+Para usar los dos perfiles, instala ambos (`./scripts/instalar-alumno.sh
+--perfil dwec` y `--perfil si`) y abre con `entorno-dev --perfil si .` o
+`entorno-dev --perfil dwec .`.
+
 ### Perfil SI: ShellCheck es imprescindible
 
 En Bash, todos los errores y avisos los detecta ShellCheck. El instalador SI

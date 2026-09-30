@@ -1,3 +1,13 @@
+-- Docker Compose tiene su propio servidor y snippets, como en VS Code.
+vim.filetype.add({
+  pattern = {
+    ["compose%.ya?ml"] = "yaml.docker-compose",
+    ["compose%.[%w_-]+%.ya?ml"] = "yaml.docker-compose",
+    ["docker%-compose%.ya?ml"] = "yaml.docker-compose",
+    ["docker%-compose%.[%w_-]+%.ya?ml"] = "yaml.docker-compose",
+  },
+})
+
 local function augroup(name)
   return vim.api.nvim_create_augroup("entorno_nvim_" .. name, { clear = true })
 end

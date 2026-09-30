@@ -3,7 +3,16 @@ local M = {}
 function M.setup()
   local snippets = require("mini.snippets")
   snippets.setup({
-    snippets = { snippets.gen_loader.from_lang() },
+    snippets = {
+      snippets.gen_loader.from_lang({
+        lang_patterns = {
+          -- sh y bash comparten plantillas; Compose tiene las suyas.
+          sh = { "**/bash.json" },
+          bash = { "**/bash.json" },
+          ["yaml.docker-compose"] = { "**/docker-compose.json" },
+        },
+      }),
+    },
     expand = {
       insert = function(snippet)
         local ft = vim.bo.filetype

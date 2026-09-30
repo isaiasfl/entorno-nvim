@@ -1,0 +1,134 @@
+{
+  "Estructura básica de compose.yaml": {
+    "prefix": "compose",
+    "body": [
+      "services:",
+      "  ${1:web}:",
+      "    image: ${2:nginx:alpine}",
+      "    ports:",
+      "      - \"${3:8080}:${4:80}\"$0"
+    ],
+    "description": "Estructura básica de compose.yaml"
+  },
+  "Servicio construido desde un Dockerfile": {
+    "prefix": "build",
+    "body": [
+      "  ${1:app}:",
+      "    build: ${2:.}",
+      "    ports:",
+      "      - \"${3:3000}:${4:3000}\"",
+      "    volumes:",
+      "      - ${5:.}:/app",
+      "    environment:",
+      "      ${6:NODE_ENV}: ${7:development}$0"
+    ],
+    "description": "Servicio construido desde un Dockerfile"
+  },
+  "Servicio Nginx con carpeta web": {
+    "prefix": "nginx",
+    "body": [
+      "  ${1:web}:",
+      "    image: nginx:alpine",
+      "    ports:",
+      "      - \"${2:8080}:80\"",
+      "    volumes:",
+      "      - ${3:./html}:/usr/share/nginx/html:ro$0"
+    ],
+    "description": "Servicio Nginx con carpeta web"
+  },
+  "MySQL/MariaDB con volumen y variables": {
+    "prefix": "mysql",
+    "body": [
+      "  ${1:db}:",
+      "    image: ${2:mariadb:11}",
+      "    restart: unless-stopped",
+      "    environment:",
+      "      MARIADB_ROOT_PASSWORD: ${3:cambiar}",
+      "      MARIADB_DATABASE: ${4:app}",
+      "    volumes:",
+      "      - ${5:db-datos}:/var/lib/mysql$0"
+    ],
+    "description": "MySQL/MariaDB con volumen y variables"
+  },
+  "PostgreSQL con volumen": {
+    "prefix": "postgres",
+    "body": [
+      "  ${1:db}:",
+      "    image: postgres:${2:17}",
+      "    restart: unless-stopped",
+      "    environment:",
+      "      POSTGRES_PASSWORD: ${3:cambiar}",
+      "      POSTGRES_DB: ${4:app}",
+      "    volumes:",
+      "      - ${5:pg-datos}:/var/lib/postgresql/data$0"
+    ],
+    "description": "PostgreSQL con volumen"
+  },
+  "Pila web + base de datos + phpMyAdmin": {
+    "prefix": "lamp",
+    "body": [
+      "services:",
+      "  web:",
+      "    image: php:${1:8.4}-apache",
+      "    ports:",
+      "      - \"${2:8080}:80\"",
+      "    volumes:",
+      "      - ./src:/var/www/html",
+      "    depends_on:",
+      "      - db",
+      "  db:",
+      "    image: mariadb:11",
+      "    environment:",
+      "      MARIADB_ROOT_PASSWORD: ${3:cambiar}",
+      "      MARIADB_DATABASE: ${4:app}",
+      "    volumes:",
+      "      - db-datos:/var/lib/mysql",
+      "  phpmyadmin:",
+      "    image: phpmyadmin",
+      "    ports:",
+      "      - \"${5:8081}:80\"",
+      "    environment:",
+      "      PMA_HOST: db",
+      "",
+      "volumes:",
+      "  db-datos:$0"
+    ],
+    "description": "Pila web + base de datos + phpMyAdmin"
+  },
+  "Volúmenes con nombre": {
+    "prefix": "volumes",
+    "body": [
+      "volumes:",
+      "  ${1:datos}:$0"
+    ],
+    "description": "Volúmenes con nombre"
+  },
+  "Red propia": {
+    "prefix": "networks",
+    "body": [
+      "networks:",
+      "  ${1:red}:",
+      "    driver: bridge$0"
+    ],
+    "description": "Red propia"
+  },
+  "Dependencia entre servicios": {
+    "prefix": "depends",
+    "body": [
+      "    depends_on:",
+      "      - ${1:db}$0"
+    ],
+    "description": "Dependencia entre servicios"
+  },
+  "Comprobación de salud del servicio": {
+    "prefix": "health",
+    "body": [
+      "    healthcheck:",
+      "      test: [\"CMD\", \"${1:curl}\", \"-f\", \"${2:http://localhost}\"]",
+      "      interval: 30s",
+      "      timeout: 5s",
+      "      retries: 3$0"
+    ],
+    "description": "Comprobación de salud del servicio"
+  }
+}

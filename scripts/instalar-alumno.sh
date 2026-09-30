@@ -204,6 +204,48 @@ entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
 [ -s /etc/ssl/certs/ca-certificates.crt ] || faltan="$faltan ca-certificates"
 faltan=${faltan# }
 
+# Recomendados de SI: formato automático de Bash (shfmt) y Python (ruff).
+# Solo se ofrecen si el gestor de paquetes los tiene; nunca bloquean.
+paquete_disponible() {
+  case "$ENTORNO_DISTRO" in
+    debian | ubuntu | pop) apt-cache show "$1" >/dev/null 2>&1 ;;
+    arch | cachyos | omarchy) pacman -Si "$1" >/dev/null 2>&1 ;;
+    *) return 1 ;;
+  esac
+}
+opcionales=
+if [ "$perfil" = si ] && [ "$solo_comprobar" -eq 0 ]; then
+  for opcional in shfmt ruff; do
+    command -v "$opcional" >/dev/null 2>&1 && continue
+    if paquete_disponible "$opcional"; then opcionales="$opcionales $opcional"; fi
+  done
+fi
+opcionales=${opcionales# }
+
+if [ -z "$faltan" ] && [ -n "$opcionales" ]; then
+  entorno_fase "Programas recomendados"
+  printf 'Recomendados para formatear al guardar: %s\n' "$opcionales"
+  case "$ENTORNO_DISTRO" in
+    arch | cachyos | omarchy) comando_opc="sudo pacman -S --needed $opcionales" ;;
+    *) comando_opc="sudo apt-get install -y $opcionales" ;;
+  esac
+  printf 'Comando: %s\n' "$comando_opc"
+  if [ "$sistema" != no ] && [ -t 0 ]; then
+    printf '%s' '¿Instalarlos ahora? Se te pedirá tu contraseña (Enter o s = sí; n = no): '
+    IFS= read -r respuesta_opc || respuesta_opc=n
+    case "$respuesta_opc" in
+      '' | s | S | si | Si | SI | sí | Sí | y | Y)
+        sh -c "$comando_opc" || printf '%s\n' 'AVISO: no se instalaron; el entorno funciona sin ellos.' ;;
+      *) printf '%s\n' 'Omitidos: el entorno funciona sin ellos.' ;;
+    esac
+  else
+    printf '%s\n' 'Omitidos: el entorno funciona sin ellos.'
+  fi
+fi
+if [ -n "$faltan" ] && [ -n "$opcionales" ]; then
+  faltan="$faltan $opcionales"
+fi
+
 if [ -n "$faltan" ]; then
   entorno_fase "Programas del sistema"
   printf 'Faltan estos programas del sistema: %s\n' "$faltan"
@@ -313,6 +355,7 @@ if [ "$solo_comprobar" -eq 0 ]; then
     "$SCRIPT_DIR/instalar-lsp-bash.sh"
     "$SCRIPT_DIR/instalar-lsp-python.sh"
   fi
+  "$SCRIPT_DIR/instalar-lsp-docker.sh"
 fi
 
 if [ "$solo_comprobar" -eq 1 ]; then
@@ -347,6 +390,8 @@ EOF
     [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
     [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
   fi
+  [ -x "$PROJECT_ROOT/tools/lsp-docker/node_modules/.bin/docker-langserver" ] \
+    || { printf '%s\n' "FALTA: servidores de Docker; repite ./scripts/instalar-alumno.sh" >&2; exit 1; }
   if [ -f "${NVIM_XDG_ROOT:-$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION}/data/nvim/site/spell/es.utf-8.spl" ]; then
     printf '%s\n' 'OK: diccionario español de ortografía.'
   else

@@ -2,9 +2,9 @@ local M = { missing = {} }
 
 local profiles = {
   inicial = { web = true, diagnostics = false },
-  dwec = { web = true, diagnostics = true },
-  si = { bash = true, python = true, diagnostics = true },
-  profesor = { web = true, python = true, lua = true, pdf = true, diagnostics = true },
+  dwec = { web = true, docker = true, diagnostics = true },
+  si = { bash = true, python = true, docker = true, diagnostics = true },
+  profesor = { web = true, python = true, bash = true, docker = true, lua = true, pdf = true, diagnostics = true },
 }
 
 -- El entorno personal conserva sus funciones; los perfiles docentes son optativos.

@@ -21,6 +21,15 @@
   commits; diccionario de Neovim verificado por SHA-256, sin hunspell.
   Faltas en rojo (visibles en WSL y tmux) y menú `Espacio o` (corregir,
   siguiente, añadir, activar).
+- Docker: errores y completado en Dockerfile y `compose.yaml` en todos los
+  perfiles (servidores fijados en `tools/lsp-docker`).
+- Formato automático al guardar (TS, JS, HTML, CSS, JSON, Docker; Bash con
+  shfmt y Python con ruff si están instalados). `Espacio uf` lo alterna.
+- Mensajes de TypeScript/JavaScript en español.
+- Snippets para Bash (20), Python (19), Dockerfile (9), Compose (10) y CSS (9).
+- Menú `Espacio l`: definición, documentación, usos, renombrar y arreglos.
+- Aviso visible al abrir un archivo cuyo servidor no está instalado.
+- El instalador SI ofrece `shfmt` y `ruff` como recomendados opcionales.
 - `Ctrl-a Q` y `actualizar.sh` cierran Neovim de forma ordenada antes de
   cerrar la sesión (preguntan si hay cambios sin guardar). Los swap de un
   Neovim que ya no existe se resuelven sin la pantalla «Found a swap file»:

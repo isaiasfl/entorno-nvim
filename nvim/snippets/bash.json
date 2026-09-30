@@ -1,0 +1,214 @@
+{
+  "Cabecera de script Bash": {
+    "prefix": "cab",
+    "body": [
+      "#!/usr/bin/env bash",
+      "# Script: ${1:nombre.sh}",
+      "# Descripción: ${2:qué hace}",
+      "# Autor: ${3:Nombre y apellidos}",
+      "# Uso: ./${1:nombre.sh} ${4:argumentos}",
+      "set -euo pipefail",
+      "",
+      "$0"
+    ],
+    "description": "Cabecera de script Bash"
+  },
+  "if … then … fi": {
+    "prefix": "if",
+    "body": [
+      "if [[ ${1:condición} ]]; then",
+      "\t${2:# órdenes}",
+      "fi$0"
+    ],
+    "description": "if … then … fi"
+  },
+  "if … else … fi": {
+    "prefix": "ife",
+    "body": [
+      "if [[ ${1:condición} ]]; then",
+      "\t${2:# órdenes}",
+      "else",
+      "\t${3:# órdenes}",
+      "fi$0"
+    ],
+    "description": "if … else … fi"
+  },
+  "if … elif … else … fi": {
+    "prefix": "elif",
+    "body": [
+      "if [[ ${1:condición} ]]; then",
+      "\t${2:# órdenes}",
+      "elif [[ ${3:condición} ]]; then",
+      "\t${4:# órdenes}",
+      "else",
+      "\t${5:# órdenes}",
+      "fi$0"
+    ],
+    "description": "if … elif … else … fi"
+  },
+  "for sobre una lista de elementos": {
+    "prefix": "fore",
+    "body": [
+      "for ${1:elemento} in ${2:\"\\$@\"}; do",
+      "\techo \"\\$${1:elemento}\"$0",
+      "done"
+    ],
+    "description": "for sobre una lista de elementos"
+  },
+  "for numérico (de 1 a N)": {
+    "prefix": "fori",
+    "body": [
+      "for (( ${1:i} = ${2:1}; ${1:i} <= ${3:10}; ${1:i}++ )); do",
+      "\techo \"\\$${1:i}\"$0",
+      "done"
+    ],
+    "description": "for numérico (de 1 a N)"
+  },
+  "Recorrer los archivos de una carpeta": {
+    "prefix": "forf",
+    "body": [
+      "for ${1:fichero} in ${2:./*}; do",
+      "\t[[ -f \"\\$${1:fichero}\" ]] || continue",
+      "\techo \"\\$${1:fichero}\"$0",
+      "done"
+    ],
+    "description": "Recorrer los archivos de una carpeta"
+  },
+  "while … do … done": {
+    "prefix": "while",
+    "body": [
+      "while [[ ${1:condición} ]]; do",
+      "\t${2:# órdenes}",
+      "done$0"
+    ],
+    "description": "while … do … done"
+  },
+  "Leer un archivo línea a línea": {
+    "prefix": "leer",
+    "body": [
+      "while IFS= read -r ${1:linea}; do",
+      "\techo \"\\$${1:linea}\"$0",
+      "done < \"${2:archivo.txt}\""
+    ],
+    "description": "Leer un archivo línea a línea"
+  },
+  "case con opciones": {
+    "prefix": "case",
+    "body": [
+      "case \"\\$${1:variable}\" in",
+      "\t${2:opcion1})",
+      "\t\t${3:# órdenes}",
+      "\t\t;;",
+      "\t*)",
+      "\t\techo \"Opción no válida: \\$${1:variable}\" >&2",
+      "\t\t;;",
+      "esac$0"
+    ],
+    "description": "case con opciones"
+  },
+  "Menú interactivo con select y case": {
+    "prefix": "menu",
+    "body": [
+      "PS3=\"${1:Elige una opción: }\"",
+      "select ${2:opcion} in ${3:Listar Crear Salir}; do",
+      "\tcase \"\\$${2:opcion}\" in",
+      "\t\tListar) ${4:ls -l} ;;",
+      "\t\tSalir) break ;;",
+      "\t\t*) echo \"Opción no válida\" ;;",
+      "\tesac",
+      "done$0"
+    ],
+    "description": "Menú interactivo con select y case"
+  },
+  "Función": {
+    "prefix": "fn",
+    "body": [
+      "${1:nombre}() {",
+      "\tlocal ${2:param}=\"\\$1\"",
+      "\t$0",
+      "}"
+    ],
+    "description": "Función"
+  },
+  "Comprobar número de argumentos": {
+    "prefix": "args",
+    "body": [
+      "if (( \\$# != ${1:1} )); then",
+      "\techo \"Uso: \\$0 ${2:argumento}\" >&2",
+      "\texit 1",
+      "fi$0"
+    ],
+    "description": "Comprobar número de argumentos"
+  },
+  "Opciones con getopts (-h, -v, -f fichero)": {
+    "prefix": "getopts",
+    "body": [
+      "while getopts \":hvf:\" ${1:opt}; do",
+      "\tcase \"\\$${1:opt}\" in",
+      "\t\th) echo \"Uso: \\$0 [-v] [-f fichero]\"; exit 0 ;;",
+      "\t\tv) ${2:verbose}=1 ;;",
+      "\t\tf) ${3:fichero}=\"\\$OPTARG\" ;;",
+      "\t\t*) echo \"Opción no válida: -\\$OPTARG\" >&2; exit 1 ;;",
+      "\tesac",
+      "done",
+      "shift $(( OPTIND - 1 ))$0"
+    ],
+    "description": "Opciones con getopts (-h, -v, -f fichero)"
+  },
+  "Pedir un dato al usuario": {
+    "prefix": "read",
+    "body": [
+      "read -r -p \"${1:Introduce un valor}: \" ${2:valor}$0"
+    ],
+    "description": "Pedir un dato al usuario"
+  },
+  "Exigir ejecución como root": {
+    "prefix": "root",
+    "body": [
+      "if (( EUID != 0 )); then",
+      "\techo \"Ejecuta este script con sudo\" >&2",
+      "\texit 1",
+      "fi$0"
+    ],
+    "description": "Exigir ejecución como root"
+  },
+  "Comprobar si existe archivo o carpeta": {
+    "prefix": "existe",
+    "body": [
+      "if [[ -${1|f,d,e|} \"${2:ruta}\" ]]; then",
+      "\t${3:echo \"Existe\"}",
+      "else",
+      "\t${4:echo \"No existe\"}",
+      "fi$0"
+    ],
+    "description": "Comprobar si existe archivo o carpeta"
+  },
+  "Comprobar que un comando está instalado": {
+    "prefix": "cmd",
+    "body": [
+      "if ! command -v ${1:programa} >/dev/null 2>&1; then",
+      "\techo \"Falta ${1:programa}\" >&2",
+      "\texit 1",
+      "fi$0"
+    ],
+    "description": "Comprobar que un comando está instalado"
+  },
+  "Array y recorrido": {
+    "prefix": "arr",
+    "body": [
+      "${1:lista}=(${2:uno dos tres})",
+      "for ${3:item} in \"\\${${1:lista}[@]}\"; do",
+      "\techo \"\\$${3:item}\"",
+      "done$0"
+    ],
+    "description": "Array y recorrido"
+  },
+  "Limpiar al salir (trap)": {
+    "prefix": "trap",
+    "body": [
+      "${1:tmp}=\"$(mktemp)\"",
+      "trap 'rm -f \"\\$${1:tmp}\"' EXIT$0"
+    ],
+    "description": "Limpiar al salir (trap)"
+  }
+}
