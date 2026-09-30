@@ -21,6 +21,9 @@
   commits; diccionario de Neovim verificado por SHA-256, sin hunspell.
   Faltas en rojo (visibles en WSL y tmux) y menú `Espacio o` (corregir,
   siguiente, añadir, activar).
+- Errores visibles en WSL y tmux: letra E/W en el margen, subrayado simple de
+  color y mensaje al final de la línea del cursor. La barra de estado dice
+  «Errores: 4  Avisos: 1» en lugar de `E:4 W:1`.
 - `Espacio e` abre el explorador al instante; `Espacio E` localiza el archivo
   actual (sustituyen a `Espacio e e` y `Espacio e f`).
 - Neovim avisa si falta ShellCheck al abrir Bash: sin él no hay diagnósticos.

@@ -336,9 +336,19 @@ function M.setup()
   vim.diagnostic.config({
     update_in_insert = false,
     underline = true,
-    signs = true,
+    -- Letras estándar: no requieren Nerd Font.
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = "E",
+        [vim.diagnostic.severity.WARN] = "W",
+        [vim.diagnostic.severity.INFO] = "I",
+        [vim.diagnostic.severity.HINT] = "H",
+      },
+    },
     severity_sort = true,
-    virtual_text = false,
+    -- Mensaje al final de la línea del cursor, sin pulsar nada; el resto de
+    -- líneas muestra letra y subrayado para no llenar la pantalla (gl: detalle).
+    virtual_text = { current_line = true, spacing = 2, prefix = "■", source = false },
     float = {
       border = "rounded",
       source = true,

@@ -11,6 +11,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "SpellCap", { sp = "#f9e2af", undercurl = true })
     vim.api.nvim_set_hl(0, "SpellLocal", { sp = "#f9e2af", undercurl = true })
     vim.api.nvim_set_hl(0, "SpellRare", { sp = "#f9e2af", undercurl = true })
+    -- Diagnósticos: subrayado simple y color, visible sin undercurl.
+    for name, color in pairs({ Error = "#f38ba8", Warn = "#f9e2af", Info = "#89dceb", Hint = "#94e2d5" }) do
+      vim.api.nvim_set_hl(0, "DiagnosticUnderline" .. name, { sp = color, underline = true })
+    end
   end,
 })
 

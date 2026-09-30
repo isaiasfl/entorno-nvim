@@ -17,10 +17,11 @@ assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(package.loaded["lspconfig"] == nil, "no debe cargarse la API antigua de lspconfig")
 
 local diagnostic_config = vim.diagnostic.config()
-assert(diagnostic_config.virtual_text == false, "los mensajes deben mostrarse en ventanas, sin texto que desborde la línea")
+assert(type(diagnostic_config.virtual_text) == "table" and diagnostic_config.virtual_text.current_line == true,
+  "el mensaje en línea debe limitarse a la línea del cursor")
 assert(diagnostic_config.float.border == "rounded", "los diagnósticos deben tener borde legible")
 assert(diagnostic_config.underline == true, "los diagnosticos deben subrayar el problema")
-assert(diagnostic_config.signs == true, "los diagnosticos deben conservar signos en el margen")
+assert(diagnostic_config.signs == true or type(diagnostic_config.signs) == "table", "los diagnosticos deben conservar signos en el margen")
 assert(diagnostic_config.update_in_insert == false, "los diagnosticos no deben cambiar mientras se escribe")
 
 for _, name in ipairs({ "ts_ls", "html", "cssls", "jsonls", "tailwindcss", "lua_ls", "pyright", "bashls", "basedpyright" }) do
