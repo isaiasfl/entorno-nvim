@@ -1,0 +1,12 @@
+# Finales de línea LF siempre, aunque Git tenga core.autocrlf=true (habitual
+# con Git para Windows). Evita el ^M en Neovim, los scripts que fallan con
+# "/bin/sh^M" y los archivos marcados como modificados sin cambios reales.
+* text=auto eol=lf
+
+# Binarios: sin conversión.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
