@@ -27,6 +27,7 @@
   shfmt y Python con ruff si están instalados). `Espacio uf` lo alterna.
 - Mensajes de TypeScript/JavaScript en español.
 - Snippets para Bash (20), Python (19), Dockerfile (9), Compose (10) y CSS (9).
+- `Espacio s`: lista de plantillas del lenguaje con buscador, sin recordar prefijos.
 - Menú `Espacio l`: definición, documentación, usos, renombrar y arreglos.
 - Aviso visible al abrir un archivo cuyo servidor no está instalado.
 - El instalador SI ofrece `shfmt` y `ruff` como recomendados opcionales.

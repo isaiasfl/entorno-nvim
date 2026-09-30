@@ -71,7 +71,8 @@ La primera vez, si tu copia aún no tiene `actualizar.sh`:
 | Snippets (`Ctrl+j`) | Bash, Python, Dockerfile, Compose | HTML, JS, TS, React, CSS, Dockerfile, Compose |
 | Formato al guardar | Bash (con shfmt), Python (con ruff), Docker | Todos los lenguajes web y Docker |
 
-Pulsa `Espacio` y espera: el menú muestra las acciones. `Espacio l` agrupa lo
+Pulsa `Espacio` y espera: el menú muestra las acciones. **`Espacio s` abre la
+lista de plantillas** del archivo: escribe para filtrar y Enter la inserta. `Espacio l` agrupa lo
 de código (ir a la definición, documentación, renombrar, arreglos rápidos) y
 `Espacio ?` enseña todos los atajos y snippets. `Espacio uf` desactiva el
 formato al guardar si alguna vez molesta.

@@ -55,6 +55,7 @@ function M.setup()
       "           Para valores reales: console.log o depurador.",
       "",
       "PLANTILLAS (según tipo de archivo)",
+      "Espacio s  Lista de plantillas: escribe para filtrar, Enter inserta",
       "Ctrl+Space Solicitar autocompletado, en insertar",
       "Ctrl+n/p   Completar palabras del texto sin servidor LSP",
       "Tab        Recorrer sugerencias; Enter acepta la elegida",

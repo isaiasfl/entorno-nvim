@@ -35,6 +35,32 @@ map("n", "<leader>ul", function()
   vim.wo.list = not vim.wo.list
 end, { desc = "Alternar caracteres invisibles" })
 
+-- Espacio s: lista de todas las plantillas del lenguaje, sin recordar teclas.
+-- Vive aquí (no en la config del plugin) para existir desde el arranque.
+map("n", "<leader>s", function()
+  if require("config.lazy").available then
+    require("lazy").load({ plugins = { "mini.nvim" } })
+  end
+  local ok, snippets = pcall(require, "mini.snippets")
+  if not ok then
+    vim.notify("Las plantillas no están disponibles: repite el instalador", vim.log.levels.WARN)
+    return
+  end
+  local line = vim.api.nvim_get_current_line()
+  if not line:match("^%s*$") then
+    -- Línea con texto: la plantilla va en una línea nueva debajo, con la
+    -- misma sangría.
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local indent = line:match("^%s*")
+    vim.api.nvim_buf_set_lines(0, row, row, false, { indent })
+    vim.api.nvim_win_set_cursor(0, { row + 1, #indent })
+  end
+  vim.cmd("startinsert!")
+  vim.schedule(function()
+    snippets.expand({ match = false })
+  end)
+end, { desc = "Insertar plantilla (snippet)" })
+
 -- Ortografía: Espacio o y el menú muestra las opciones.
 local function spell_on()
   if not vim.wo.spell then

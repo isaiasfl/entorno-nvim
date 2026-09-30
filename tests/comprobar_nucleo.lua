@@ -30,6 +30,7 @@ assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 assert(package.loaded["config.theme"], "config.theme no se cargo")
 
 -- Ortografía: español e inglés si el diccionario está instalado; solo en texto.
+assert(mapping("n", "<leader>s").desc == "Insertar plantilla (snippet)", "Espacio s debe existir desde el arranque")
 for _, lhs in ipairs({ "<leader>oc", "<leader>on", "<leader>op", "<leader>oa", "<leader>ot" }) do
   assert(mapping("n", lhs).desc ~= nil, "falta el atajo de ortografia " .. lhs)
 end
