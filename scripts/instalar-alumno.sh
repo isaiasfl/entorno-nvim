@@ -263,7 +263,8 @@ ENTORNO_PERFIL="$perfil" ENTORNO_IA=0 ENTORNO_SIN_LISTEN=1 NVIM_BIN="$NVIM_LOCAL
   "$SCRIPT_DIR/arrancar.sh" --headless "+lua print('OK: Neovim alumno arranca')" +qa
 printf '\n'
 entorno_fase "Lanzador entorno-dev"
-"$SCRIPT_DIR/instalar-entorno-dev.sh"
+entorno_lanzador_ok=1
+"$SCRIPT_DIR/instalar-entorno-dev.sh" || entorno_lanzador_ok=0
 
 path_preparado=0
 case ":$PATH:" in

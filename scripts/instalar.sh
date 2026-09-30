@@ -276,7 +276,8 @@ entorno_fase "Parsers"
 entorno_fase "Comprobación final de requisitos"
 "$SCRIPT_DIR/comprobar-requisitos.sh"
 entorno_fase "Lanzador entorno-dev"
-"$SCRIPT_DIR/instalar-entorno-dev.sh"
+entorno_lanzador_ok=1
+"$SCRIPT_DIR/instalar-entorno-dev.sh" || entorno_lanzador_ok=0
 entorno_resumen_instalacion profesor completa
 
 # Consentimiento separado: --yes no autoriza cambiar la shell.

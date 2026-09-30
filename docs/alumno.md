@@ -181,6 +181,11 @@ nativo/macOS para el perfil `profesor`. El resto del entorno funciona igual.
 **Windows, WSL2 o la ruta tienen espacios.**
 El entorno admite rutas con espacios; escríbelas entre comillas.
 
+**He movido o vuelto a clonar la carpeta `entorno-nvim`.**
+Cierra las sesiones antiguas con `tmux -L entorno-nvim kill-server` y repite
+el instalador desde la carpeta nueva. Si la copia anterior ya no existe, el
+comando `entorno-dev` se redirige solo; si existe, se pregunta antes.
+
 **Quiero que `entorno-dev` esté en el `PATH`.**
 Los instaladores ya lo preparan. Para repararlo: `./scripts/instalar-entorno-dev.sh`. Crea el enlace en
 `~/.local/bin` sin sobrescribir nada ajeno.

@@ -56,6 +56,24 @@ if HOME="$FOREIGN_LINK_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/d
 fi
 [ "$(readlink "$FOREIGN_LINK_HOME/.local/bin/entorno-dev")" = "$TEST_ROOT/lanzador-ajeno" ]
 
+# Carpeta del repositorio movida o borrada: el enlace roto se actualiza.
+MOVED_HOME="$TEST_ROOT/home-movido"
+mkdir -p "$MOVED_HOME/.local/bin"
+ln -s "$TEST_ROOT/copia-movida/bin/entorno-dev" "$MOVED_HOME/.local/bin/entorno-dev"
+HOME="$MOVED_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" >/dev/null
+[ "$(readlink "$MOVED_HOME/.local/bin/entorno-dev")" = "$PROJECT_ROOT/bin/entorno-dev" ]
+
+# Otra copia existente: sin terminal no se sustituye y se explica el arreglo.
+OTHER_HOME="$TEST_ROOT/home-otra-copia"
+mkdir -p "$OTHER_HOME/.local/bin" "$TEST_ROOT/otra-copia/bin"
+cp "$PROJECT_ROOT/bin/entorno-dev" "$TEST_ROOT/otra-copia/bin/entorno-dev"
+ln -s "$TEST_ROOT/otra-copia/bin/entorno-dev" "$OTHER_HOME/.local/bin/entorno-dev"
+if HOME="$OTHER_HOME" "$PROJECT_ROOT/scripts/instalar-entorno-dev.sh" </dev/null >/dev/null 2>&1; then
+  printf '%s\n' "Error: el instalador sustituiria otra copia sin confirmacion." >&2
+  exit 1
+fi
+[ "$(readlink "$OTHER_HOME/.local/bin/entorno-dev")" = "$TEST_ROOT/otra-copia/bin/entorno-dev" ]
+
 for directory in "tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION"; do
   [ -d "$SOURCE_TOOLS/$directory" ] || {
     printf 'Error: falta la instalacion fuente para la prueba aislada: %s\n' "$directory" >&2

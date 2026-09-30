@@ -118,7 +118,11 @@ entorno_resumen_instalacion() {
     fi
   else
     printf '%s\n' '  [##########] Arranque aislado de Neovim comprobado'
-    printf '%s\n' '  [OK] Lanzador entorno-dev preparado en ~/.local/bin'
+    if [ "${entorno_lanzador_ok:-1}" -eq 1 ]; then
+      printf '%s\n' '  [OK] Lanzador entorno-dev preparado en ~/.local/bin'
+    else
+      printf '%s[AVISO] Comando entorno-dev sin actualizar: vea el aviso anterior%s\n' "$entorno_color_aviso" "$entorno_color_reset"
+    fi
     printf '%s\n' '  [INFO] Este perfil no instala las herramientas de Markdown/PDF'
   fi
   printf '\n%s\n' '  EMPIECE AQUI (desde la carpeta del repositorio):'
@@ -126,7 +130,9 @@ entorno_resumen_instalacion() {
   printf '\n'; printf '%s\n' '  SOLO EL EDITOR:' '    ./scripts/arrancar.sh /ruta/a/archivo'
   printf '\n'; printf '%s\n' '  DENTRO DE NEOVIM:' '    Esc y Espacio ?   Ayuda de teclas' '    Espacio e        Explorador' '    Espacio w        Guardar' '    :bd              Cerrar archivo sin salir'
   printf '\n%s\n' '  COMANDOS EN EL PATH:'
-  if [ "$resumen_tipo" = completa ]; then
+  if [ "${entorno_lanzador_ok:-1}" -eq 0 ]; then
+    printf '%s\n' '    [AVISO] entorno-dev no se ha actualizado; use ./bin/entorno-dev.'
+  elif [ "$resumen_tipo" = completa ]; then
     printf '%s\n' '    Lanzador entorno-dev preparado en ~/.local/bin.'
   fi
   case ":$PATH:" in

@@ -1,5 +1,13 @@
 # Changelog
 
+## Sin publicar
+
+- Reinstalar tras mover o borrar la carpeta del repositorio ya no falla:
+  el comando `entorno-dev` roto se redirige a la copia actual con un aviso.
+  Si apunta a otra copia existente, se pregunta antes de cambiarlo.
+- Si el comando `entorno-dev` no se puede actualizar, la instalación termina
+  con un aviso y la alternativa `./bin/entorno-dev`, no con un error genérico.
+
 ## 1.1.0 — 2026-09-27
 
 - Ayuda de teclas con Espacio ? y F1, movimientos, edición, errores y snippets.
