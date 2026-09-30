@@ -80,7 +80,7 @@ if [ -z "${ENTORNO_IA:-}" ]; then
   if [ "$ENTORNO_PERFIL" = profesor ]; then ENTORNO_IA=1; else ENTORNO_IA=0; fi
 fi
 case "$ENTORNO_PERFIL:$ENTORNO_IA" in
-  inicial:0 | inicial:1 | dwec:0 | dwec:1 | si:0 | si:1 | profesor:0 | profesor:1) ;;
+  inicial:[01] | alumno:[01] | dwec:[01] | si:[01] | profesor:[01]) ;;
   *) printf '%s\n' 'Error: perfil o estado IA incorrecto.' >&2; exit 2 ;;
 esac
 
@@ -88,7 +88,7 @@ esac
 # utiliza el LSP. Un proyecto que necesite otra version debe declararla en sus
 # devDependencies y usar npm exec/npx desde ese proyecto.
 case "$ENTORNO_PERFIL" in
-  inicial | dwec | profesor)
+  inicial | alumno | dwec | si | profesor)
     web_bin="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
     if [ -x "$web_bin/tsc" ]; then PATH="$web_bin:$PATH"; fi
     ;;

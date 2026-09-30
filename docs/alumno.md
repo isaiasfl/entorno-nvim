@@ -13,9 +13,9 @@ cd entorno-nvim
 ./scripts/instalar-alumno.sh
 ```
 
-El instalador pregunta la asignatura (**1 = DWEC**, **2 = SI**) y la recuerda:
-para actualizar basta con repetir el comando y pulsar Enter. Si faltan
-programas del sistema, muestra el comando y pregunta antes de usar `sudo`.
+Instala lo mismo para DWEC y SI (web, Bash, Python y Docker). Para actualizar
+más adelante: `./scripts/actualizar.sh`. Si faltan programas del sistema,
+muestra el comando y pregunta antes de usar `sudo`.
 
 Este carril instala los paquetes básicos que falten (`git`, `tmux`, `fzf`,
 `fd-find`, `ripgrep`, `curl`, `tar`, `xz-utils` y certificados), descarga
@@ -63,27 +63,39 @@ Guarda tu trabajo y, desde la carpeta `entorno-nvim`:
 La primera vez, si tu copia aún no tiene `actualizar.sh`:
 `git restore . && git pull --ff-only && sh scripts/actualizar.sh`.
 
-### Qué te ayuda en cada perfil
+### Qué te ayuda
 
-| | SI | DWEC |
-| --- | --- | --- |
-| Errores y completado | Bash, Python, Dockerfile, Compose | HTML, CSS, JSON, JS, TS, JSX/TSX, Tailwind, Dockerfile, Compose |
-| Snippets (`Ctrl+j`) | Bash, Python, Dockerfile, Compose | HTML, JS, TS, React, CSS, Dockerfile, Compose |
-| Formato al guardar | Bash (con shfmt), Python (con ruff), Docker | Todos los lenguajes web y Docker |
+| Lenguaje | Errores y completado | Plantillas (`Espacio s`) | Formato al guardar | Ejecutar (`Espacio r`) |
+| --- | --- | --- | --- | --- |
+| HTML, CSS, JSON | Sí | HTML y CSS | Sí | — |
+| JavaScript, TypeScript, React | Sí (TS en español) | Sí | Sí | JS y TS |
+| Tailwind | Si el proyecto lo usa | — | — | — |
+| Bash | Sí, con ShellCheck | Sí | Con shfmt | Sí |
+| Python | Sí | Sí | Con ruff | Sí |
+| Dockerfile, Compose | Sí | Sí | Dockerfile | — |
 
-Pulsa `Espacio` y espera: el menú muestra las acciones. **`Espacio s` abre la
-lista de plantillas** del archivo: escribe para filtrar y Enter la inserta. `Espacio l` agrupa lo
-de código (ir a la definición, documentación, renombrar, arreglos rápidos) y
-`Espacio ?` enseña todos los atajos y snippets. `Espacio uf` desactiva el
-formato al guardar si alguna vez molesta.
+**Pulsa `Espacio` y espera: el menú muestra todo.**
 
-Para usar los dos perfiles, instala ambos (`./scripts/instalar-alumno.sh
---perfil dwec` y `--perfil si`) y abre con `entorno-dev --perfil si .` o
-`entorno-dev --perfil dwec .`.
+| Tecla | Qué hace |
+| --- | --- |
+| `Espacio r` | Ejecutar este archivo (Bash, Python, JS, TS) en la terminal de abajo |
+| `Espacio s` | Insertar plantilla: lista con buscador |
+| `Espacio l` | Código: definición, documentación, usos, renombrar, arreglos, formatear |
+| `Espacio t` | Texto: duplicar, borrar, copiar, mover, comentar línea… (con su tecla nativa) |
+| `Espacio b` | Archivos abiertos: lista, siguiente, anterior, cerrar |
+| `Espacio f` | Buscar archivos y texto |
+| `Espacio o` | Ortografía: corregir, siguiente falta, añadir palabra |
+| `Espacio e` / `Espacio E` | Explorador / localizar el archivo actual |
+| `Espacio u` | Opciones: tema, formato al guardar, ortografía |
+| `Espacio ?` | Ayuda completa de teclas |
 
-### Perfil SI: ShellCheck es imprescindible
+Las opciones de `Espacio t` muestran entre paréntesis la tecla nativa de Vim
+(`dd`, `yy`, `gcc`...): así puedes aprenderla y usarla directamente.
+`Espacio uf` desactiva el formato al guardar si alguna vez molesta.
 
-En Bash, todos los errores y avisos los detecta ShellCheck. El instalador SI
+### Bash: ShellCheck es imprescindible
+
+En Bash, todos los errores y avisos los detecta ShellCheck. El instalador
 lo exige; si falta, Neovim avisa al abrir un `.sh`. Compruébalo con
 `shellcheck --version`.
 
@@ -173,10 +185,9 @@ O en un solo paso, desde cualquier carpeta:
 /ruta/a/entorno-nvim/bin/entorno-dev /ruta/a/mi-proyecto
 ```
 
-- Sin opciones usa el perfil elegido en `instalar-alumno.sh`, sin IA: editor
-  arriba y terminal abajo.
-- `--perfil dwec` (web), `--perfil si` (Bash y Python), `--perfil inicial` o
-  `--perfil profesor` cambian el perfil solo para esa sesión.
+- Sin opciones usa el perfil del alumnado, sin IA: editor arriba y terminal
+  abajo.
+- `--perfil inicial` o `--perfil profesor` cambian el perfil solo para esa sesión.
 - `--sin-tmux` abre solo Neovim; `--sin-ia` omite el panel de agente.
 - `--elegir` abre el selector de proyectos.
 

@@ -16,11 +16,10 @@ cd entorno-nvim
 ./scripts/instalar-alumno.sh
 ```
 
-El instalador pregunta la asignatura (**1 = DWEC**, **2 = SI**) y la recuerda
-para las siguientes veces. Si faltan programas del sistema, muestra el comando
-y pregunta antes de usar `sudo`. Para DWEC prepara Git, tmux, búsqueda, Neovim, Node 24, plugins y
-los servidores de HTML, CSS, JSON, JavaScript, TypeScript y Tailwind. El perfil
-`si` prepara en su lugar Bash Language Server, ShellCheck y Pyright.
+Instala lo mismo para DWEC y SI: Git, tmux, búsqueda, Neovim, Node 24,
+plugins y los servidores de HTML, CSS, JSON, JavaScript, TypeScript, React,
+Tailwind, Bash (con ShellCheck), Python, Dockerfile y Docker Compose. Si faltan
+programas del sistema, muestra el comando y pregunta antes de usar `sudo`.
 
 No sustituye `~/.config/nvim` ni `~/.tmux.conf`. Tampoco instala o configura
 cuentas de inteligencia artificial.
@@ -29,8 +28,7 @@ cuentas de inteligencia artificial.
 
 | Orden | Resultado |
 | --- | --- |
-| `./scripts/instalar-alumno.sh` | Pregunta el perfil y lo instala o actualiza |
-| `./scripts/instalar-alumno.sh --perfil dwec` | Igual, sin preguntar el perfil (también `--perfil si`) |
+| `./scripts/instalar-alumno.sh` | Instala o completa el entorno |
 | `./scripts/instalar-alumno.sh --comprobar` | Comprueba la instalación sin modificar nada |
 | `./scripts/instalar-alumno.sh --help` | Muestra la ayuda |
 
@@ -74,8 +72,7 @@ entorno-dev ~/ruta/del/proyecto
 
 | Opción | Uso |
 | --- | --- |
-| `--perfil si` | Bash y Python para Sistemas Informáticos |
-| `--perfil dwec` | HTML, CSS, JSON, JavaScript, TypeScript y Tailwind |
+| `--perfil alumno` | Todo para el alumnado (predeterminado tras instalar) |
 | `--perfil inicial` | Perfil web sin diagnósticos |
 | `--perfil profesor` | Perfil completo del profesor |
 | `--ia` | Crea el panel de agente y habilita la integración |

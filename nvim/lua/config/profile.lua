@@ -2,8 +2,12 @@ local M = { missing = {} }
 
 local profiles = {
   inicial = { web = true, diagnostics = false },
-  dwec = { web = true, docker = true, diagnostics = true },
-  si = { bash = true, python = true, docker = true, diagnostics = true },
+  -- Perfil único del alumnado: cada servidor solo arranca al abrir su tipo
+  -- de archivo, así que tenerlo todo no ralentiza. dwec y si se conservan
+  -- como nombres antiguos equivalentes.
+  alumno = { web = true, bash = true, python = true, docker = true, diagnostics = true },
+  dwec = { web = true, bash = true, python = true, docker = true, diagnostics = true },
+  si = { web = true, bash = true, python = true, docker = true, diagnostics = true },
   profesor = { web = true, python = true, bash = true, docker = true, lua = true, pdf = true, diagnostics = true },
 }
 

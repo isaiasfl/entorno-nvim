@@ -8,7 +8,7 @@ PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
 . "$SCRIPT_DIR/lib/plataforma.sh"
 ENTORNO_PERFIL=${ENTORNO_PERFIL:-profesor}
 case "$ENTORNO_PERFIL" in
-  inicial | dwec | si | profesor) ;;
+  inicial | alumno | dwec | si | profesor) ;;
   *) printf 'Error: perfil desconocido: %s\n' "$ENTORNO_PERFIL" >&2; exit 2 ;;
 esac
 case "${ENTORNO_IA:-0}" in

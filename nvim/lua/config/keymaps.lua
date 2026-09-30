@@ -3,8 +3,23 @@ local map = vim.keymap.set
 map("i", "jk", "<Esc>", { desc = "Salir del modo insertar", silent = true })
 
 map("n", "<leader>w", "<cmd>write<cr>", { desc = "Guardar archivo" })
-map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Cerrar ventana" })
-map("n", "<leader>h", "<cmd>nohlsearch<cr>", { desc = "Limpiar busqueda" })
+-- Esc también quita el resaltado de la última búsqueda (como en LazyVim).
+map("n", "<Esc>", "<cmd>nohlsearch<cr><Esc>", { desc = "Quitar resaltado de búsqueda" })
+map("n", "<leader>r", function() require("config.ejecutar").run() end, { desc = "Ejecutar este archivo" })
+
+-- Espacio b: archivos abiertos (buffers).
+map("n", "<leader>bb", function() require("config.navigation").pick("buffers") end, { desc = "Lista de archivos abiertos" })
+map("n", "<leader>bn", function() require("config.tabline").cycle(1) end, { desc = "Archivo siguiente (]b)" })
+map("n", "<leader>bp", function() require("config.tabline").cycle(-1) end, { desc = "Archivo anterior ([b)" })
+map("n", "<leader>bd", "<cmd>confirm bdelete<cr>", { desc = "Cerrar este archivo (:bd)" })
+map("n", "<leader>bo", function()
+  local current = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if buf ~= current and vim.bo[buf].buflisted and not vim.bo[buf].modified then
+      vim.api.nvim_buf_delete(buf, {})
+    end
+  end
+end, { desc = "Cerrar los demás archivos guardados" })
 map("n", "]b", function() require("config.tabline").cycle(1) end, { desc = "Archivo siguiente" })
 map("n", "[b", function() require("config.tabline").cycle(-1) end, { desc = "Archivo anterior" })
 
@@ -13,6 +28,7 @@ map("n", "<leader>gg", function()
 end, { desc = "Abrir lazygit" })
 
 if require("config.profile").has("pdf") then
+  map("n", "<leader>m", "<Nop>", { desc = "+Markdown" })
   map("n", "<leader>mp", function()
     require("config.markdown_pdf").export_current()
   end, { desc = "Generar PDF del Markdown actual" })
@@ -116,10 +132,23 @@ map("n", "<C-l>", "<C-w>l", { desc = "Ventana derecha" })
 
 -- Edición rápida
 
--- Duplicar línea
-map("n", "<leader>d", "yyp", {
-  desc = "Duplicar línea",
-})
+-- Espacio t: operaciones de texto. Cada opción indica su tecla nativa entre
+-- paréntesis para que se aprenda; ambas formas funcionan igual.
+map("n", "<leader>td", "yyp", { desc = "Duplicar línea (yyp)" })
+map("n", "<leader>tx", "dd", { desc = "Borrar línea (dd)" })
+map("n", "<leader>ty", "yy", { desc = "Copiar línea (yy)" })
+map("n", "<leader>tp", "p", { desc = "Pegar debajo (p)" })
+map("n", "<leader>tj", "<cmd>m .+1<cr>==", { desc = "Bajar línea (Alt+Shift+j)" })
+map("n", "<leader>tk", "<cmd>m .-2<cr>==", { desc = "Subir línea (Alt+Shift+k)" })
+map("n", "<leader>tc", "gcc", { desc = "Comentar o descomentar (gcc)", remap = true })
+map("n", "<leader>ta", "ggVG", { desc = "Seleccionar todo (ggVG)" })
+map("n", "<leader>tu", "u", { desc = "Deshacer (u)" })
+map("n", "<leader>tr", "<C-r>", { desc = "Rehacer (Ctrl+r)" })
+map("n", "<leader>ts", function()
+  local word = vim.fn.expand("<cword>")
+  vim.api.nvim_feedkeys(":%s/\\<" .. word .. "\\>//gc", "n", false)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left><Left><Left>", true, false, true), "n", false)
+end, { desc = "Reemplazar esta palabra en el archivo (:%s)" })
 
 
 -- =========================

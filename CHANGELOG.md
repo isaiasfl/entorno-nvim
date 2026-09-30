@@ -2,6 +2,14 @@
 
 ## Sin publicar
 
+- **Perfil único del alumnado**: `instalar-alumno.sh` instala web, Bash,
+  Python y Docker sin preguntar. `--perfil dwec`/`si` se aceptan y equivalen.
+- Menú de `Espacio` reorganizado al estilo LazyVim: `b` archivos abiertos,
+  `t` texto y edición (con la tecla nativa entre paréntesis), `r` ejecutar
+  el archivo (Bash, Python, JS, TS) en la terminal de abajo. `Esc` limpia la
+  búsqueda; salen del menú `Espacio d`, `h` y `q` (ahora `Espacio t d`).
+- Avisos cortos para que Neovim no pida ENTER y no se coma teclas.
+
 - Reinstalar tras mover o borrar la carpeta del repositorio ya no falla:
   el comando `entorno-dev` roto se redirige a la copia actual con un aviso.
   Si apunta a otra copia existente, se pregunta antes de cambiarlo.

@@ -45,7 +45,7 @@ El script acepta los mismos argumentos que Neovim:
 | Modo | Atajo | Acción |
 | --- | --- | --- |
 | Insertar | `jk` | Salir al modo normal, equivalente a `Esc` |
-| Normal | `<leader>h` | Limpiar el resaltado de la última búsqueda |
+| Normal | `Esc` | Limpiar el resaltado de la última búsqueda |
 | Normal | `<leader>ul` | Alternar caracteres invisibles en la ventana actual |
 | Normal | `<leader>ff` | Buscar archivos del proyecto |
 | Normal | `<leader>fg` | Buscar texto dentro del proyecto |
@@ -74,7 +74,7 @@ escribir `j`, Neovim espera brevemente para saber si la siguiente tecla es `k`.
 
 ### Búsquedas y caracteres invisibles
 
-Después de buscar con `/` o `?`, `<leader>h` oculta el resaltado sin borrar el
+Después de buscar con `/` o `?`, `Esc` oculta el resaltado sin borrar el
 patrón de búsqueda. `n` y `N` pueden seguir recorriendo sus coincidencias.
 
 Los tabs y espacios finales están ocultos por defecto. `<leader>ul` alterna su

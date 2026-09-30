@@ -119,7 +119,7 @@ entorno_resumen_instalacion() {
   fi
   if [ "$resumen_tipo" = alumnado ]; then
     printf '\n'
-    printf '%s\n' '  EMPIECE AQUI (su perfil queda recordado):' '    cd /ruta/a/mi-proyecto' '    entorno-dev .'
+    printf '%s\n' '  EMPIECE AQUI:' '    cd /ruta/a/mi-proyecto' '    entorno-dev .'
     printf '%s\n' '  Si la terminal no encuentra entorno-dev, desde esta carpeta:' '    ./bin/entorno-dev /ruta/a/mi-proyecto'
   else
     printf '\n%s\n' '  EMPIECE AQUI (desde la carpeta del repositorio):'

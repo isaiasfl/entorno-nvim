@@ -27,10 +27,11 @@ cd entorno-nvim
 ./scripts/instalar-alumno.sh
 ```
 
-El instalador pregunta la asignatura: **1 = DWEC** (web) o **2 = SI**
-(Bash y Python). Si faltan programas del sistema, los muestra y pregunta
-antes de instalarlos (pedirá su contraseña). Al terminar ofrece añadir
-`entorno-dev` al PATH: responda `s`.
+Instala el entorno completo del alumnado, igual para DWEC y SI: HTML, CSS,
+JavaScript, TypeScript, React, Tailwind, Bash, Python, Dockerfile y Docker
+Compose. Si faltan programas del sistema, los muestra y pregunta antes de
+instalarlos (pedirá su contraseña). Al terminar ofrece añadir `entorno-dev`
+al PATH: responda `s`.
 
 ### Caso 2: ya lo tenía instalado y tiene `scripts/actualizar.sh`
 
@@ -42,7 +43,7 @@ cd ~/entorno-nvim
 ```
 
 Descarga la versión nueva, ofrece cerrar las sesiones abiertas y reinstala
-con la asignatura que eligió (pulse Enter si pregunta).
+todo lo nuevo. Pulse Enter si pregunta.
 
 ### Caso 3: ya lo tenía instalado, pero su copia no tiene `actualizar.sh`
 
@@ -64,8 +65,8 @@ cd ~/ruta/de/mi-proyecto
 entorno-dev .
 ```
 
-Abre Neovim arriba y una terminal abajo con su asignatura. Dentro de Neovim,
-`Espacio ?` muestra la ayuda de teclas. Si la terminal dice que no encuentra
+Abre Neovim arriba y una terminal abajo. Dentro de Neovim, pulse `Espacio`
+y espere: aparece el menú con todas las acciones. Si la terminal dice que no encuentra
 `entorno-dev`, abra una terminal nueva o use `~/entorno-nvim/bin/entorno-dev .`
 
 ### Si algo falla
@@ -111,16 +112,16 @@ cd entorno-nvim
 ./scripts/instalar.sh --help
 ```
 
-**Para alumnado DWEC o SI, use el instalador de alumno. Para el entorno completo
+**Para el alumnado (DWEC y SI), use el instalador de alumno. Para el entorno completo
 con Markdown/PDF, use el instalador general.** Son alternativas; no necesita
 ejecutar los dos.
 
 ```mermaid
 flowchart TD
     A[Descargar entorno-nvim] --> B{¿Qué necesita?}
-    B -->|Alumnado DWEC o SI| C[instalar-alumno.sh: elegir 1 o 2]
+    B -->|Alumnado DWEC y SI| C[instalar-alumno.sh]
     B -->|Entorno completo y PDF| E[instalar.sh --sistema]
-    C --> F[entorno-dev . con el perfil recordado]
+    C --> F[entorno-dev .]
     E --> H[Abrir proyecto con perfil profesor]
 ```
 
@@ -130,7 +131,7 @@ Ejecute desde la carpeta del repositorio la pareja que corresponda:
 
 | Uso | Instalar | Abrir su proyecto |
 | --- | --- | --- |
-| Alumnado DWEC (web) o SI (Bash y Python) | `./scripts/instalar-alumno.sh` y elegir 1 o 2 | `./bin/entorno-dev /ruta/a/mi-proyecto` |
+| Alumnado DWEC y SI: web, Bash, Python y Docker | `./scripts/instalar-alumno.sh` | `./bin/entorno-dev /ruta/a/mi-proyecto` |
 | Profesor: entorno completo y Markdown/PDF | `./scripts/instalar.sh --sistema` | `./bin/entorno-dev --perfil profesor --sin-ia /ruta/a/mi-proyecto` |
 
 Sustituya `/ruta/a/mi-proyecto` por la carpeta de su proyecto. Para abrir la
@@ -146,7 +147,7 @@ Ctrl+C cancela. La ayuda y la comprobación no inician una instalación.
 | --- | --- | --- |
 | `--yes` o `-y` | Ambos instaladores | Omite solo la pausa inicial para automatización; no autoriza sudo |
 | `--help` o `-h` | Ambos instaladores | Muestra ayuda y termina sin instalar |
-| `--perfil dwec` / `--perfil si` | Instalador de alumno | Elige el perfil sin preguntar; sin la opción se muestra un menú y se recuerda la elección |
+| `--perfil dwec` / `--perfil si` | Instalador de alumno | Se aceptan por compatibilidad; instalan lo mismo que sin opción |
 | `--sistema` | Instalador general | Ofrece instalar los paquetes del sistema que falten; muestra el comando y pide confirmación antes de usar sudo |
 | `--sin-sistema` | Instalador de alumno | Nunca usa sudo; solo indica qué paquetes faltan. Sin esta opción pregunta antes de instalarlos |
 | `--comprobar` | Instalador de alumno | Comprueba la instalación sin descargar ni modificar |
@@ -289,7 +290,7 @@ backup registrado. El backup histórico se conserva. Véase
 
 ```sh
 cd /ruta/al/proyecto
-entorno-dev --perfil dwec
+entorno-dev
 ```
 
 Sin opciones recupera el perfil profesor, PDF y tmux con tres paneles.
@@ -339,11 +340,19 @@ Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 | Mapa | Acción |
 | --- | --- |
 | `<leader>?` / F1 en modo normal | Chuleta de teclas, errores, movimientos y snippets |
+| `Espacio r` | Ejecutar este archivo (Bash, Python, JS, TS) en la terminal de abajo |
+| `Espacio s` | Insertar plantilla: lista con buscador |
+| `Espacio l` | Código: definición, documentación, usos, renombrar, arreglos, formatear |
+| `Espacio t` | Texto: duplicar, borrar, copiar, mover, comentar línea… (con su tecla nativa) |
+| `Espacio b` | Archivos abiertos: lista, siguiente, anterior, cerrar |
+| `Espacio f` | Buscar archivos y texto |
+| `Espacio o` | Ortografía: corregir, siguiente falta, añadir palabra |
+| `Espacio e` / `Espacio E` | Explorador / localizar el archivo actual |
+| `Espacio u` | Opciones: tema, formato al guardar, ortografía |
 | `<leader>w` | Guardar |
 | `]b` / `[b` / `:bd` | Archivo siguiente / anterior / cerrar archivo |
 | `gl` / `[d` / `]d` | Errores de la línea / anterior / siguiente |
 | `Ctrl-j` en insertar | Elegir o expandir snippets del lenguaje |
-| `<leader>d` | Duplicar la línea actual |
 | `Alt-Shift-j/k` / `Cmd-Shift-↓/↑` | Mover líneas o selecciones |
 | `<leader>gg` | Lazygit |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y visualizar |

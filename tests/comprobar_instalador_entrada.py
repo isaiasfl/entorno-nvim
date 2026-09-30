@@ -51,24 +51,19 @@ assert b"MODO LOCAL" in output
 assert b"no autoriza sudo" in output
 print("OK: versión, plan y pausa; cancelación sin instalar: instalar.sh")
 
-# Sin opciones: menú de perfil, respuesta no válida, elección y plan.
-output = ejecutar("instalar-alumno.sh", [], [
-    (b"Escribe 1 o 2", b"x\n"),
-    (b"Respuesta no v", b"2\n"),
-    (b"Pulsa Enter", b"cancelar\n"),
-])
+# Sin opciones: perfil único, sin menú, plan y cancelación.
+output = ejecutar("instalar-alumno.sh", [], [(b"Pulsa Enter", b"cancelar\n")])
 assert b"v" + version in output
-assert b"1) DWEC" in output and b"2) SI" in output
-assert b"Perfil: SI" in output
+assert b"Escribe 1 o 2" not in output
+assert b"Perfil: alumno" in output
 assert b"QU\xc3\x89 VA A PASAR" in output
 assert b"se te preguntar\xc3\xa1 antes de instalarlo" in output
-print("OK: menú de perfil y cancelación sin instalar: instalar-alumno.sh")
+print("OK: perfil único y cancelación sin instalar: instalar-alumno.sh")
 
-# Con --perfil no se pregunta.
+# Los perfiles antiguos se aceptan y no preguntan.
 output = ejecutar("instalar-alumno.sh", ["--perfil", "DWEC"], [(b"Pulsa Enter", b"cancelar\n")])
-assert b"Escribe 1 o 2" not in output
-assert b"Perfil: DWEC" in output
-print("OK: --perfil evita el menú: instalar-alumno.sh")
+assert b"Perfil: alumno" in output
+print("OK: --perfil dwec se acepta por compatibilidad: instalar-alumno.sh")
 
 # Cancelar no debe cambiar el perfil recordado.
 actual = perfil_guardado.read_bytes() if perfil_guardado.exists() else None

@@ -121,9 +121,11 @@ Estas teclas sueltas solo tienen este significado en el inicio IFL:
 | Tecla | Modo | Acción |
 | --- | --- | --- |
 | `Espacio w` | Normal | Guardar archivo |
-| `Espacio q` | Normal | Cerrar ventana; no fuerza pérdida de cambios |
-| `Espacio h` | Normal | Limpiar resaltado de búsqueda |
-| `Espacio d` | Normal | Duplicar línea debajo |
+| `Esc` | Normal | Limpiar resaltado de búsqueda |
+| `Espacio t d` | Normal | Duplicar línea debajo (`yyp`); `Espacio t` agrupa más operaciones de texto |
+| `Espacio r` | Normal | Ejecutar el archivo actual en la terminal de abajo |
+| `Espacio s` | Normal | Lista de plantillas con buscador |
+| `Espacio b` | Normal | Archivos abiertos: lista, siguiente, anterior, cerrar |
 | `Espacio e` | Normal | Mostrar/ocultar explorador |
 | `Espacio E` | Normal | Localizar archivo actual en el árbol |
 | `Espacio f f` | Normal | Buscar archivos |

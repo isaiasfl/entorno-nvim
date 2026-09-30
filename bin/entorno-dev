@@ -43,7 +43,7 @@ Uso:
 
 Sin opciones usa el perfil elegido al instalar con instalar-alumno.sh;
 si no lo hay, el perfil profesor con tmux y tres paneles.
-  --perfil inicial|dwec|si|profesor   Perfil (predeterminado: el instalado)
+  --perfil alumno|profesor|inicial    Perfil (predeterminado: el instalado)
   --tmux                            Sesion tmux (predeterminado)
   --sin-tmux                        Solo el editor
   --sin-ia                          Deshabilita IA y su panel
@@ -68,7 +68,7 @@ EOF
   esac
 done
 case "$profile" in
-  inicial | dwec | si | profesor) ;;
+  inicial | alumno | dwec | si | profesor) ;;
   *) printf 'Error: perfil desconocido: %s\n' "$profile" >&2; exit 2 ;;
 esac
 [ "$#" -le 1 ] || { printf '%s\n' 'Error: se admite una sola carpeta.' >&2; exit 2; }

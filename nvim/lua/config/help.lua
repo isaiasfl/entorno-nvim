@@ -4,6 +4,12 @@ function M.setup()
     local lines = {
       "AYUDA RÁPIDA — modo normal salvo indicación",
       "",
+      "Espacio    Menú con todas las acciones (espera un momento)",
+      "Espacio r  Ejecutar este archivo en la terminal de abajo",
+      "Espacio s  Insertar plantilla (lista con buscador)",
+      "Espacio t  Texto: duplicar, borrar, copiar, mover, comentar",
+      "Espacio b  Archivos abiertos: lista, siguiente, cerrar",
+      "",
       "Esc        Volver a modo normal",
       "jk rápido  También sale de insertar (sin pausa entre letras)",
       "i / a      Insertar antes / después del cursor",

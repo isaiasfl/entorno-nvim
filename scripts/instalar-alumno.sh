@@ -14,7 +14,7 @@ entorno_fase_actual="opciones y requisitos"
 sistema=preguntar
 inicio_sin_pausa=0
 solo_comprobar=0
-perfil=
+perfil=alumno
 # Perfil de la ultima instalacion: lo reutilizan este instalador y entorno-dev.
 PERFIL_GUARDADO=${ENTORNO_PERFIL_GUARDADO:-"$PROJECT_ROOT/.xdg/perfil-alumno"}
 
@@ -24,22 +24,19 @@ mostrar_logo() {
 
 uso() {
   cat <<'EOF'
-USO RÁPIDO
+USO
   ./scripts/instalar-alumno.sh
 
-  Te preguntará tu asignatura (DWEC o SI) y, si faltan programas del
-  sistema, te ofrecerá instalarlos. La próxima vez recordará tu elección:
-  para actualizar basta con repetir el mismo comando y pulsar Enter.
-
-PERFILES
-  dwec   Desarrollo web: HTML, CSS, JavaScript, TypeScript y React
-  si     Sistemas: Bash y Python
+  Prepara el entorno completo del alumnado: HTML, CSS, JavaScript,
+  TypeScript, React, Tailwind, Bash, Python, Dockerfile y Docker Compose.
+  Si faltan programas del sistema, te ofrecerá instalarlos. Para
+  actualizar más adelante: ./scripts/actualizar.sh
 
 OPCIONES (no son obligatorias)
-  --perfil dwec|si   elige el perfil sin preguntar (también: ... dwec)
   --comprobar        solo revisa la instalación; no descarga ni cambia nada
   --sin-sistema      no instala paquetes del sistema ni usa sudo
   --sistema          acepta la opción antigua; equivale al comportamiento normal
+  --perfil dwec|si   se aceptan por compatibilidad; instalan lo mismo
   -y, --yes          empieza sin pedir Enter (no autoriza sudo)
   -h, --help         muestra esta ayuda
 
@@ -52,59 +49,31 @@ Más ayuda: docs/alumno.md
 EOF
 }
 
-normalizar_perfil() {
-  case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
-    dwec | web | 1) printf '%s\n' dwec ;;
-    si | sistemas | 2) printf '%s\n' si ;;
-    *) return 1 ;;
-  esac
-}
-
-nombre_perfil() {
-  case "$1" in
-    dwec) printf '%s\n' 'DWEC (desarrollo web)' ;;
-    si) printf '%s\n' 'SI (Bash y Python)' ;;
-  esac
-}
-
 error_uso() {
   printf '\nError: %s\n' "$1" >&2
-  printf '%s\n' 'Lo más sencillo es ejecutar sin opciones y responder a las preguntas:' \
+  printf '%s\n' 'Lo más sencillo es ejecutar sin opciones:' \
     '  ./scripts/instalar-alumno.sh' 'Ayuda: ./scripts/instalar-alumno.sh --help' >&2
+  trap - 0
   exit 2
 }
 
-elegir_perfil() {
-  printf '%s\n\n' '¿Para qué asignatura preparas el entorno?'
-  printf '%s\n' '  1) DWEC   Desarrollo web: HTML, CSS, JavaScript, TypeScript y React'
-  printf '%s\n\n' '  2) SI     Sistemas: Bash y Python'
-  while :; do
-    if [ -n "$1" ]; then
-      printf 'Escribe 1 o 2 y pulsa Enter [Enter = %s, tu última elección]: ' "$1"
-    else
-      printf '%s' 'Escribe 1 o 2 y pulsa Enter: '
-    fi
-    IFS= read -r respuesta || return 1
-    if [ -z "$respuesta" ] && [ -n "$1" ]; then
-      perfil=$1
-      return 0
-    fi
-    perfil=$(normalizar_perfil "$respuesta") && return 0
-    printf '%s\n' 'Respuesta no válida: escribe 1 (DWEC) o 2 (SI).'
-  done
+# Perfil único; dwec y si se aceptan por compatibilidad con guías antiguas.
+perfil_valido() {
+  case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+    alumno | dwec | web | si | sistemas) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --perfil)
-      [ "$#" -ge 2 ] || error_uso 'falta el nombre del perfil después de --perfil (dwec o si).'
-      perfil=$(normalizar_perfil "$2") || error_uso "perfil desconocido: $2 (usa dwec o si)."
+      [ "$#" -ge 2 ] || error_uso 'falta el nombre del perfil después de --perfil.'
+      perfil_valido "$2" || error_uso "perfil desconocido: $2."
       shift
       ;;
-    --perfil=*)
-      perfil=$(normalizar_perfil "${1#--perfil=}") || error_uso "perfil desconocido: ${1#--perfil=} (usa dwec o si)."
-      ;;
-    dwec | DWEC | si | SI | web | sistemas) perfil=$(normalizar_perfil "$1") ;;
+    --perfil=*) perfil_valido "${1#--perfil=}" || error_uso "perfil desconocido: ${1#--perfil=}." ;;
+    alumno | dwec | DWEC | si | SI | web | sistemas) ;;
     --sistema) sistema=si ;;
     --sin-sistema) sistema=no ;;
     -y | --yes) inicio_sin_pausa=1 ;;
@@ -135,21 +104,7 @@ esac
 trap entorno_instalacion_salida 0
 mostrar_logo
 
-guardado=
-if [ -r "$PERFIL_GUARDADO" ]; then
-  guardado=$(normalizar_perfil "$(sed -n '1p' "$PERFIL_GUARDADO")") || guardado=
-fi
-if [ -z "$perfil" ]; then
-  if [ -t 0 ]; then
-    elegir_perfil "$guardado" || exit 1
-  elif [ -n "$guardado" ]; then
-    perfil=$guardado
-  else
-    error_uso 'falta el perfil y no hay terminal para preguntarlo. Usa --perfil dwec o --perfil si.'
-  fi
-fi
-
-printf '\nPerfil: %s\n' "$(nombre_perfil "$perfil")"
+printf '\nPerfil: alumno (web, Bash, Python y Docker)\n'
 printf 'Sistema: %s %s' "$ENTORNO_DISTRO" "$ENTORNO_ARCH"
 [ "$ENTORNO_IS_WSL" = 1 ] && printf ' (WSL2)'
 printf '\n'
@@ -194,8 +149,7 @@ else
   printf '%s\n' "$perfil" > "$PERFIL_GUARDADO"
 fi
 
-herramientas='git tmux curl tar xz fzf rg'
-[ "$perfil" = si ] && herramientas="$herramientas shellcheck"
+herramientas='git tmux curl tar xz fzf rg shellcheck'
 faltan=
 for herramienta in $herramientas; do
   command -v "$herramienta" >/dev/null 2>&1 || faltan="$faltan $herramienta"
@@ -204,7 +158,7 @@ entorno_fd_bin >/dev/null 2>&1 || faltan="$faltan fd"
 [ -s /etc/ssl/certs/ca-certificates.crt ] || faltan="$faltan ca-certificates"
 faltan=${faltan# }
 
-# Recomendados de SI: formato automático de Bash (shfmt) y Python (ruff).
+# Recomendados: formato automático de Bash (shfmt) y Python (ruff).
 # Solo se ofrecen si el gestor de paquetes los tiene; nunca bloquean.
 paquete_disponible() {
   case "$ENTORNO_DISTRO" in
@@ -214,7 +168,7 @@ paquete_disponible() {
   esac
 }
 opcionales=
-if [ "$perfil" = si ] && [ "$solo_comprobar" -eq 0 ]; then
+if [ "$solo_comprobar" -eq 0 ]; then
   for opcional in shfmt ruff; do
     command -v "$opcional" >/dev/null 2>&1 && continue
     if paquete_disponible "$opcional"; then opcionales="$opcionales $opcional"; fi
@@ -347,14 +301,14 @@ version_instalada=$("$NVIM_LOCAL" --version | sed -n '1s/^NVIM v//p')
 }
 
 if [ "$solo_comprobar" -eq 0 ]; then
-  entorno_fase "Node y servidores del perfil"
+  entorno_fase "Node"
   "$SCRIPT_DIR/instalar-node.sh"
-  if [ "$perfil" = dwec ]; then
-    ENTORNO_SIN_FIXTURES=1 "$SCRIPT_DIR/instalar-lsp-web.sh"
-  else
-    "$SCRIPT_DIR/instalar-lsp-bash.sh"
-    "$SCRIPT_DIR/instalar-lsp-python.sh"
-  fi
+  entorno_fase "Servidores web (HTML, CSS, JS, TS, React, Tailwind)"
+  ENTORNO_SIN_FIXTURES=1 "$SCRIPT_DIR/instalar-lsp-web.sh"
+  entorno_fase "Servidores de Bash y Python"
+  "$SCRIPT_DIR/instalar-lsp-bash.sh"
+  "$SCRIPT_DIR/instalar-lsp-python.sh"
+  entorno_fase "Servidores de Docker"
   "$SCRIPT_DIR/instalar-lsp-docker.sh"
 fi
 
@@ -374,22 +328,19 @@ EOF
   NODE_LOCAL=$(entorno_node_dir)/bin/node
   [ -x "$NODE_LOCAL" ] && [ "$("$NODE_LOCAL" --version)" = "v$ENTORNO_NODE_VERSION" ] \
     || { printf '%s\n' "FALTA: Node local verificado." >&2; exit 1; }
-  if [ "$perfil" = dwec ]; then
-    WEB_LSP_BIN="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
-    for ejecutable in typescript-language-server vscode-html-language-server \
-      vscode-css-language-server vscode-json-language-server tailwindcss-language-server
-    do
-      [ -x "$WEB_LSP_BIN/$ejecutable" ] || {
-        printf 'FALTA: servidor web %s.\n' "$ejecutable" >&2
-        exit 1
-      }
-    done
-  else
-    BASHLS_LOCAL="$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin/bash-language-server"
-    PYRIGHT_LOCAL="$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
-    [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server." >&2; exit 1; }
-    [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright." >&2; exit 1; }
-  fi
+  WEB_LSP_BIN="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
+  for ejecutable in typescript-language-server vscode-html-language-server \
+    vscode-css-language-server vscode-json-language-server tailwindcss-language-server
+  do
+    [ -x "$WEB_LSP_BIN/$ejecutable" ] || {
+      printf 'FALTA: servidor web %s; ejecuta ./scripts/instalar-alumno.sh\n' "$ejecutable" >&2
+      exit 1
+    }
+  done
+  BASHLS_LOCAL="$PROJECT_ROOT/tools/lsp-bash/node_modules/.bin/bash-language-server"
+  PYRIGHT_LOCAL="$PROJECT_ROOT/tools/lsp-python/node_modules/.bin/pyright-langserver"
+  [ -x "$BASHLS_LOCAL" ] || { printf '%s\n' "FALTA: Bash Language Server; ejecuta ./scripts/instalar-alumno.sh" >&2; exit 1; }
+  [ -x "$PYRIGHT_LOCAL" ] || { printf '%s\n' "FALTA: Pyright; ejecuta ./scripts/instalar-alumno.sh" >&2; exit 1; }
   [ -x "$PROJECT_ROOT/tools/lsp-docker/node_modules/.bin/docker-langserver" ] \
     || { printf '%s\n' "FALTA: servidores de Docker; repite ./scripts/instalar-alumno.sh" >&2; exit 1; }
   if [ -f "${NVIM_XDG_ROOT:-$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION}/data/nvim/site/spell/es.utf-8.spl" ]; then
@@ -397,7 +348,7 @@ EOF
   else
     printf '%s\n' 'AVISO: falta el diccionario español; se corrige solo en inglés. Repite el instalador.'
   fi
-  printf 'OK: perfil %s, tmux, busqueda, Node, Neovim, LSP y plugins preparados.\n' "$perfil"
+  printf '%s\n' 'OK: entorno del alumnado completo (web, Bash, Python, Docker), tmux, búsqueda, Node, Neovim y plugins.'
   exit 0
 fi
 

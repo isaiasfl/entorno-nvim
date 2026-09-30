@@ -345,3 +345,18 @@ la línea del cursor, porque Windows Terminal y tmux no dibujan undercurl.
 Snippets propios para Bash, Python, Dockerfile, Docker Compose y CSS, en el
 mismo formato VS Code. `compose*.yaml` se detecta como `yaml.docker-compose`.
 El menú `Espacio l` repite `gd`, `K`, `grr`, `grn` y `gra` con nombres claros.
+
+## Perfil único del alumnado y menú al estilo LazyVim (2026-09-30)
+
+Los perfiles `dwec` y `si` se unifican en `alumno`: el coste es de unos
+130 MB más en SI y ninguno en rendimiento, porque cada servidor solo arranca
+al abrir su tipo de archivo (Tailwind, además, solo si el proyecto lo usa).
+Con perfiles separados, lo que faltaba no se notaba como error: simplemente
+no se marcaba nada. `dwec` y `si` se siguen aceptando y equivalen a `alumno`.
+
+El menú de `Espacio` toma la organización de LazyVim sin copiar su código:
+`b` archivos abiertos, `f` buscar, `g` Git, `l` código, `s` plantillas,
+`t` texto (cada entrada muestra su tecla nativa para aprenderla), `r`
+ejecutar el archivo, `u` opciones. `Esc` limpia la búsqueda, como en
+LazyVim; `Espacio d`, `h` y `q` salen del primer nivel. Los avisos se
+limitan a una línea: si no caben, Neovim pide ENTER y se come las teclas.

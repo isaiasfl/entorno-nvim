@@ -149,7 +149,7 @@ main() {
     perfil=$(sed -n '1p' "$PERFIL_GUARDADO")
   fi
   case "$perfil" in
-    dwec | si) exec "$SCRIPT_DIR/instalar-alumno.sh" --perfil "$perfil" --yes ;;
+    alumno | dwec | si) exec "$SCRIPT_DIR/instalar-alumno.sh" --yes ;;
     *) exec "$SCRIPT_DIR/instalar-alumno.sh" ;;
   esac
 }

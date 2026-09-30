@@ -76,8 +76,8 @@ procesos de ese proyecto, guardar primero y usar `Ctrl-a Q`, confirmando.
 
 | Acción | Tecla |
 | --- | --- |
-| Guardar / salir | `<leader>w` / `<leader>q` |
-| Duplicar línea | `<leader>d` |
+| Guardar / salir | `<leader>w` / `:q` |
+| Duplicar línea | `<leader>td` (o `yyp`) |
 | Mover línea o selección (Linux) | `Alt-Shift-j/k` |
 | Mover línea o selección (macOS) | `Cmd-Shift-↓/↑` |
 | Buscar archivo / texto | dashboard `f` / `g` |
@@ -156,7 +156,7 @@ párrafo.
 | --- | --- |
 | `Alt-Shift-j` / `Alt-Shift-k` | Mover línea o selección abajo/arriba (Linux) |
 | `Cmd-Shift-↓` / `Cmd-Shift-↑` | Lo mismo en macOS |
-| `<leader>d` | Duplicar la línea actual |
+| `<leader>td` | Duplicar la línea actual |
 | `ddp` / `ddkP` | Bajar/subir la línea actual con `dd` + pegar |
 | `:m .+1` / `:m -2` | Mover la línea con comando |
 

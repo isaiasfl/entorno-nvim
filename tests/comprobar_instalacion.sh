@@ -155,7 +155,7 @@ HOME="$TEST_HOME" "$PROJECT_ROOT/scripts/markdown-pdf.sh" \
 
 # Los carriles docentes deben poder repetirse tras un git pull: conservan lo
 # correcto y completan lo nuevo sin tocar configuracion personal ni el enlace.
-for perfil in dwec si; do
+for perfil in alumno dwec; do
   for intento in 1 2; do
     HOME="$TEST_HOME" PATH="$TEST_ROOT/bin:$PATH" ENTORNO_TOOLS_ROOT="$SOURCE_TOOLS" \
       NVIM_XDG_ROOT="$PROJECT_ROOT/.xdg/$ENTORNO_NVIM_VERSION" \
@@ -169,9 +169,9 @@ grep -q 'Ortografía: español e inglés' "$TEST_ROOT/instalador-dwec-1.log"
 grep -q 'Node .* ya esta instalado y verificado' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'Servidores LSP web ya instalados' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'Plugins Neovim ya instalados' "$TEST_ROOT/instalador-dwec-2.log"
-grep -q 'INSTALACION PREPARADA' "$TEST_ROOT/instalador-si-1.log"
-[ "$(sed -n '1p' "$TEST_ROOT/perfil-alumno")" = si ]
-grep -q 'Bash Language Server ya esta instalado' "$TEST_ROOT/instalador-si-2.log"
-grep -q 'Pyright ya esta instalado' "$TEST_ROOT/instalador-si-2.log"
+grep -q 'INSTALACION PREPARADA' "$TEST_ROOT/instalador-alumno-1.log"
+[ "$(sed -n '1p' "$TEST_ROOT/perfil-alumno")" = alumno ]
+grep -q 'Bash Language Server ya esta instalado' "$TEST_ROOT/instalador-alumno-2.log"
+grep -q 'Pyright ya esta instalado' "$TEST_ROOT/instalador-alumno-2.log"
 
 printf '%s\n' "Comprobacion de instalacion aislada correcta."

@@ -302,7 +302,7 @@ local function enable_web_servers()
   end
   if missing then
     warn_missing({ "html", "css", "json", "javascript", "typescript", "javascriptreact", "typescriptreact" },
-      "Sin servidores web (no hay errores): ./scripts/instalar-alumno.sh --perfil dwec")
+      "Faltan servidores web: ./scripts/instalar-alumno.sh")
   end
 end
 
@@ -313,7 +313,7 @@ local function enable_docker_servers()
   if vim.fn.executable(dockerfile) ~= 1 or vim.fn.executable(compose) ~= 1 then
     profile.unavailable("docker", "ejecute scripts/instalar-lsp-docker.sh")
     warn_missing({ "dockerfile", "yaml.docker-compose" },
-      "Faltan los servidores de Docker. Instálalos con: ./scripts/instalar-lsp-docker.sh")
+      "Faltan servidores Docker: ./scripts/instalar-alumno.sh")
     return
   end
   M.enable("dockerls", {
@@ -365,7 +365,7 @@ local function enable_python_server()
   local executable = vim.fs.joinpath(paths.python_lsp_bin(), "pyright-langserver")
   if vim.fn.executable(executable) ~= 1 then
     profile.unavailable("pyright", "ejecute scripts/instalar-lsp-python.sh")
-    warn_missing({ "python" }, "Falta Pyright: no se marcarán errores de Python. Repite ./scripts/instalar-alumno.sh")
+    warn_missing({ "python" }, "Falta Pyright: ./scripts/instalar-alumno.sh")
     return
   end
 
@@ -399,7 +399,7 @@ local function enable_bash_server()
   local executable = vim.fs.joinpath(paths.bash_lsp_bin(), "bash-language-server")
   if vim.fn.executable(executable) ~= 1 then
     profile.unavailable("bashls", "ejecute scripts/instalar-lsp-bash.sh")
-    warn_missing({ "sh", "bash" }, "Falta el servidor de Bash: no se marcarán errores. Repite ./scripts/instalar-alumno.sh")
+    warn_missing({ "sh", "bash" }, "Falta servidor Bash: ./scripts/instalar-alumno.sh")
     return
   end
   if vim.fn.executable("shfmt") ~= 1 then
@@ -420,7 +420,11 @@ local function enable_bash_server()
       pattern = { "bash", "sh" },
       once = true,
       callback = function()
-        vim.notify("ShellCheck no está instalado: " .. instruction .. ".", vim.log.levels.WARN)
+        -- Mensaje corto: si no cabe en una línea, Neovim pide ENTER y se
+        -- come las teclas siguientes.
+        vim.schedule(function()
+          vim.notify("Falta ShellCheck (errores de Bash): sudo apt install shellcheck", vim.log.levels.WARN)
+        end)
       end,
     })
   end
