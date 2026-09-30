@@ -40,6 +40,7 @@ return {
           { mode = "n", keys = "<Leader>g", desc = "+Git" },
           { mode = "n", keys = "<Leader>l", desc = "+Código y errores" },
           { mode = "n", keys = "<Leader>m", desc = "+Markdown" },
+          { mode = "n", keys = "<Leader>o", desc = "+Ortografía" },
           { mode = "n", keys = "<Leader>u", desc = "+Aspecto y opciones" },
         },
       })

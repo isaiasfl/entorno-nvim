@@ -19,7 +19,10 @@
   el perfil recordado.
 - Ortografía en español e inglés (`spelllang=es,en`) en Markdown, texto y
   commits; diccionario de Neovim verificado por SHA-256, sin hunspell.
-  `Espacio us` la alterna.
+  Faltas en rojo (visibles en WSL y tmux) y menú `Espacio o` (corregir,
+  siguiente, añadir, activar).
+- `Espacio e` abre el explorador al instante; `Espacio E` localiza el archivo
+  actual (sustituyen a `Espacio e e` y `Espacio e f`).
 - Neovim avisa si falta ShellCheck al abrir Bash: sin él no hay diagnósticos.
 - El instalador de alumno avisa si el repositorio está en `/mnt/c` en WSL2.
 - `.gitattributes` fuerza finales de línea LF aunque Git use `core.autocrlf`,

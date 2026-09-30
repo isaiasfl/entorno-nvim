@@ -2,6 +2,18 @@ local function augroup(name)
   return vim.api.nvim_create_augroup("entorno_nvim_" .. name, { clear = true })
 end
 
+-- Los temas marcan las faltas solo con subrayado ondulado, que Windows
+-- Terminal/WSL y tmux no suelen dibujar: se añade texto rojo y subrayado.
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = augroup("spell_visible"),
+  callback = function()
+    vim.api.nvim_set_hl(0, "SpellBad", { fg = "#f38ba8", sp = "#f38ba8", underline = true, ctermfg = 203, cterm = { underline = true } })
+    vim.api.nvim_set_hl(0, "SpellCap", { sp = "#f9e2af", undercurl = true })
+    vim.api.nvim_set_hl(0, "SpellLocal", { sp = "#f9e2af", undercurl = true })
+    vim.api.nvim_set_hl(0, "SpellRare", { sp = "#f9e2af", undercurl = true })
+  end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
   callback = function()

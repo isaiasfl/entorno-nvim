@@ -96,7 +96,7 @@ La referencia probada es Debian 13 con Neovim 0.12.4.
 - Tree-sitter con ocho parsers externos fijados.
 - sesiones tmux por proyecto en el socket dedicado `entorno-nvim`;
 - Markdown → HTML/CSS → Chromium → PDF A4 (Pandoc opcional, sólo para PDF).
-- Ortografía en español e inglés en Markdown y texto (`Espacio us`).
+- Ortografía en español e inglés en Markdown y texto: faltas en rojo, menú `Espacio o`.
 - `scripts/actualizar.sh` para actualizar con un solo comando.
 
 El [inventario V1](docs/inventario-v1.md) detalla componentes y versiones.

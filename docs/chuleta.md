@@ -14,7 +14,7 @@ el enlace opcional instalado. `:EntornoInfo` muestra lo que falta preparar.
 ## TMUX
 
 En la pantalla inicial, `e` abre el explorador. En Neovim, `Espacio e`
-tambien lo abre; se conservan `Espacio e e` y `Espacio e f`.
+tambien lo abre; `Espacio E` localiza el archivo actual.
 `Espacio e` espera brevemente por si completa una de esas secuencias.
 El diagnostico flotante pasa a `Espacio l d`.
 En el explorador nativo, `Espacio e` tambien cierra y devuelve el archivo

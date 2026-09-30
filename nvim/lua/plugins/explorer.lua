@@ -14,14 +14,7 @@ return {
     },
     keys = {
       {
-        "<leader>ee",
-        function()
-          require("nvim-tree.api").tree.toggle({ focus = true })
-        end,
-        desc = "Abrir o cerrar el arbol de archivos",
-      },
-      {
-        "<leader>ef",
+        "<leader>E",
         function()
           local path = vim.api.nvim_buf_get_name(0)
           if path == "" then

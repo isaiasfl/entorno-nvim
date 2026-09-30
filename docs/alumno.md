@@ -72,8 +72,9 @@ lo exige; si falta, Neovim avisa al abrir un `.sh`. Compruébalo con
 ### Ortografía en español e inglés
 
 Se activa sola en Markdown, texto y mensajes de commit (no en el código).
-`Espacio us` la activa o desactiva, `]s`/`[s` saltan entre faltas, `z=`
-sugiere y `zg` añade una palabra como correcta. No necesita `hunspell`: el
+Las faltas salen en rojo y subrayadas. Pulsa `Espacio o` y el menú muestra
+las opciones: `c` corregir (elige una sugerencia), `n`/`p` falta siguiente o
+anterior, `a` añadir palabra como correcta, `t` activar o desactivar. No necesita `hunspell`: el
 diccionario de Neovim se descarga verificado dentro del entorno.
 
 ## Instalación completa (avanzada)
@@ -184,7 +185,7 @@ Para abrir un archivo concreto sin tmux:
 | `<leader>lj` o `/**` + `Enter` | Generar JSDoc desde la función JS/TS |
 | `cabts` o `!` + `Ctrl+j` | Insertar cabecera TypeScript o plantilla HTML |
 | `<leader>ut` | Cambiar tema visual |
-| `<leader>us` / `]s` / `z=` | Ortografía: activar / siguiente falta / sugerencias |
+| `Espacio o` | Ortografía: menú con corregir, siguiente falta, añadir palabra |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y ver |
 
 La lista completa está en [guia-completa-teclas.md](guia-completa-teclas.md).

@@ -15,7 +15,7 @@ y este layout:
 `scripts/arrancar.sh`; no depende de `~/.config/nvim`. El panel de edición
 arranca Neovim sin argumentos y situado en la raíz del proyecto, por lo que
 muestra el dashboard IFL. Desde el dashboard, `e` abre el árbol de archivos;
-en cualquier buffer, `<leader>ee` lo abre o cierra.
+en cualquier buffer, `<leader>e` lo abre o cierra.
 
 El flujo usa por defecto el servidor dedicado `entorno-nvim`, mediante
 `tmux -L entorno-nvim`. Así no carga opciones, atajos ni sesiones en el servidor

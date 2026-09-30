@@ -30,7 +30,14 @@ assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 assert(package.loaded["config.theme"], "config.theme no se cargo")
 
 -- Ortografía: español e inglés si el diccionario está instalado; solo en texto.
-assert(mapping("n", "<leader>us").desc ~= nil, "falta el atajo de ortografia")
+for _, lhs in ipairs({ "<leader>oc", "<leader>on", "<leader>op", "<leader>oa", "<leader>ot" }) do
+  assert(mapping("n", lhs).desc ~= nil, "falta el atajo de ortografia " .. lhs)
+end
+for _, lhs in ipairs({ "<leader>ee", "<leader>ef" }) do
+  assert(vim.tbl_isempty(mapping("n", lhs)), lhs .. " retrasaria Espacio e")
+end
+local spell_bad = vim.api.nvim_get_hl(0, { name = "SpellBad", link = false })
+assert(spell_bad.fg and spell_bad.underline, "las faltas deben verse en color sin depender de undercurl")
 if #vim.api.nvim_get_runtime_file("spell/es.utf-8.spl", false) > 0 then
   assert(vim.o.spelllang == "es,en", "spelllang esperado es,en: " .. vim.o.spelllang)
   assert(vim.fn.spellbadword("canción")[1] == "", "el diccionario espanol no reconoce canción")
@@ -250,8 +257,7 @@ for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
 end
 
 for lhs, description in pairs({
-  [" ee"] = "Abrir o cerrar el arbol de archivos",
-  [" ef"] = "Enfocar el archivo actual en el arbol",
+  [" E"] = "Enfocar el archivo actual en el arbol",
 }) do
   local tree_mapping = mapping("n", lhs)
   assert(tree_mapping.desc == description, lhs .. " no tiene la descripcion esperada")
@@ -267,9 +273,9 @@ end
 
 local revealed_file = root .. "/README.md"
 vim.cmd("edit " .. vim.fn.fnameescape(revealed_file))
-tree_actions["<leader>ef"]()
+tree_actions["<leader>E"]()
 assert(package.loaded["nvim-tree"], "nvim-tree no se pudo cargar")
-assert(vim.bo.filetype == "NvimTree", "leader+ef no enfoco el arbol")
+assert(vim.bo.filetype == "NvimTree", "leader+E no enfoco el arbol")
 
 local tree_api = require("nvim-tree.api")
 local revealed_node = tree_api.tree.get_node_under_cursor()
@@ -340,7 +346,7 @@ assert(tree_config.ui.confirm.remove, "borrar debe pedir confirmacion")
 assert(tree_config.ui.confirm.trash, "enviar a la papelera debe pedir confirmacion")
 assert(not tree_config.ui.confirm.default_yes, "la confirmacion no debe aceptar por defecto")
 
-tree_actions["<leader>ee"]()
+require("config.navigation").explorer()
 assert(vim.bo.filetype == "NvimTree", "nvim-tree no abrio su buffer")
 
 for lhs, rhs in pairs({
@@ -367,7 +373,7 @@ for lhs, description in pairs({
   assert(tree_action.buffer == 1, lhs .. " debe ser local al buffer de nvim-tree")
 end
 
-tree_actions["<leader>ee"]()
+require("config.navigation").explorer()
 for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
   assert(vim.bo[bufnr].filetype ~= "NvimTree" or not vim.api.nvim_buf_is_loaded(bufnr), "leader+ee no cerro nvim-tree")
 end

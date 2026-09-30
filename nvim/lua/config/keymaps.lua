@@ -35,10 +35,50 @@ map("n", "<leader>ul", function()
   vim.wo.list = not vim.wo.list
 end, { desc = "Alternar caracteres invisibles" })
 
-map("n", "<leader>us", function()
+-- Ortografía: Espacio o y el menú muestra las opciones.
+local function spell_on()
+  if not vim.wo.spell then
+    vim.wo.spell = true
+    vim.notify("Ortografía activada (" .. vim.o.spelllang .. ")")
+  end
+end
+
+local function spell_fix()
+  spell_on()
+  local word = vim.fn.expand("<cword>")
+  if word == "" or vim.fn.spellbadword(word)[1] == "" then
+    local before = vim.api.nvim_win_get_cursor(0)
+    vim.cmd("normal! ]s")
+    if vim.deep_equal(before, vim.api.nvim_win_get_cursor(0)) then
+      vim.notify("No hay faltas de ortografía")
+      return
+    end
+    word = vim.fn.expand("<cword>")
+  end
+  local suggestions = vim.fn.spellsuggest(word, 9)
+  if #suggestions == 0 then
+    vim.notify("Sin sugerencias para «" .. word .. "». Espacio o a la añade como correcta.")
+    return
+  end
+  vim.ui.select(suggestions, { prompt = "Corregir «" .. word .. "» por:" }, function(choice)
+    if choice then
+      vim.cmd("normal! ciw" .. choice)
+      vim.cmd("stopinsert")
+    end
+  end)
+end
+
+map("n", "<leader>oc", spell_fix, { desc = "Corregir falta (con sugerencias)" })
+map("n", "<leader>on", function() spell_on(); vim.cmd("normal! ]s") end, { desc = "Ir a la siguiente falta" })
+map("n", "<leader>op", function() spell_on(); vim.cmd("normal! [s") end, { desc = "Ir a la falta anterior" })
+map("n", "<leader>oa", function()
+  vim.cmd("normal! zg")
+  vim.notify("Añadida como correcta: " .. vim.fn.expand("<cword>"))
+end, { desc = "Añadir palabra como correcta" })
+map("n", "<leader>ot", function()
   vim.wo.spell = not vim.wo.spell
   vim.notify("Ortografía " .. (vim.wo.spell and "activada (" .. vim.o.spelllang .. ")" or "desactivada"))
-end, { desc = "Alternar corrector ortográfico" })
+end, { desc = "Activar o desactivar ortografía" })
 
 
 -- Navegación entre ventanas Neovim
@@ -158,7 +198,7 @@ end, {
   desc = "Mostrar diagnosticos de esta linea",
 })
 
--- Sin nowait: mantener tambien las secuencias historicas ee y ef.
+-- Sin atajos que empiecen por Espacio e: así actúa al instante.
 map("n", "<leader>e", function()
   require("config.navigation").explorer()
 end, { desc = "Abrir explorador" })

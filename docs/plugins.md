@@ -105,10 +105,10 @@ estructura de carpetas o crear, renombrar y borrar elementos en su contexto.
 
 | Atajo | Acción |
 | --- | --- |
-| `<leader>ee` | Abrir o cerrar el árbol |
-| `<leader>ef` | Abrir el árbol y enfocar el archivo actual |
+| `<leader>e` | Abrir o cerrar el árbol |
+| `<leader>E` | Abrir el árbol y enfocar el archivo actual |
 
-`<leader>ef` realiza una revelación puntual. No activa seguimiento permanente,
+`<leader>E` realiza una revelación puntual. No activa seguimiento permanente,
 no cambia la raíz del árbol y avisa si el buffer actual no es un archivo.
 nvim-tree tampoco se abre automáticamente al iniciar ni al abrir un directorio.
 
@@ -128,7 +128,7 @@ nvim-tree tampoco se abre automáticamente al iniciar ni al abrir un directorio.
 Para pasar del árbol al archivo normalmente se usa `Ctrl+l`, porque el árbol
 está a la izquierda. `Enter` abre el elemento en una ventana de edición y deja
 el árbol disponible. Para volver al árbol se usa `Ctrl+h`. También puede
-cerrarse con `q` desde el árbol o con `<leader>ee` desde cualquier ventana.
+cerrarse con `q` desde el árbol o con `<leader>e` desde cualquier ventana.
 
 Crear, renombrar y borrar solicitan entrada de forma explícita. El borrado y el
 envío a la papelera mantienen confirmación, con respuesta negativa por defecto.

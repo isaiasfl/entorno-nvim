@@ -78,7 +78,7 @@ la ventana actual y puede cerrar el editor si ya no está en la ayuda.
 - `Ctrl+a`: mantener Ctrl mientras se pulsa a.
 - `Ctrl+a` → `t`: pulsar Ctrl+a, soltar y después t.
 - `Espacio e`: pulsar Espacio y después e, sin mantenerlos juntos.
-- `Espacio e e`: Espacio, e, e. El líder de Neovim es Espacio.
+- `Espacio e`: Espacio y después e. El líder de Neovim es Espacio.
 - Las mayúsculas importan: `p` y `P` son acciones distintas.
 - Los comandos que empiezan por `:` se escriben dentro de Neovim y se
   confirman con `Enter`, salvo que se indique el indicador de comandos de tmux.
@@ -124,8 +124,8 @@ Estas teclas sueltas solo tienen este significado en el inicio IFL:
 | `Espacio q` | Normal | Cerrar ventana; no fuerza pérdida de cambios |
 | `Espacio h` | Normal | Limpiar resaltado de búsqueda |
 | `Espacio d` | Normal | Duplicar línea debajo |
-| `Espacio e` / `Espacio e e` | Normal | Mostrar/ocultar explorador |
-| `Espacio e f` | Normal | Localizar archivo actual en el árbol |
+| `Espacio e` | Normal | Mostrar/ocultar explorador |
+| `Espacio E` | Normal | Localizar archivo actual en el árbol |
 | `Espacio f f` | Normal | Buscar archivos |
 | `Espacio f g` | Normal | Buscar texto del proyecto |
 | `Espacio f b` | Normal | Elegir buffer |

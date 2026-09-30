@@ -91,18 +91,15 @@ function M.setup()
     callback = function(event)
       -- netrw define Space localmente; retirarlo para que no intercepte el leader.
       pcall(vim.keymap.del, "n", "<Space>", { buffer = event.buf })
-      for _, key in ipairs({ "<leader>e", "<leader>ee" }) do
-        vim.keymap.set("n", key, M.explorer,
-          { buffer = event.buf, silent = true, desc = "Cerrar explorador" })
-      end
+      vim.keymap.set("n", "<leader>e", M.explorer,
+        { buffer = event.buf, silent = true, desc = "Cerrar explorador" })
     end,
   })
   for key, method in pairs({ ff = "files", fg = "live_grep", fb = "buffers" }) do
     vim.keymap.set("n", "<leader>" .. key, function() M.pick(method) end,
       { desc = "Navegacion: " .. method })
   end
-  vim.keymap.set("n", "<leader>ee", M.explorer, { desc = "Explorador de archivos" })
-  vim.keymap.set("n", "<leader>ef", function()
+  vim.keymap.set("n", "<leader>E", function()
     local path = vim.api.nvim_buf_get_name(0)
     if path == "" then
       vim.notify("El buffer actual no corresponde a un archivo")
