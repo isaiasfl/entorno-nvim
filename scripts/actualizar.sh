@@ -67,7 +67,11 @@ cerrar_sesiones() {
   printf '  %s\n' $sesiones
   printf '%s\n' 'Guarda tu trabajo en Neovim antes de cerrarlas.'
   if preguntar_si '¿Cerrarlas ahora?'; then
-    tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
+    for sesion in $sesiones; do
+      ENTORNO_TMUX_SOCKET=$TMUX_SOCKET "$SCRIPT_DIR/tmux-cerrar-proyecto.sh" "$sesion" || fallo \
+        "la sesión $sesion tiene cambios sin guardar en Neovim." \
+        'Entra con: entorno-dev (en esa carpeta), guarda con Espacio w y repite.'
+    done
     printf '%s\n' 'Sesiones cerradas.'
   else
     printf '%s\n' 'Se mantienen abiertas. Ciérralas antes de volver a usarlas con:' \

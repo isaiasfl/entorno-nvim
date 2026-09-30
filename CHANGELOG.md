@@ -21,6 +21,10 @@
   commits; diccionario de Neovim verificado por SHA-256, sin hunspell.
   Faltas en rojo (visibles en WSL y tmux) y menú `Espacio o` (corregir,
   siguiente, añadir, activar).
+- `Ctrl-a Q` y `actualizar.sh` cierran Neovim de forma ordenada antes de
+  cerrar la sesión (preguntan si hay cambios sin guardar). Los swap de un
+  Neovim que ya no existe se resuelven sin la pantalla «Found a swap file»:
+  se borran si no hay cambios o se recuperan con un aviso en español.
 - Errores visibles en WSL y tmux: letra E/W en el margen, subrayado simple de
   color y mensaje al final de la línea del cursor. La barra de estado dice
   «Errores: 4  Avisos: 1» en lugar de `E:4 W:1`.

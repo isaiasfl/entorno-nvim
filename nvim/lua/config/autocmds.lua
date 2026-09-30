@@ -18,6 +18,38 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
+-- Swap de un Neovim que ya no existe (sesión tmux cerrada, WSL apagado...):
+-- Neovim solo resuelve el caso del proceso vivo; aquí se evita la pregunta.
+-- Sin cambios pendientes se borra; con cambios se recuperan y se avisa.
+vim.api.nvim_create_autocmd("SwapExists", {
+  group = augroup("swap_huerfano"),
+  callback = function()
+    local swapname = vim.v.swapname
+    local info = vim.fn.swapinfo(swapname)
+    if info.error or info.user ~= vim.uv.os_get_passwd().username then
+      return
+    end
+    -- swapinfo() da pid 0 cuando el proceso ya no existe; si vive, Neovim
+    -- ya lo resuelve por su cuenta.
+    if info.pid > 0 then
+      return
+    end
+    if info.dirty == 0 then
+      vim.v.swapchoice = "d"
+      return
+    end
+    vim.v.swapchoice = "r"
+    vim.schedule(function()
+      vim.fn.delete(swapname)
+      vim.notify(
+        "Se han recuperado cambios que no se guardaron (Neovim se cerró sin salir).\n"
+          .. "Espacio w los guarda; :e! los descarta y vuelve a la versión guardada.",
+        vim.log.levels.WARN
+      )
+    end)
+  end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
   callback = function()

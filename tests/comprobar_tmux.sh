@@ -331,7 +331,7 @@ printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
   fail "la ayuda Terminal omite herramientas de desarrollo"
 "$HELP_SCRIPT" --actions AI | grep -q '^SPACE ac.*contexto' ||
   fail "la ayuda IA omite el flujo de contexto"
-tmux_test list-keys -T prefix | grep -q 'bind-key.* Q .*confirm-before.*kill-session' ||
+tmux_test list-keys -T prefix | grep -q 'bind-key.* Q .*confirm-before.*tmux-cerrar-proyecto.sh' ||
   fail "falta el cierre confirmado de la sesion con Prefix+Q"
 "$HELP_SCRIPT" --actions FLOW | grep -q '^REVISAR CAMBIOS$' ||
   fail "la ayuda omite el flujo diario de Git"
