@@ -302,8 +302,7 @@ local function enable_web_servers()
   end
   if missing then
     warn_missing({ "html", "css", "json", "javascript", "typescript", "javascriptreact", "typescriptreact" },
-      "Faltan los servidores web: no se marcarán errores. Instálalos con:\n"
-        .. "  ./scripts/instalar-alumno.sh --perfil dwec")
+      "Sin servidores web (no hay errores): ./scripts/instalar-alumno.sh --perfil dwec")
   end
 end
 
