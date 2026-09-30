@@ -42,15 +42,20 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ### Actualizar una instalación existente
 
+Guarde su trabajo y ejecute:
+
 ```bash
 cd ~/entorno-nvim
-git pull --ff-only
-./scripts/instalar-alumno.sh
+./scripts/actualizar.sh
 ```
 
-Pulse Enter en la pregunta del perfil: recuerda el de la última vez. El
-instalador es repetible: conserva lo que ya está preparado y completa lo que
-falte.
+Descarga la versión nueva, ofrece cerrar las sesiones abiertas y reinstala con
+su perfil. La primera vez, si su copia no tiene aún `actualizar.sh`:
+
+```bash
+cd ~/entorno-nvim
+git restore . && git pull --ff-only && sh scripts/actualizar.sh
+```
 
 ## 2. Abrir un proyecto
 
@@ -258,7 +263,7 @@ más cómodo para ejecutar y observar el programa.
 | --- | --- |
 | No aparece el texto de un error | `Espacio l d`; actualizar el repositorio y reiniciar la sesión |
 | `entorno-dev: command not found` | `export PATH="$HOME/.local/bin:$PATH"` |
-| La ayuda emergente parpadea | Actualizar con `git pull`; el menú textual sustituye a fzf si este es incompatible |
+| La ayuda emergente parpadea | Actualizar con `./scripts/actualizar.sh`; el menú textual sustituye a fzf si este es incompatible |
 | Neovim parece atrapado escribiendo | Pulse `Esc` |
 | No sé en qué modo estoy | Pulse `Esc`; volverá con seguridad al modo normal |
 | Quiero conservarlo todo al cerrar SSH | `Ctrl-a d` antes de salir, aunque cerrar SSH también conserva tmux |

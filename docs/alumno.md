@@ -52,6 +52,30 @@ configurado un cliente compatible. El editor y tmux funcionan sin él. El
 instalador crea `~/.local/bin/entorno-dev` sin sobrescribir contenido ajeno y
 avisa si hace falta añadir `~/.local/bin` al `PATH` de la terminal actual.
 
+### Actualizar
+
+Guarda tu trabajo y, desde la carpeta `entorno-nvim`:
+
+```sh
+./scripts/actualizar.sh
+```
+
+La primera vez, si tu copia aún no tiene `actualizar.sh`:
+`git restore . && git pull --ff-only && sh scripts/actualizar.sh`.
+
+### Perfil SI: ShellCheck es imprescindible
+
+En Bash, todos los errores y avisos los detecta ShellCheck. El instalador SI
+lo exige; si falta, Neovim avisa al abrir un `.sh`. Compruébalo con
+`shellcheck --version`.
+
+### Ortografía en español e inglés
+
+Se activa sola en Markdown, texto y mensajes de commit (no en el código).
+`Espacio us` la activa o desactiva, `]s`/`[s` saltan entre faltas, `z=`
+sugiere y `zg` añade una palabra como correcta. No necesita `hunspell`: el
+diccionario de Neovim se descarga verificado dentro del entorno.
+
 ## Instalación completa (avanzada)
 
 Esta guía instala el entorno **sin `sudo`**, sin sustituir tu Neovim y sin tocar
@@ -160,6 +184,7 @@ Para abrir un archivo concreto sin tmux:
 | `<leader>lj` o `/**` + `Enter` | Generar JSDoc desde la función JS/TS |
 | `cabts` o `!` + `Ctrl+j` | Insertar cabecera TypeScript o plantilla HTML |
 | `<leader>ut` | Cambiar tema visual |
+| `<leader>us` / `]s` / `z=` | Ortografía: activar / siguiente falta / sugerencias |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y ver |
 
 La lista completa está en [guia-completa-teclas.md](guia-completa-teclas.md).
@@ -181,6 +206,15 @@ nativo/macOS para el perfil `profesor`. El resto del entorno funciona igual.
 
 **Windows, WSL2 o la ruta tienen espacios.**
 El entorno admite rutas con espacios; escríbelas entre comillas.
+
+**Aparece `^M` al final de las líneas o todos los archivos salen modificados.**
+Git para Windows convirtió los finales de línea. Ejecuta
+`./scripts/actualizar.sh` (o, la primera vez,
+`git restore . && git pull --ff-only && sh scripts/actualizar.sh`): los corrige.
+
+**El entorno está en `/mnt/c/...` (WSL2).**
+Clónalo en tu carpeta de Linux (`cd ~ && git clone ...`): las carpetas de
+Windows son lentas y no admiten los sockets de Neovim.
 
 **He movido o vuelto a clonar la carpeta `entorno-nvim`.**
 Cierra las sesiones antiguas con `tmux -L entorno-nvim kill-server` y repite

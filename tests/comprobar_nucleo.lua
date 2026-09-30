@@ -28,6 +28,17 @@ assert(package.loaded["config.keymaps"], "config.keymaps no se cargo")
 assert(package.loaded["config.autocmds"], "config.autocmds no se cargo")
 assert(package.loaded["config.lazy"], "config.lazy no se cargo")
 assert(package.loaded["config.theme"], "config.theme no se cargo")
+
+-- Ortografía: español e inglés si el diccionario está instalado; solo en texto.
+assert(mapping("n", "<leader>us").desc ~= nil, "falta el atajo de ortografia")
+if #vim.api.nvim_get_runtime_file("spell/es.utf-8.spl", false) > 0 then
+  assert(vim.o.spelllang == "es,en", "spelllang esperado es,en: " .. vim.o.spelllang)
+  assert(vim.fn.spellbadword("canción")[1] == "", "el diccionario espanol no reconoce canción")
+  assert(vim.fn.spellbadword("house")[1] == "", "el diccionario ingles no reconoce house")
+  assert(vim.fn.spellbadword("errror")[1] ~= "", "no se detecta la falta errror")
+else
+  assert(vim.o.spelllang == "en", "sin diccionario espanol debe quedar solo en")
+end
 assert(package.loaded["config.lsp"], "config.lsp no se cargo")
 assert(package.loaded["config.completion"], "config.completion no se cargo")
 assert(package.loaded["config.markdown_pdf"], "config.markdown_pdf no se cargo")

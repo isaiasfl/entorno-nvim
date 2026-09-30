@@ -139,9 +139,9 @@ entorno_resumen_instalacion() {
   esac
   printf '%s\n' '    nvim no se sustituye automaticamente.'  '    Activacion opcional de nvim y su configuracion: README.md.'
   if [ "$resumen_tipo" = alumnado ]; then
-    printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y ./scripts/instalar-alumno.sh (Enter).'
+    printf '\n%s\n' '  ACTUALIZAR: ./scripts/actualizar.sh'
   else
-    printf '\n%s\n' '  ACTUALIZAR: git pull --ff-only y repetir este instalador.'
+    printf '\n%s\n' '  ACTUALIZAR: ./scripts/actualizar.sh --completo'
   fi
   printf '%s\n' '  Lazygit utiliza la version del sistema; no se actualiza aqui.'
   printf '%s\n' '  La IA es opcional: no se instalan clientes ni credenciales.'

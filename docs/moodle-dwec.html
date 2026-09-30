@@ -50,9 +50,14 @@ cd ~/entorno-nvim
 </p>
 
 <h4 class="mt-4">3. Actualizar más adelante</h4>
+<p>Guarde su trabajo y ejecute:</p>
 <pre class="bg-light border rounded p-3"><code>cd ~/entorno-nvim
-git pull --ff-only
-./scripts/instalar-alumno.sh --perfil dwec</code></pre>
+./scripts/actualizar.sh</code></pre>
+<p>
+  La primera vez, si su copia todavía no tiene <code>actualizar.sh</code>:
+</p>
+<pre class="bg-light border rounded p-3"><code>cd ~/entorno-nvim
+git restore . &amp;&amp; git pull --ff-only &amp;&amp; sh scripts/actualizar.sh</code></pre>
 
 <h4 class="mt-4">4. Chuleta esencial</h4>
 <div class="table-responsive">

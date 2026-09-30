@@ -113,17 +113,27 @@ y [la instalación completa](docs/instalacion.md).
 
 ### Actualizar una instalación existente
 
-Cierre Neovim, entre en la carpeta de `entorno-nvim` y actualice:
+Guarde su trabajo, entre en la carpeta de `entorno-nvim` y ejecute:
 
 ```sh
-git pull --ff-only
-./scripts/instalar-alumno.sh
+./scripts/actualizar.sh
 ```
 
-El instalador de alumno recuerda el perfil: basta con pulsar Enter. Para el entorno completo, ejecute
-`./scripts/instalar.sh --sistema` después del pull. Los instaladores reutilizan
-los componentes ya preparados y comprueban los plugins fijados. Si Git avisa de
-cambios locales, consérvelos y resuelva el aviso antes de continuar.
+Corrige archivos alterados por finales de línea de Windows, restaura
+`nvim/lazy-lock.json` si cambió sin querer, ofrece cerrar las sesiones tmux
+antiguas, hace `git pull --ff-only` y repite la instalación con el perfil
+recordado. Para el entorno completo del profesor: `./scripts/actualizar.sh --completo`.
+
+**Primera vez en copias anteriores a `actualizar.sh`** (descarta cambios locales
+en archivos del entorno, que no deben editarse):
+
+```sh
+git restore . && git pull --ff-only && sh scripts/actualizar.sh
+```
+
+`--ff-only` solo avanza la copia hasta la versión publicada: si hubiera
+cambios o commits locales que exigieran mezclar, se detiene sin tocar nada en
+lugar de crear un commit de mezcla o un conflicto.
 
 ## Comprobar requisitos
 

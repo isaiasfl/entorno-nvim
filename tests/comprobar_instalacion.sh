@@ -165,6 +165,7 @@ for perfil in dwec si; do
   done
 done
 grep -q 'INSTALACION PREPARADA' "$TEST_ROOT/instalador-dwec-1.log"
+grep -q 'Ortografía: español e inglés' "$TEST_ROOT/instalador-dwec-1.log"
 grep -q 'Node .* ya esta instalado y verificado' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'Servidores LSP web ya instalados' "$TEST_ROOT/instalador-dwec-2.log"
 grep -q 'Plugins Neovim ya instalados' "$TEST_ROOT/instalador-dwec-2.log"

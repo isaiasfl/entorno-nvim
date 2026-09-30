@@ -14,6 +14,14 @@
   falten, sin necesidad de `--sistema`; `--sin-sistema` lo impide.
 - Mensajes más claros ante opciones erróneas, ejecución como root o falta de
   paquetes, con el comando exacto para continuar.
+- `scripts/actualizar.sh`: corrige finales CRLF, restaura `lazy-lock.json`,
+  ofrece cerrar sesiones antiguas, hace `git pull --ff-only` y reinstala con
+  el perfil recordado.
+- Ortografía en español e inglés (`spelllang=es,en`) en Markdown, texto y
+  commits; diccionario de Neovim verificado por SHA-256, sin hunspell.
+  `Espacio us` la alterna.
+- Neovim avisa si falta ShellCheck al abrir Bash: sin él no hay diagnósticos.
+- El instalador de alumno avisa si el repositorio está en `/mnt/c` en WSL2.
 - `.gitattributes` fuerza finales de línea LF aunque Git use `core.autocrlf`,
   evitando `^M` en Neovim y archivos marcados como modificados en WSL2.
 
