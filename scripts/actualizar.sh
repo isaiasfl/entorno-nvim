@@ -4,9 +4,8 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
 PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
-. "$SCRIPT_DIR/lib/versiones.sh"
-. "$SCRIPT_DIR/lib/rutas.sh"
-. "$SCRIPT_DIR/lib/plataforma.sh"
+# Las librerias se cargan despues de git pull y de corregir finales de linea:
+# en una copia antigua con CRLF todavia no se pueden ejecutar.
 PERFIL_GUARDADO=${ENTORNO_PERFIL_GUARDADO:-"$PROJECT_ROOT/.xdg/perfil-alumno"}
 TMUX_SOCKET=${ENTORNO_TMUX_SOCKET:-entorno-nvim}
 
@@ -45,7 +44,7 @@ preguntar_si() {
 # Archivos del repositorio con CRLF en disco cuyo contenido es igual al de
 # Git salvo el final de línea: se vuelven a escribir con LF.
 normalizar_finales() {
-  git ls-files --eol | grep 'w/crlf' | cut -f2- | while IFS= read -r archivo; do
+  git ls-files --eol | grep 'w/crlf' | grep 'eol=lf' | cut -f2- | while IFS= read -r archivo; do
     [ -f "$archivo" ] || continue
     git diff --ignore-cr-at-eol --quiet -- "$archivo" || continue
     rm -f "$archivo"
@@ -95,10 +94,6 @@ main() {
       'Vuelve a descargarlo con: git clone https://github.com/isaiasfl/entorno-nvim.git'
 
   printf '%s\n' 'ACTUALIZAR ENTORNO-NVIM' "Carpeta: $PROJECT_ROOT"
-  if entorno_ruta_windows_wsl "$PROJECT_ROOT"; then
-    printf '\n'
-    entorno_explicar_ruta_windows "$PROJECT_ROOT"
-  fi
 
   printf '\n%s\n' '1/4 Revisando cambios locales...'
   normalizar_finales
@@ -132,6 +127,13 @@ main() {
   else
     printf '%s\n' 'Novedades:'
     git log --format='  - %s' "$antes..$despues" | head -n 15
+  fi
+  . "$SCRIPT_DIR/lib/versiones.sh"
+  . "$SCRIPT_DIR/lib/rutas.sh"
+  . "$SCRIPT_DIR/lib/plataforma.sh"
+  if entorno_ruta_windows_wsl "$PROJECT_ROOT"; then
+    printf '\n'
+    entorno_explicar_ruta_windows "$PROJECT_ROOT"
   fi
 
   printf '\n%s\n' '4/4 Reinstalando lo que haya cambiado...'
