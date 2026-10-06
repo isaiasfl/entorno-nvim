@@ -15,7 +15,7 @@ assert(package.loaded["mini.pairs"], "mini.pairs no se pudo cargar")
 
 for name in pairs(package.loaded) do
   if name:match("^mini%.") then
-    assert(vim.tbl_contains({ "mini.pairs", "mini.snippets", "mini.clue" }, name), "se cargo un modulo mini no solicitado: " .. name)
+    assert(vim.tbl_contains({ "mini.pairs", "mini.snippets", "mini.clue", "mini.surround", "mini.ai", "mini.diff" }, name), "se cargo un modulo mini no solicitado: " .. name)
   end
 end
 

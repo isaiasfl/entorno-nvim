@@ -25,6 +25,34 @@ return {
         end,
         desc = "Ver buffers abiertos",
       },
+      {
+        "<leader>fd",
+        function()
+          require("fzf-lua").diagnostics_workspace()
+        end,
+        desc = "Errores de todo el proyecto",
+      },
+      {
+        "<leader>fr",
+        function()
+          require("fzf-lua").oldfiles()
+        end,
+        desc = "Archivos recientes",
+      },
+      {
+        "<leader>fw",
+        function()
+          require("fzf-lua").grep_cword()
+        end,
+        desc = "Buscar la palabra del cursor en el proyecto",
+      },
+      {
+        "<leader>f.",
+        function()
+          require("fzf-lua").resume()
+        end,
+        desc = "Repetir la última búsqueda",
+      },
     },
     opts = function()
       local actions = require("fzf-lua.actions")

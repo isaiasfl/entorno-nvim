@@ -1,0 +1,17 @@
+local root = vim.fn.getcwd()
+vim.opt.rtp:prepend(root .. '/nvim')
+vim.opt.rtp:append(root .. '/.xdg/0.12.4/data/nvim/lazy/mini.nvim')
+vim.g.mapleader = ' '
+dofile(root .. '/nvim/lua/plugins/editing.lua')[1].config()
+local function run(line, keys)
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { line })
+  vim.api.nvim_win_set_cursor(0, { 1, line:find('b') and line:find('b') - 1 or 0 })
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), 'mtx', false)
+  return vim.api.nvim_get_current_line()
+end
+assert(run('hola', 'saiw"') == '"hola"', 'surround add')
+assert(run('"hola"', 'sr"\'') == "'hola'", 'surround replace')
+assert(run('"hola"', 'sd"') == 'hola', 'surround delete')
+assert(run('suma(a, b)', 'dia') == 'suma(a, )', 'ai argumento: ' .. vim.api.nvim_get_current_line())
+assert(vim.fn.maparg('<leader>gd', 'n') ~= '' and vim.fn.maparg(']h', 'n') ~= '', 'diff maps')
+print('OK: surround, ai y diff')

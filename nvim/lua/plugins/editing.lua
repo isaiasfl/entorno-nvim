@@ -14,6 +14,16 @@ return {
 
       require("config.snippets").setup()
 
+      -- sa/sd/sr: añadir, quitar o cambiar comillas, paréntesis y etiquetas.
+      require("mini.surround").setup()
+      -- Más objetos de texto: cia (argumento), cif (llamada), cit (etiqueta).
+      require("mini.ai").setup()
+      -- Marcas de Git en el margen con símbolos estándar (sin Nerd Font).
+      -- ]h/[h saltan entre cambios, gh aplica y gH deshace el trozo.
+      local diff = require("mini.diff")
+      diff.setup({ view = { style = "sign", signs = { add = "▎", change = "▎", delete = "▁" } } })
+      vim.keymap.set("n", "<leader>gd", diff.toggle_overlay, { desc = "Ver cambios sin guardar en Git" })
+
       local clue = require("mini.clue")
       clue.setup({
         -- Ancho según el texto: las descripciones no se cortan con "…".
