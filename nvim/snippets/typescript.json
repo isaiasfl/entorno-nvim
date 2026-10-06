@@ -111,5 +111,227 @@
       "import ${1:nombre} from \"${2:modulo}\"$0"
     ],
     "description": "Importar módulo"
+  },
+  "qs": {
+    "prefix": "qs",
+    "body": [
+      "const ${1:elemento} = document.querySelector('${2:#id}');"
+    ],
+    "description": "Seleccionar un elemento del DOM"
+  },
+  "qsa": {
+    "prefix": "qsa",
+    "body": [
+      "const ${1:elementos} = document.querySelectorAll('${2:.clase}');"
+    ],
+    "description": "Seleccionar varios elementos del DOM"
+  },
+  "ael": {
+    "prefix": "ael",
+    "body": [
+      "${1:elemento}.addEventListener('${2:click}', (${3:event}) => {",
+      "  $0",
+      "});"
+    ],
+    "description": "Escuchar un evento"
+  },
+  "ce": {
+    "prefix": "ce",
+    "body": [
+      "const ${1:elemento} = document.createElement('${2:div}');",
+      "${1:elemento}.textContent = ${3:'texto'};",
+      "${4:contenedor}.append(${1:elemento});"
+    ],
+    "description": "Crear un elemento y añadirlo al DOM"
+  },
+  "dcl": {
+    "prefix": "dcl",
+    "body": [
+      "document.addEventListener('DOMContentLoaded', () => {",
+      "  $0",
+      "});"
+    ],
+    "description": "Ejecutar al cargar el DOM"
+  },
+  "fetch": {
+    "prefix": "fetch",
+    "body": [
+      "const ${1:cargarDatos} = async () => {",
+      "  try {",
+      "    const respuesta = await fetch('${2:url}');",
+      "    if (!respuesta.ok) throw new Error(`HTTP \\${respuesta.status}`);",
+      "    const datos: ${3:Tipo} = await respuesta.json();",
+      "    $0",
+      "  } catch (error) {",
+      "    console.error(error);",
+      "  }",
+      "};"
+    ],
+    "description": "Petición fetch con async/await y control de errores"
+  },
+  "post": {
+    "prefix": "post",
+    "body": [
+      "const respuesta = await fetch('${1:url}', {",
+      "  method: '${2:POST}',",
+      "  headers: { 'Content-Type': 'application/json' },",
+      "  body: JSON.stringify(${3:datos}),",
+      "});"
+    ],
+    "description": "Enviar JSON con fetch"
+  },
+  "lsg": {
+    "prefix": "lsg",
+    "body": [
+      "const ${1:datos} = JSON.parse(localStorage.getItem('${2:clave}') ?? '${3:[]}');"
+    ],
+    "description": "Leer JSON de localStorage"
+  },
+  "lss": {
+    "prefix": "lss",
+    "body": [
+      "localStorage.setItem('${1:clave}', JSON.stringify(${2:datos}));"
+    ],
+    "description": "Guardar JSON en localStorage"
+  },
+  "map": {
+    "prefix": "map",
+    "body": [
+      "const ${1:resultado} = ${2:lista}.map((${3:item}) => ${0:item});"
+    ],
+    "description": "Transformar un array"
+  },
+  "filter": {
+    "prefix": "filter",
+    "body": [
+      "const ${1:resultado} = ${2:lista}.filter((${3:item}) => ${0:condicion});"
+    ],
+    "description": "Filtrar un array"
+  },
+  "find": {
+    "prefix": "find",
+    "body": [
+      "const ${1:encontrado} = ${2:lista}.find((${3:item}) => ${0:condicion});"
+    ],
+    "description": "Buscar el primer elemento"
+  },
+  "reduce": {
+    "prefix": "reduce",
+    "body": [
+      "const ${1:total} = ${2:lista}.reduce((${3:acc}, ${4:item}) => ${0:acc + item}, ${5:0});"
+    ],
+    "description": "Acumular un array"
+  },
+  "prom": {
+    "prefix": "prom",
+    "body": [
+      "new Promise((resolve, reject) => {",
+      "  $0",
+      "});"
+    ],
+    "description": "Crear una promesa"
+  },
+  "sto": {
+    "prefix": "sto",
+    "body": [
+      "setTimeout(() => {",
+      "  $0",
+      "}, ${1:1000});"
+    ],
+    "description": "Ejecutar tras un retardo"
+  },
+  "exp": {
+    "prefix": "exp",
+    "body": [
+      "export ${1:const} ${2:nombre} = ${0};"
+    ],
+    "description": "Exportar"
+  },
+  "expd": {
+    "prefix": "expd",
+    "body": [
+      "export default ${0};"
+    ],
+    "description": "Exportación por defecto"
+  },
+  "desc": {
+    "prefix": "desc",
+    "body": [
+      "describe('${1:qué se prueba}', () => {",
+      "  it('${2:debería ...}', () => {",
+      "    expect(${3:valor}).toBe(${4:esperado});",
+      "  });",
+      "});"
+    ],
+    "description": "Bloque de tests (Vitest/Jest)"
+  },
+  "it": {
+    "prefix": "it",
+    "body": [
+      "it('${1:debería ...}', () => {",
+      "  expect(${2:valor}).toBe(${3:esperado});",
+      "});"
+    ],
+    "description": "Un test (Vitest/Jest)"
+  },
+  "int": {
+    "prefix": "int",
+    "body": [
+      "interface ${1:Nombre} {",
+      "  ${2:id}: ${3:number};",
+      "  $0",
+      "}"
+    ],
+    "description": "Interface"
+  },
+  "type": {
+    "prefix": "type",
+    "body": [
+      "type ${1:Nombre} = ${0};"
+    ],
+    "description": "Alias de tipo"
+  },
+  "union": {
+    "prefix": "union",
+    "body": [
+      "type ${1:Estado} = '${2:a}' | '${3:b}';"
+    ],
+    "description": "Tipo unión de literales"
+  },
+  "enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:Nombre} {",
+      "  ${2:Valor},",
+      "}"
+    ],
+    "description": "Enumerado"
+  },
+  "class": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Nombre} {",
+      "  constructor(private ${2:valor}: ${3:string}) {}",
+      "",
+      "  $0",
+      "}"
+    ],
+    "description": "Clase con propiedad en el constructor"
+  },
+  "gfn": {
+    "prefix": "gfn",
+    "body": [
+      "function ${1:nombre}<${2:T}>(${3:valor}: ${2:T}): ${2:T} {",
+      "  $0",
+      "}"
+    ],
+    "description": "Función genérica"
+  },
+  "asc": {
+    "prefix": "asc",
+    "body": [
+      "const ${1:VALORES} = [${2}] as const;"
+    ],
+    "description": "Array constante (as const)"
   }
 }
