@@ -1,8 +1,28 @@
 local M = {}
 
+-- Repositorio del archivo actual o, si no, de la carpeta de trabajo.
 local function project_root()
-  return vim.fs.root(0, { ".git" }) or vim.fn.getcwd()
+  return vim.fs.root(0, { ".git" }) or vim.fs.root(vim.fn.getcwd(), { ".git" })
 end
+
+-- Repositorios en subcarpetas (hasta dos niveles), p. ej. ~/DWEC/tema1.
+local function child_repos()
+  local cwd = vim.fn.getcwd()
+  local found = {}
+  for name, kind in vim.fs.dir(cwd, {
+    depth = 3,
+    skip = function(dir) return dir ~= "node_modules" and not dir:match("/%.git$") end,
+  }) do
+    if kind == "directory" and (name == ".git" or name:match("/%.git$")) then
+      local dir = vim.fs.dirname(cwd .. "/" .. name)
+      if dir ~= cwd then table.insert(found, dir) end
+    end
+  end
+  table.sort(found)
+  return found
+end
+
+local launch
 
 function M.open(command)
   if vim.fn.executable("lazygit") ~= 1 then
@@ -10,7 +30,25 @@ function M.open(command)
     return
   end
 
-  local cwd = project_root()
+  local root = project_root()
+  if root then return launch(root, command) end
+
+  local repos = child_repos()
+  if #repos == 1 then return launch(repos[1], command) end
+  if #repos == 0 then
+    vim.notify("Aquí no hay ningún repositorio Git. Abre un archivo del proyecto"
+      .. " o, si quieres crear uno, ejecuta: git init", vim.log.levels.WARN)
+    return
+  end
+  vim.ui.select(repos, {
+    prompt = "¿Qué repositorio abro? ",
+    format_item = function(dir) return vim.fn.fnamemodify(dir, ":~:.") end,
+  }, function(dir)
+    if dir then vim.schedule(function() launch(dir, command) end) end
+  end)
+end
+
+launch = function(cwd, command)
   local previous_window = vim.api.nvim_get_current_win()
   local buffer = vim.api.nvim_create_buf(false, true)
   local width = math.max(1, math.floor(vim.o.columns * 0.9))
