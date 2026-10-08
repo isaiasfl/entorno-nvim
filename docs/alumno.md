@@ -259,7 +259,8 @@ El entorno admite rutas con espacios; escríbelas entre comillas.
 **Aparece `^M` al final de las líneas o todos los archivos salen modificados.**
 Git para Windows convirtió los finales de línea. Ejecuta
 `./scripts/actualizar.sh` (o, la primera vez,
-`git restore . && git pull --ff-only && sh scripts/actualizar.sh`): los corrige.
+`git pull --ff-only && sh scripts/actualizar.sh`): los corrige. Si Git
+impide avanzar por cambios locales, consérvelos o consulte al profesor.
 
 **El entorno está en `/mnt/c/...` (WSL2).**
 Clónalo en tu carpeta de Linux (`cd ~ && git clone ...`): las carpetas de

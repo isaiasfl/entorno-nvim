@@ -419,3 +419,12 @@ comprobación con el binario oficial temporal en la segunda revisión.
 
 Pendiente de campo: el alumno debe probar instalación y uso en WSL2 ARM64;
 si falla, conservar mensaje completo, `uname -m` y distribución, sin secretos.
+
+
+### Aclaración del actualizador — 2026-10-08
+
+Revisado `scripts/actualizar.sh`: descarga con `git pull --ff-only` y después
+invoca el instalador de alumnado. Si la instalación ARM falló antes de guardar
+el perfil, la rama por defecto también invoca `instalar-alumno.sh`, con pausa
+Enter; no el instalador completo del profesor. El README recomienda ahora
+el actualizador también para ese caso. Git manual solo si el script no existe.

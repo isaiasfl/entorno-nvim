@@ -52,13 +52,17 @@ al PATH: responda `s`.
 ### Si falló la instalación anterior en ARM64
 
 Si ya descargó el repositorio y el instalador anterior rechazó ARM, no hace
-falta borrar su carpeta. Desde WSL2:
+falta borrar su carpeta. Desde WSL2, guarde su trabajo y ejecute:
 
 ```sh
 cd ~/entorno-nvim
-git pull --ff-only
-./scripts/instalar-alumno.sh
+./scripts/actualizar.sh
 ```
+
+El actualizador descarga los cambios y ejecuta el instalador compatible.
+Funciona aunque la instalación anterior no llegara a guardar el perfil:
+en ese caso pide Enter para comenzar. Si no existe `scripts/actualizar.sh`,
+use el caso 3 de abajo.
 
 Si Git avisa de cambios locales, consérvelos o consulte al profesor antes de
 descartarlos. Si falla de nuevo, copie el mensaje completo y la salida de
