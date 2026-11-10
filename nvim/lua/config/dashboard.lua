@@ -4,24 +4,25 @@ local namespace = vim.api.nvim_create_namespace("ifl_dashboard")
 local window_options = {}
 
 local logo = {
-  "██╗  ███████╗  ██╗     ",
-  "██║  ██╔════╝  ██║     ",
-  "██║  █████╗    ██║     ",
-  "██║  ██╔══╝    ██║     ",
-  "██║  ██║       ███████╗",
-  "╚═╝  ╚═╝       ╚══════╝",
+  "███╗   ███████████╗   ███╗          ",
+  "███║   ███╔═══════╝   ███║          ",
+  "███║   ████████╗      ███║          ",
+  "███║   ███╔════╝      ███║          ",
+  "███║   ███║           ███████████╗  ",
+  "╚══╝   ╚══╝           ╚══════════╝  ",
 }
 
 local actions = {
-  { key = "f", label = "Buscar archivos" },
-  { key = "g", label = "Buscar texto" },
-  { key = "e", label = "Explorador" },
-  { key = "b", label = "Buffers" },
-  { key = "r", label = "Archivos recientes" },
-  { key = "l", label = "Lazygit" },
-  { key = "n", label = "Nuevo archivo" },
-  { key = "c", label = "Configuración" },
-  { key = "q", label = "Salir" },
+  { key = "f", label = "Buscar archivos", icon = "" },
+  { key = "g", label = "Buscar texto", icon = "" },
+  { key = "e", label = "Explorador", icon = "" },
+  { key = "b", label = "Buffers", icon = "" },
+  { key = "r", label = "Archivos recientes", icon = "" },
+  { key = "l", label = "Lazygit", icon = "" },
+  { key = "n", label = "Nuevo archivo", icon = "" },
+  { key = "c", label = "Configuración", icon = "" },
+  { key = "?", label = "Ayuda y atajos", icon = "󰋖" },
+  { key = "q", label = "Salir", icon = "" },
 }
 
 local function is_dashboard(buffer)
@@ -115,37 +116,42 @@ local function render(buffer, window)
     logo_width = math.max(logo_width, vim.fn.strdisplaywidth(line))
   end
 
-  local menu_width = 0
-  for _, action in ipairs(actions) do
-    menu_width = math.max(menu_width, vim.fn.strdisplaywidth(string.format("[%s]  %s", action.key, action.label)))
-  end
-
-  for _, line in ipairs(logo) do
-    add_line(line, logo_width, "IFLLogo")
-  end
-  add_blank()
-  add_line("Neovim de Isaías", nil, "IFLSubtitle")
-  local version = vim.version()
-  add_line(string.format("v%d.%d.%d", version.major, version.minor, version.patch), nil, "IFLSecondary")
-  add_line("Perfil " .. require("config.profile").name .. " | :EntornoInfo", nil, "IFLSecondary")
-  add_blank()
-
-  local first_action_line = #lines
-  for _, action in ipairs(actions) do
-    local text = string.format("[%s]  %s", action.key, action.label)
-    local padding = left_padding(menu_width, width)
-    table.insert(lines, padding .. text)
-    table.insert(highlights, { line = #lines - 1, group = "IFLKey", start = #padding, finish = #padding + 3 })
-    table.insert(highlights, { line = #lines - 1, group = "IFLDescription", start = #padding + 5, finish = -1 })
-  end
-  add_blank()
-
-  local directory = shortened(vim.fn.fnamemodify(vim.fn.getcwd(), ":~"), math.max(10, width - 4))
-  add_line(directory, nil, "IFLSecondary")
-  if height >= 25 then
+  local menu_width = math.min(44, math.max(26, width - 4))
+  local spacious = height >= 38
+  local show_logo = height >= 26 and width >= logo_width + 4
+  if show_logo then
+    for _, line in ipairs(logo) do
+      add_line(line, logo_width, "IFLLogo")
+    end
     add_blank()
   end
-  add_line(":IFL para volver", nil, "IFLSecondary")
+  add_line("Neovim de Isaías", nil, "IFLSubtitle")
+  add_blank()
+  if spacious then add_blank() end
+
+  local first_action_line = #lines
+  for index, action in ipairs(actions) do
+    local icon = vim.env.ENTORNO_ICONOS == "0" and "·" or action.icon
+    local label = icon .. "  " .. action.label
+    local key = "[" .. action.key .. "]"
+    local gap = string.rep(" ", math.max(2, menu_width - vim.fn.strdisplaywidth(label) - #key))
+    local padding = left_padding(menu_width, width)
+    local text = padding .. label .. gap .. key
+    table.insert(lines, text)
+    table.insert(highlights, { line = #lines - 1, group = "IFLIcon", start = #padding, finish = #padding + #icon })
+    table.insert(highlights, { line = #lines - 1, group = "IFLDescription", start = #padding + #icon, finish = #text - #key })
+    table.insert(highlights, { line = #lines - 1, group = "IFLKey", start = #text - #key, finish = -1 })
+    if spacious and index < #actions then add_blank() end
+  end
+  add_blank()
+  if spacious then add_blank() end
+  local directory = shortened(vim.fn.fnamemodify(vim.fn.getcwd(), ":~"), math.max(10, width - 4))
+  add_line(directory, nil, "IFLSecondary")
+  add_line("Perfil " .. require("config.profile").name .. "  ·  :EntornoInfo", nil, "IFLSecondary")
+  if height >= 26 then
+    add_blank()
+    add_line("Volver al inicio: :IFL", nil, "IFLSecondary")
+  end
 
   local top_padding = math.max(0, math.floor((height - #lines) / 2))
   if top_padding > 0 then
@@ -186,6 +192,13 @@ end
 local function set_actions(buffer)
   local options = { buffer = buffer, silent = true, nowait = true }
 
+  -- La bienvenida es un menú: las teclas de edición no deben intentar escribir.
+  -- Las acciones propias (c, r, etc.) se definen después y conservan prioridad.
+  for _, key in ipairs({ "i", "I", "a", "A", "o", "O", "s", "S", "d", "D", "x", "X",
+    "c", "C", "r", "R", "p", "P", "u", "U", ".", "J", "~", "gi", "gI", "gR", "<C-r>", "<Del>" }) do
+    vim.keymap.set("n", key, "<Nop>", options)
+  end
+
   vim.keymap.set("n", "f", function()
     load_fzf("files")
   end, vim.tbl_extend("force", options, { desc = "IFL: buscar archivos" }))
@@ -209,6 +222,7 @@ local function set_actions(buffer)
     local init = vim.fs.joinpath(require("config.paths").repository(), "nvim", "init.lua")
     vim.cmd.edit(vim.fn.fnameescape(init))
   end, vim.tbl_extend("force", options, { desc = "IFL: abrir configuración" }))
+  vim.keymap.set("n", "?", "<cmd>AyudaEntorno<cr>", vim.tbl_extend("force", options, { desc = "IFL: ayuda y atajos" }))
   vim.keymap.set("n", "q", "<cmd>quit<cr>", vim.tbl_extend("force", options, { desc = "IFL: salir" }))
 end
 
@@ -244,11 +258,12 @@ local function should_open_at_startup()
 end
 
 local function define_highlights()
-  vim.api.nvim_set_hl(0, "IFLLogo", { link = "Title" })
-  vim.api.nvim_set_hl(0, "IFLSubtitle", { link = "Special" })
-  vim.api.nvim_set_hl(0, "IFLKey", { link = "Keyword" })
+  vim.api.nvim_set_hl(0, "IFLLogo", { fg = "#8fc4c5", bold = true })
+  vim.api.nvim_set_hl(0, "IFLSubtitle", { fg = "#b6c58b" })
+  vim.api.nvim_set_hl(0, "IFLKey", { fg = "#dfca8e", bold = true })
+  vim.api.nvim_set_hl(0, "IFLIcon", { fg = "#8fc4c5" })
   vim.api.nvim_set_hl(0, "IFLDescription", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "IFLSecondary", { link = "Comment" })
+  vim.api.nvim_set_hl(0, "IFLSecondary", { fg = "#a5b8ad", italic = false })
 end
 
 local function rerender_dashboards()

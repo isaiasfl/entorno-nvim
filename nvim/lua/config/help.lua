@@ -91,6 +91,7 @@ function M.setup()
       "REVISAR ERRORES Y ENTENDER EL CÓDIGO",
       "[d / ]d    Error anterior / siguiente",
       "K          Tipo y documentación del símbolo",
+      "Ctrl+s     Parámetros al escribir una llamada (modo insertar)",
       "gl         Errores de esta línea",
       "           HTML: atributos mal escritos, ids y cierres incorrectos",
       "Espacio ld Errores del archivo",

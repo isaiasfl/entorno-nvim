@@ -4,7 +4,7 @@
 
 La pantalla inicial está implementada con la API nativa de Neovim. No se añade
 `dashboard-nvim`, `alpha-nvim`, `mini.starter` ni otro plugin: para un logotipo
-ASCII y nueve acciones, un módulo pequeño ofrece menos arranque, menos
+Unicode y diez acciones, un módulo pequeño ofrece menos arranque, menos
 dependencias y un comportamiento más fácil de entender.
 
 ## Comportamiento
@@ -36,6 +36,7 @@ opciones que tenía la ventana.
 | `l` | Abrir lazygit en el terminal nativo |
 | `n` | Crear un buffer vacío |
 | `c` | Abrir `nvim/init.lua` |
+| `?` | Abrir Ayuda y atajos |
 | `q` | Salir |
 
 Las búsquedas reutilizan el buscador ya fijado en el lockfile y el explorador y
@@ -44,17 +45,20 @@ solo cuando se pulsa su acción.
 
 ## Diseño y mantenimiento
 
-El logotipo textual usa caracteres de bloque Unicode estándar y no requiere
-Nerd Font. Los grupos `IFLLogo`, `IFLSubtitle`, `IFLKey`, `IFLDescription` e
-`IFLSecondary` separan logotipo, subtítulo, teclas, acciones e información
-discreta. Enlazan con grupos estándar del esquema de colores, por lo que se
-adaptan sin fijar una paleta propia.
+El IFL ancho usa bloques Unicode, con acento azul suave. Menú con iconos a
+la izquierda y teclas alineadas a la derecha, acentos salvia/amarillo y mayor
+separación vertical desde 38 filas. Con menos de 26 filas se oculta el logo
+para conservar todas las acciones. Los iconos requieren Nerd Font; con
+`ENTORNO_ICONOS=0` se sustituyen por un punto sencillo.
 
-El menú se calcula como una caja única: todas las teclas y descripciones
-comparten columna y el conjunto se vuelve a centrar al cambiar el tamaño de la
-interfaz o de la ventana/split que lo muestra. Bajo el menú aparecen la versión
-efectiva de Neovim y el directorio actual, abreviado cuando no cabe. El estado
-local guardado se elimina también si una ventana se cierra directamente.
+El pie muestra carpeta y perfil. La versión y los detalles se consultan en
+`:EntornoInfo`. `:IFL` permite volver. El conjunto se centra y recalcula al
+redimensionar la ventana; no se han añadido dependencias ni restauración de
+sesiones. El diseño anterior es recuperable en el historial Git, commit `3eda676`.
 
 La implementación está en `nvim/lua/config/dashboard.lua` y la prueba en
 `tests/comprobar_dashboard.lua`.
+
+El pie usa texto claro sin cursiva. Las teclas normales de edición se ignoran
+en la bienvenida para evitar E21; las acciones del menú conservan prioridad.
+La protección de solo lectura se mantiene; no se habilita modifiable.

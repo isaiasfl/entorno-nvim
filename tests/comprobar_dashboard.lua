@@ -19,6 +19,8 @@ for name in pairs(lazy_config.plugins) do
   assert(not lower:find("starter", 1, true), "no debe instalarse un plugin starter: " .. name)
 end
 
+vim.o.columns = 120
+vim.o.lines = 40
 dashboard.open()
 
 local buffer = vim.api.nvim_get_current_buf()
@@ -35,17 +37,16 @@ assert(vim.wo.fillchars:find("eob: ", 1, true), "el dashboard debe ocultar las m
 assert(vim.wo.statusline == " ", "el dashboard debe dejar limpia la línea de estado")
 
 local text = table.concat(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), "\n")
-local version = vim.version()
 for _, expected in ipairs({
-  "██╗  ███████╗  ██╗",
+  "███╗   ███████████╗   ███╗",
   "Neovim de Isaías",
-  string.format("v%d.%d.%d", version.major, version.minor, version.patch),
   "Buscar archivos",
   "Explorador",
   "Buffers",
   "Archivos recientes",
   "Lazygit",
-  ":IFL para volver",
+  "Volver al inicio: :IFL",
+  "Ayuda y atajos",
 }) do
   assert(text:find(expected, 1, true), "falta contenido del dashboard: " .. expected)
 end
@@ -65,20 +66,28 @@ for key, description in pairs({
   n = "IFL: nuevo archivo",
   c = "IFL: abrir configuración",
   q = "IFL: salir",
+  ["?"] = "IFL: ayuda y atajos",
 }) do
   assert(mappings[key], "falta la acción " .. key)
   assert(mappings[key].desc == description, "descripción incorrecta para " .. key)
 end
 
 for group, link in pairs({
-  IFLLogo = "Title",
-  IFLSubtitle = "Special",
-  IFLKey = "Keyword",
   IFLDescription = "Normal",
-  IFLSecondary = "Comment",
 }) do
   assert(vim.api.nvim_get_hl(0, { name = group, link = true }).link == link, group .. " no enlaza con " .. link)
 end
+
+local before_edit_keys = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
+vim.v.errmsg = ""
+for _, key in ipairs({ "i", "a", "o", "x", "d", "p", "u", "R" }) do
+  vim.api.nvim_feedkeys(key, "xt", false)
+end
+assert(vim.v.errmsg == "", "las teclas de edición provocan un error: " .. vim.v.errmsg)
+assert(vim.deep_equal(before_edit_keys, vim.api.nvim_buf_get_lines(buffer, 0, -1, false)), "el menú se modificó")
+assert(not vim.bo[buffer].modifiable, "la bienvenida debe seguir siendo de solo lectura")
+local secondary = vim.api.nvim_get_hl(0, { name = "IFLSecondary", link = false })
+assert(secondary.fg == 0xa5b8ad and not secondary.italic, "el pie no usa el contraste previsto")
 
 local sizes = {
   { columns = 52, lines = 24 },
@@ -93,24 +102,20 @@ for _, size in ipairs(sizes) do
   local window_width = vim.api.nvim_win_get_width(0)
   local rendered = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
   local key_column
-  local description_column
   for _, key in ipairs({ "f", "g", "e", "b", "r", "l", "n", "c", "q" }) do
     for _, line in ipairs(rendered) do
       local key_start = line:find("[" .. key .. "]", 1, true)
       if key_start then
-        local current_description = key_start + 5
-        key_column = key_column or key_start
-        description_column = description_column or current_description
-        assert(key_start == key_column, "las teclas del menú no comparten columna a ancho " .. window_width)
-        assert(current_description == description_column, "las descripciones no comparten columna")
+        local column = vim.fn.strdisplaywidth(line:sub(1, key_start - 1))
+        key_column = key_column or column
+        assert(column == key_column, "las teclas del menú no comparten columna a ancho " .. window_width)
         break
       end
     end
   end
 
-  local longest = "[r]  Archivos recientes"
-  local expected_column = math.max(1, math.floor((window_width - vim.fn.strdisplaywidth(longest)) / 2) + 1)
-  assert(key_column == expected_column, "el menú no está centrado a ancho " .. window_width)
+  assert(key_column, "faltan teclas visibles")
+  assert(#rendered <= vim.api.nvim_win_get_height(0), "el menú excede la altura disponible")
   for _, line in ipairs(rendered) do
     assert(vim.fn.strdisplaywidth(line) <= window_width, "una línea excede el ancho " .. window_width)
   end

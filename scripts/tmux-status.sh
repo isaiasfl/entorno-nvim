@@ -16,7 +16,7 @@ case "$agent" in
   claude) agent_label=Claude ;;
   pi) agent_label=Pi ;;
   shell) agent_label=Shell ;;
-  *) agent_label=- ;;
+  *) agent_label= ;;
 esac
 
 git_label=
@@ -35,8 +35,8 @@ if [ -n "$project" ] && [ -d "$project" ] &&
   fi
 fi
 
-if [ -n "$git_label" ]; then
-  printf '%s | AI:%s' "$git_label" "$agent_label"
-else
+printf '%s' "$git_label"
+if [ -n "$agent_label" ]; then
+  [ -z "$git_label" ] || printf ' | '
   printf 'AI:%s' "$agent_label"
 fi

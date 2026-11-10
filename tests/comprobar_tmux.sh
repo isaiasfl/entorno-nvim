@@ -566,28 +566,42 @@ tmux_test set-environment -t "=$SESSION" ENTORNO_TMUX_PROJECT_ROOTS "$WORK_DIR"
 [ "$(tmux_test show-options -gv mouse)" = "on" ] || fail "mouse debe estar activado"
 [ "$(tmux_test show-options -gv status-interval)" = 15 ] || fail "status-interval no es razonable"
 [ "$(tmux_test show-options -gv status-style)" = "fg=colour7,bg=colour0" ] || fail "status-style no usa colores ANSI"
-[ "$(tmux_test show-options -gv status-left-style)" = "fg=colour6,bg=colour0,bold" ] ||
+[ "$(tmux_test show-options -gv status-left-style)" = "fg=#b6c58b,bg=#24352f,bold" ] ||
   fail "status-left no destaca el proyecto"
 [ "$(tmux_test show-options -gv status-right-style)" = "fg=colour7,bg=colour0" ] ||
   fail "status-right no conserva contraste ANSI"
-[ "$(tmux_test show-options -gv status-left)" = ' #{?#{@entorno_project_name},#{@entorno_project_name},#S} #[fg=colour8,bg=colour0,nobold]|' ] ||
+[ "$(tmux_test show-options -gv status-left)" = ' #{=24:#{?#{@entorno_project_name},#{@entorno_project_name},#S}} #[default]  ' ] ||
   fail "status-left no muestra el nombre legible del proyecto"
-[ "$(tmux_test show-options -gv window-status-separator)" = "" ] ||
+[ "$(tmux_test show-options -gv window-status-separator)" = " " ] ||
   fail "tmux anade separacion fuera de los formatos controlados"
-[ "$(tmux_test show-window-options -gv window-status-format)" = " #I:#W #[fg=colour8,bg=colour0]|" ] ||
+[ "$(tmux_test show-window-options -gv window-status-format)" = " #I #W " ] ||
   fail "las ventanas inactivas no muestran indice y nombre"
-[ "$(tmux_test show-window-options -gv window-status-current-format)" = " [#I:#W] #[fg=colour8,bg=colour0,nobold]|" ] ||
-  fail "la ventana activa no usa corchetes ASCII"
+[ "$(tmux_test show-window-options -gv window-status-current-format)" = " #I #W " ] ||
+  fail "la ventana activa no muestra indice y nombre"
 [ "$(tmux_test show-window-options -gv window-status-style)" = "fg=colour7,bg=colour0" ] ||
   fail "las ventanas inactivas no usan el estilo ANSI"
-[ "$(tmux_test show-window-options -gv window-status-current-style)" = "fg=colour0,bg=colour6,bold" ] ||
+[ "$(tmux_test show-window-options -gv window-status-current-style)" = "fg=#152620,bg=#8fc4c5,bold" ] ||
   fail "la ventana activa no esta diferenciada"
-[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " proyecto principal #[fg=colour8,bg=colour0,nobold]|" ] ||
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{T:status-left}')" = " proyecto principal #[default]  " ] ||
   fail "status-left no oculta el checksum de la sesion"
+# El rol y la marca activa deben seguir al foco, no al orden del layout.
+[ "$(tmux_test show-window-options -gv pane-border-status)" = top ] ||
+  fail "faltan etiquetas superiores de panel"
+SAVED_FOCUS=$(tmux_test display-message -p -t "=$SESSION:1" '#{pane_id}')
+for entry in "$EDITOR_PANE:EDITOR" "$TERMINAL_PANE:CONSOLA" "$AGENT_PANE:AGENTE"; do
+  focus_pane=${entry%:*}
+  focus_label=${entry##*:}
+  tmux_test select-pane -t "$focus_pane"
+  actual_label=$(tmux_test display-message -p -t "$focus_pane" '#{E:@entorno_pane_label}')
+  [ "$actual_label" = "$focus_label" ] || fail "rol visible incorrecto: $actual_label"
+  actual_border=$(tmux_test display-message -p -t "$focus_pane" '#{E:pane-border-format}')
+  printf '%s' "$actual_border" | grep -Fq "> $focus_label" || fail "falta marca del panel activo"
+done
+tmux_test select-pane -t "$SAVED_FOCUS"
 STATUS_RIGHT=$(tmux_test show-options -gv status-right)
 printf '%s\n' "$STATUS_RIGHT" | grep -q 'tmux-status\.sh' || fail "status-right no usa el helper"
 printf '%s\n' "$STATUS_RIGHT" | grep -q '%H:%M' || fail "status-right no muestra la hora"
-printf '%s\n' "$STATUS_RIGHT" | grep -Fq '#[fg=colour6,bold]%H:%M' || fail "status-right no destaca la hora"
+printf '%s\n' "$STATUS_RIGHT" | grep -Fq '#[fg=colour0,bg=colour6,bold] %H:%M' || fail "status-right no destaca la hora"
 [ "$(tmux_test show-options -gv base-index)" = "1" ] || fail "base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv pane-base-index)" = "1" ] || fail "pane-base-index debe ser 1"
 [ "$(tmux_test show-window-options -gv mode-keys)" = "vi" ] || fail "copy mode debe usar teclas Vi"
@@ -600,11 +614,11 @@ status_output() {
   TMUX="$STATUS_TMUX" TMUX_PANE="$EDITOR_PANE" "$STATUS_SCRIPT" "$SESSION"
 }
 EXPECTED_BRANCH=$(git -C "$REPOSITORY" symbolic-ref --quiet --short HEAD)
-[ "$(status_output)" = "git:$EXPECTED_BRANCH | AI:-" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH" ] ||
   fail "la barra no muestra Git limpio y agente ausente"
 printf '%s\n' modificado > "$REPOSITORY/estado-barra.txt"
 git -C "$REPOSITORY" add estado-barra.txt
-[ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:-" ] ||
+[ "$(status_output)" = "git:$EXPECTED_BRANCH *" ] ||
   fail "la barra no muestra el repositorio modificado"
 tmux_test set-option -p -t "$AGENT_PANE" @entorno_agent codex
 [ "$(status_output)" = "git:$EXPECTED_BRANCH * | AI:Codex" ] ||
