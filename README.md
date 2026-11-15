@@ -10,22 +10,25 @@
 
 | Capa | Qué usa |
 |---|---|
-| Editor | Neovim 0.12.4, configuración modular en Lua |
-| Plugins | lazy.nvim con todas las versiones fijadas en `lazy-lock.json` |
-| Terminal | tmux con paneles de editor, consola y agente |
-| Búsqueda | fzf-lua sobre ripgrep y fd |
-| LSP | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
-| Formato al guardar | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
-| Node | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
-| Parsers | Tree-sitter CLI 0.26.11 |
-| Git | lazygit, con delta opcional para los diffs |
-| Markdown/PDF | mdcat, Pandoc y Chromium (perfil de profesor) |
-| Sistemas | Debian 13, Ubuntu 24.04/26.04, WSL2 y CachyOS/Arch; macOS parcial |
-| Instalación | Shell POSIX, binarios oficiales verificados con SHA-256, sin `sudo` sin permiso |
+| <img src="IMG/icons/neovim.svg" width="18" alt=""> **Editor** | Neovim 0.12.4, configuración modular en Lua |
+| <img src="IMG/icons/lua.svg" width="18" alt=""> **Plugins** | lazy.nvim con todas las versiones fijadas en `lazy-lock.json` |
+| <img src="IMG/icons/tmux.svg" width="18" alt=""> **Terminal** | tmux con paneles de editor, consola y agente |
+| 🔍 **Búsqueda** | fzf-lua sobre ripgrep y fd |
+| <img src="IMG/icons/python.svg" width="18" alt=""> <img src="IMG/icons/typescript.svg" width="18" alt=""> <img src="IMG/icons/html5.svg" width="18" alt=""> **LSP** | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
+| <img src="IMG/icons/rust.svg" width="18" alt=""> <img src="IMG/icons/gnubash.svg" width="18" alt=""> **Formato al guardar** | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
+| <img src="IMG/icons/nodedotjs.svg" width="18" alt=""> **Node** | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
+| 🌳 **Parsers** | Tree-sitter CLI 0.26.11 |
+| <img src="IMG/icons/git.svg" width="18" alt=""> **Git** | lazygit, con delta opcional para los diffs |
+| <img src="IMG/icons/markdown.svg" width="18" alt=""> <img src="IMG/icons/latex.svg" width="18" alt=""> **Markdown/PDF** | mdcat, Pandoc y Chromium (perfil de profesor) |
+| <img src="IMG/icons/debian.svg" width="18" alt=""> <img src="IMG/icons/ubuntu.svg" width="18" alt=""> <img src="IMG/icons/archlinux.svg" width="18" alt=""> <img src="IMG/icons/apple.svg" width="18" alt=""> **Sistemas** | Debian 13, Ubuntu 24.04/26.04, WSL2 y CachyOS/Arch; macOS parcial |
+| <img src="IMG/icons/gnubash.svg" width="18" alt=""> **Instalación** | Shell POSIX, binarios oficiales verificados con SHA-256, sin `sudo` sin permiso |
 
 **Sin dependencias ocultas:** no hay Node global, ni paquetes de npm sueltos, ni
 plugins sin versión fija. Lo que no está instalado se detecta y se avisa, y el
 entorno sigue funcionando en texto.
+
+*Iconos de [Simple Icons](https://simpleicons.org/) (CC0); procedencia en
+[IMG/icons/FUENTES.md](IMG/icons/FUENTES.md).*
 
 ## Índice
 
