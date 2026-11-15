@@ -27,7 +27,8 @@ cd entorno-nvim
 Si prefiere una sola orden, hace lo mismo y actualiza si ya lo tenía:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/install.sh \
+  | bash
 ```
 
 Ese arranque solo descarga el repositorio y llama al instalador; todas las

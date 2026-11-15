@@ -1,7 +1,7 @@
 #!/bin/sh
 # Instalador de una linea para el alumnado.
 #
-#   curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/install.sh | bash
 #
 # Solo descarga o actualiza el repositorio y entrega el control al instalador
 # real (scripts/instalar-alumno.sh), que verifica cada binario con SHA-256.

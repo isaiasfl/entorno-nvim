@@ -2,6 +2,11 @@
 
 ## 1.2.2 — 2026-11-15
 
+- `instalar-rapido.sh` pasa a llamarse **`install.sh`**, más corto y estándar;
+  el comando de una línea se muestra en dos líneas para que no se corte al
+  copiarlo. El README se reordena: alumnado (instalar, casos, uso, problemas) y
+  después las fuentes, con citas de aviso y columnas de iconos alineadas.
+
 - README: nueva tabla **Stack** al principio con las versiones reales del
   repositorio (Neovim, Node, pnpm, LSP, Ruff, Tree-sitter) y los sistemas
   soportados.
@@ -50,7 +55,7 @@
   comas de sus estilos partían la condición `#{?}` y dejaban texto suelto en la
   barra inferior.
 
-- Instalador de una línea (`instalar-rapido.sh`): descarga o actualiza el
+- Instalador de una línea (`install.sh`): descarga o actualiza el
   repositorio y delega en el instalador de alumnado, leyendo las preguntas de
   `/dev/tty` para que funcione al ejecutarse como `curl | bash`.
 

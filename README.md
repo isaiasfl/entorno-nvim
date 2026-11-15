@@ -4,38 +4,40 @@
 
 <h1 align="center">entorno-nvim</h1>
 
+<p align="center"><strong>Ifuru</strong> · IFL → イフル</p>
+
 <p align="center"><em>Neovim de Isaías: desarrollo, docencia y Markdown/PDF.</em></p>
 
 ## Stack
 
-| Capa | Qué usa |
-|---|---|
-| <img src="IMG/icons/neovim.svg" width="18" alt=""> **Editor** | Neovim 0.12.4, configuración modular en Lua |
-| <img src="IMG/icons/lua.svg" width="18" alt=""> **Plugins** | lazy.nvim con todas las versiones fijadas en `lazy-lock.json` |
-| <img src="IMG/icons/tmux.svg" width="18" alt=""> **Terminal** | tmux con paneles de editor, consola y agente |
-| 🔍 **Búsqueda** | fzf-lua sobre ripgrep y fd |
-| <img src="IMG/icons/python.svg" width="18" alt=""> <img src="IMG/icons/typescript.svg" width="18" alt=""> <img src="IMG/icons/html5.svg" width="18" alt=""> **LSP** | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
-| <img src="IMG/icons/rust.svg" width="18" alt=""> <img src="IMG/icons/gnubash.svg" width="18" alt=""> **Formato al guardar** | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
-| <img src="IMG/icons/nodedotjs.svg" width="18" alt=""> **Node** | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
-| 🌳 **Parsers** | Tree-sitter CLI 0.26.11 |
-| <img src="IMG/icons/git.svg" width="18" alt=""> **Git** | lazygit, con delta opcional para los diffs |
-| <img src="IMG/icons/markdown.svg" width="18" alt=""> <img src="IMG/icons/latex.svg" width="18" alt=""> **Markdown/PDF** | mdcat, Pandoc y Chromium (perfil de profesor) |
-| <img src="IMG/icons/debian.svg" width="18" alt=""> <img src="IMG/icons/ubuntu.svg" width="18" alt=""> <img src="IMG/icons/archlinux.svg" width="18" alt=""> <img src="IMG/icons/apple.svg" width="18" alt=""> **Sistemas** | Debian 13, Ubuntu 24.04/26.04, WSL2 y CachyOS/Arch; macOS parcial |
-| <img src="IMG/icons/gnubash.svg" width="18" alt=""> **Instalación** | Shell POSIX, binarios oficiales verificados con SHA-256, sin `sudo` sin permiso |
+| | Capa | Qué usa |
+| :--: | --- | --- |
+| <img src="IMG/icons/neovim.svg" width="20" height="20" alt=""> | **Editor** | Neovim 0.12.4, configuración modular en Lua |
+| <img src="IMG/icons/lua.svg" width="20" height="20" alt=""> | **Plugins** | lazy.nvim con todas las versiones fijadas en `lazy-lock.json` |
+| <img src="IMG/icons/tmux.svg" width="20" height="20" alt=""> | **Terminal** | tmux con paneles de editor, consola y agente |
+| 🔍 | **Búsqueda** | fzf-lua sobre ripgrep y fd |
+| <img src="IMG/icons/python.svg" width="20" height="20" alt=""><img src="IMG/icons/typescript.svg" width="20" height="20" alt=""><img src="IMG/icons/html5.svg" width="20" height="20" alt=""> | **LSP** | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
+| <img src="IMG/icons/rust.svg" width="20" height="20" alt=""><img src="IMG/icons/gnubash.svg" width="20" height="20" alt=""> | **Formato al guardar** | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
+| <img src="IMG/icons/nodedotjs.svg" width="20" height="20" alt=""> | **Node** | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
+| 🌳 | **Parsers** | Tree-sitter CLI 0.26.11 |
+| <img src="IMG/icons/git.svg" width="20" height="20" alt=""> | **Git** | lazygit, con delta opcional para los diffs |
+| <img src="IMG/icons/markdown.svg" width="20" height="20" alt=""><img src="IMG/icons/latex.svg" width="20" height="20" alt=""> | **Markdown/PDF** | mdcat, Pandoc y Chromium (perfil de profesor) |
+| <img src="IMG/icons/debian.svg" width="20" height="20" alt=""><img src="IMG/icons/ubuntu.svg" width="20" height="20" alt=""><img src="IMG/icons/archlinux.svg" width="20" height="20" alt=""><img src="IMG/icons/apple.svg" width="20" height="20" alt=""> | **Sistemas** | Debian 13, Ubuntu 24.04/26.04, WSL2 y CachyOS/Arch; macOS parcial |
+| <img src="IMG/icons/gnubash.svg" width="20" height="20" alt=""> | **Instalación** | Shell POSIX, binarios oficiales verificados con SHA-256, sin `sudo` sin permiso |
 
-**Sin dependencias ocultas:** no hay Node global, ni paquetes de npm sueltos, ni
-plugins sin versión fija. Lo que no está instalado se detecta y se avisa, y el
-entorno sigue funcionando en texto.
+> **Sin dependencias ocultas.** No hay Node global, ni paquetes de npm sueltos,
+> ni plugins sin versión fija. Lo que no está instalado se detecta y se avisa, y
+> el entorno sigue funcionando en texto.
 
-*Iconos de [Simple Icons](https://simpleicons.org/) (CC0); procedencia en
-[IMG/icons/FUENTES.md](IMG/icons/FUENTES.md).*
+*Iconos de [Simple Icons](https://simpleicons.org/) (CC0). Procedencia y
+limitaciones en [IMG/icons/FUENTES.md](IMG/icons/FUENTES.md).*
 
 ## Índice
 
 - [Stack](#stack)
 - [Alumnado: empiece aquí](#alumnado-empiece-aquí)
-  - [Linux](#linux) · [Windows 11 con WSL2](#windows-11-con-wsl2)
-  - [Casos habituales](#caso-1-instalación-paso-a-paso)
+  - [Windows 11 con WSL2](#windows-11-con-wsl2)
+  - [Casos habituales](#casos-habituales)
     · [Trabajar cada día](#trabajar-cada-día) · [Si algo falla](#si-algo-falla)
 - [Fuentes e iconos (Nerd Font)](#fuentes-e-iconos-nerd-font)
 - [Qué es](#qué-es) · [Qué incluye](#qué-incluye)
@@ -59,20 +61,20 @@ instalación, enlaces, bloques de comandos, atajos e incidencias.
 
 ## Alumnado: empiece aquí
 
-Elija su sistema. En los dos casos el comando se ejecuta en una terminal de
-**Linux**; en Windows, dentro de **WSL2**, nunca en PowerShell ni en `/mnt/c`.
+> [!IMPORTANT]
+> **Instalación en una línea** — Linux o terminal de WSL2
+>
+> ```sh
+> curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/install.sh \
+>   | bash
+> ```
+>
+> Descarga el entorno en `~/entorno-nvim`, lo instala y, al terminar, abre una
+> terminal nueva con `entorno-dev` listo. Si ya lo tenía, actualiza en lugar de
+> duplicar.
 
-### Linux
-
-Una sola línea:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
-```
-
-Descarga el entorno en `~/entorno-nvim`, lo instala y, al terminar, abre una
-terminal nueva con `entorno-dev` listo. Si ya lo tenía, actualiza en lugar de
-duplicar.
+> **Requisito:** una terminal de **Linux**. En Windows 11, la de **WSL2**
+> (Ubuntu), nunca PowerShell ni una carpeta `/mnt/c`.
 
 ### Windows 11 con WSL2
 
@@ -84,12 +86,16 @@ duplicar.
    contraseña **de Linux** (no son las de Windows).
 2. **Dentro de Ubuntu**, ejecute el mismo comando de una línea que en Linux:
    ```sh
-   curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/install.sh \
+     | bash
    ```
 3. **Iconos (opcional):** si ve cuadros en lugar de iconos, falta una fuente
    Nerd Font. En WSL se instala **en Windows**, no en Ubuntu: siga
    [Fuentes e iconos](#fuentes-e-iconos-nerd-font) o escriba `:EntornoIconos 0`
    dentro del editor para seguir en texto.
+
+> **En WSL, clone en su carpeta de Linux** (`~`). Las carpetas de Windows son
+> lentas y no admiten los sockets de Neovim.
 
 **El mismo `scripts/instalar-alumno.sh` sirve para Intel/AMD (x86_64) y
 ARM64 (por ejemplo, Snapdragon con Windows y WSL2).** Detecta la arquitectura
@@ -107,66 +113,12 @@ detección simulada y artefactos oficiales verificados para ARM64. La
 instalación completa en un portátil WSL2 ARM64 sigue pendiente; no se
 presenta como probada en ese hardware.
 
-## Fuentes e iconos (Nerd Font)
+### Casos habituales
 
-Los iconos del menú, del árbol de archivos y de la barra inferior son glifos
-de **Nerd Font**. Sin esa fuente, la terminal dibuja cuadros o huecos.
+> Si nunca lo ha instalado, vaya a la [instalación en una línea](#alumnado-empiece-aquí). Esta
+> sección es para repetir, actualizar o salir de un atasco.
 
-Tiene dos salidas y las dos son correctas:
-
-- **Seguir sin iconos**, sin instalar nada: escriba `:EntornoIconos 0` dentro
-  del editor. El texto y todas las funciones siguen igual, y la elección se
-  guarda.
-- **Instalar la fuente** y mantener los iconos. Después, `:EntornoIconos 1`.
-
-### Fuentes en Windows 11 (Windows Terminal y VS Code)
-
-1. Descargue **JetBrainsMono Nerd Font** desde
-   <https://www.nerdfonts.com/font-downloads> y descomprima el `.zip`.
-2. Seleccione todos los archivos `.ttf`, botón derecho →
-   **Instalar para todos los usuarios**. En Windows 11 esa opción puede estar
-   en «Mostrar más opciones» (o pulse `Mayús+F10`).
-3. **Windows Terminal:** `Ctrl+,` → perfil de **Ubuntu** → **Apariencia** →
-   **Tipo de letra** → `JetBrainsMono Nerd Font` → **Guardar**.
-4. **VS Code:** en la configuración de usuario (no la del proyecto) añada:
-   ```json
-   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
-   ```
-5. Cierre **todas** las ventanas de la terminal y abra `entorno-dev` de nuevo:
-   la fuente se elige al abrir la ventana.
-
-![Windows Terminal: pestaña Apariencia con el campo Font face](IMG/nerdfont/windows-terminal-apariencia.png)
-
-*Windows Terminal → perfil → Apariencia → **Font face**. Captura de la
-documentación oficial de Microsoft (CC BY 4.0); procedencia en
-[IMG/nerdfont/FUENTES.md](IMG/nerdfont/FUENTES.md).*
-
-Una fuente instalada dentro de Ubuntu no cambia nada: quien dibuja los
-caracteres es Windows Terminal.
-
-### Fuentes en Linux
-
-```sh
-mkdir -p ~/.local/share/fonts
-cp JetBrainsMono*.ttf ~/.local/share/fonts/
-fc-cache -f
-```
-
-Después elija `JetBrainsMono Nerd Font` en las preferencias de su terminal
-(GNOME Terminal, Konsole, Alacritty, Kitty, WezTerm...). Para comprobar que el
-sistema la ve:
-
-```sh
-fc-list | grep -i "nerd font"
-```
-
-### Comprobar cuál está activa
-
-Dentro del editor, `:EntornoIconos` muestra el estado y una línea de muestra:
-si se ve bien, la fuente sirve; si salen cuadros, no. El comando no instala ni
-modifica nada fuera del repositorio.
-
-### Caso 1: instalación paso a paso
+#### Caso 1: instalación paso a paso
 
 Si prefiere ver los comandos uno a uno, o quiere comprobar qué hace el
 instalador:
@@ -184,7 +136,7 @@ Compose. Si faltan programas del sistema, los muestra y pregunta antes de
 instalarlos (pedirá su contraseña). Al terminar ofrece añadir `entorno-dev`
 al PATH: responda `s`.
 
-### Si falló la instalación anterior en ARM64
+#### Si falló la instalación anterior en ARM64
 
 Si ya descargó el repositorio y el instalador anterior rechazó ARM, no hace
 falta borrar su carpeta. Desde WSL2, guarde su trabajo y ejecute:
@@ -203,7 +155,7 @@ Si Git avisa de cambios locales, consérvelos o consulte al profesor antes de
 descartarlos. Si falla de nuevo, copie el mensaje completo y la salida de
 `uname -m` y `cat /etc/os-release` (sin datos personales ni credenciales).
 
-### Caso 2: ya lo tenía instalado y tiene `scripts/actualizar.sh`
+#### Caso 2: ya lo tenía instalado y tiene `scripts/actualizar.sh`
 
 Guarde su trabajo y ejecute:
 
@@ -217,7 +169,7 @@ todo lo nuevo. Pulse Enter si pregunta. **No hace falta reinstalar a mano:**
 aunque instalara antes solo DWEC o solo SI, la actualización completa lo que
 falte (web, Bash, Python y Docker).
 
-### Caso 3: ya lo tenía instalado, pero su copia no tiene `actualizar.sh`
+#### Caso 3: ya lo tenía instalado, pero su copia no tiene `actualizar.sh`
 
 Solo la primera vez:
 
@@ -231,7 +183,7 @@ Si Git avisa de cambios locales (por ejemplo, finales de línea `^M` o
 `lazy-lock.json`), consulte al profesor antes de descartarlos. Desde entonces,
 use el caso 2.
 
-### Caso 4: empezar de cero (si algo sigue fallando)
+#### Caso 4: empezar de cero (si algo sigue fallando)
 
 Guarde su trabajo y descargue una copia limpia; la antigua se conserva por
 si acaso:
@@ -272,6 +224,68 @@ cd ~/entorno-nvim
 
 Copie el mensaje completo y envíelo al profesor. Problemas habituales en
 [la guía del alumno](docs/alumno.md#5-solución-de-problemas).
+
+## Fuentes e iconos (Nerd Font)
+
+Los iconos del menú, del árbol de archivos y de la barra inferior son glifos
+de **Nerd Font**. Sin esa fuente, la terminal dibuja cuadros o huecos.
+
+> **No está roto.** El entorno funciona igual en texto; las fuentes son solo
+> para ver los iconos.
+
+Tiene dos salidas y las dos son correctas:
+
+- **Seguir sin iconos**, sin instalar nada: escriba `:EntornoIconos 0` dentro
+  del editor. El texto y todas las funciones siguen igual, y la elección se
+  guarda.
+- **Instalar la fuente** y mantener los iconos. Después, `:EntornoIconos 1`.
+
+### Fuentes en Windows 11 (Windows Terminal y VS Code)
+
+1. Descargue **JetBrainsMono Nerd Font** desde
+   <https://www.nerdfonts.com/font-downloads> y descomprima el `.zip`.
+2. Seleccione todos los archivos `.ttf`, botón derecho →
+   **Instalar para todos los usuarios**. En Windows 11 esa opción puede estar
+   en «Mostrar más opciones» (o pulse `Mayús+F10`).
+3. **Windows Terminal:** `Ctrl+,` → perfil de **Ubuntu** → **Apariencia** →
+   **Tipo de letra** → `JetBrainsMono Nerd Font` → **Guardar**.
+4. **VS Code:** en la configuración de usuario (no la del proyecto) añada:
+   ```json
+   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
+   ```
+5. Cierre **todas** las ventanas de la terminal y abra `entorno-dev` de nuevo:
+   la fuente se elige al abrir la ventana.
+
+![Windows Terminal: pestaña Apariencia con el campo Font face](IMG/nerdfont/windows-terminal-apariencia.png)
+
+*Windows Terminal → perfil → Apariencia → **Font face**. Captura de la
+documentación oficial de Microsoft (CC BY 4.0); procedencia en
+[IMG/nerdfont/FUENTES.md](IMG/nerdfont/FUENTES.md).*
+
+> Una fuente instalada dentro de Ubuntu no cambia nada: quien dibuja los
+> caracteres es Windows Terminal.
+
+### Fuentes en Linux
+
+```sh
+mkdir -p ~/.local/share/fonts
+cp JetBrainsMono*.ttf ~/.local/share/fonts/
+fc-cache -f
+```
+
+Después elija `JetBrainsMono Nerd Font` en las preferencias de su terminal
+(GNOME Terminal, Konsole, Alacritty, Kitty, WezTerm...). Para comprobar que el
+sistema la ve:
+
+```sh
+fc-list | grep -i "nerd font"
+```
+
+### Comprobar cuál está activa
+
+Dentro del editor, `:EntornoIconos` muestra el estado y una línea de muestra:
+si se ve bien, la fuente sirve; si salen cuadros, no. El comando no instala ni
+modifica nada fuera del repositorio.
 
 ## Qué es
 
