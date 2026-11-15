@@ -290,6 +290,15 @@ entorno_lanzador_ok=1
 "$SCRIPT_DIR/instalar-entorno-dev.sh" || entorno_lanzador_ok=0
 entorno_resumen_instalacion profesor completa
 
+# Ruff formatea Python al guardar. Igual que en el perfil de alumnado: binario
+# verificado en .tools/, sin preguntar y sin bloquear.
+ruff_vendorizado="$ENTORNO_TOOLS_ROOT/ruff-$ENTORNO_RUFF_VERSION/bin/ruff"
+if [ ! -x "$ruff_vendorizado" ] && ! command -v ruff >/dev/null 2>&1; then
+  entorno_fase "Ruff para Python"
+  "$SCRIPT_DIR/instalar-ruff.sh" \
+    || printf '%s\n' 'AVISO: no se instalo ruff; Python funciona sin formato automatico.'
+fi
+
 # Consentimiento separado: --yes no autoriza cambiar la shell.
 sh "$SCRIPT_DIR/configurar-path.sh"
 

@@ -207,26 +207,15 @@ if [ -n "$faltan" ] && [ -n "$opcionales" ]; then
   faltan="$faltan $opcionales"
 fi
 
-# Ruff no esta empaquetado en Debian 13 ni en Ubuntu 26.04: se ofrece el binario
-# oficial verificado dentro de .tools/, sin pip, pipx ni sudo. Opcional y sin
-# bloquear nunca la instalacion.
+# Ruff formatea Python al guardar. Va como el resto del entorno: binario
+# oficial verificado en .tools/, sin preguntar (al alumnado el nombre no le dice
+# nada) y sin bloquear la instalacion si falla la descarga.
 ruff_vendorizado="$ENTORNO_TOOLS_ROOT/ruff-$ENTORNO_RUFF_VERSION/bin/ruff"
-if [ "$solo_comprobar" -eq 0 ] && [ "$inicio_sin_pausa" -eq 0 ] && [ -t 0 ] \
-  && [ ! -x "$ruff_vendorizado" ] && ! command -v ruff >/dev/null 2>&1; then
-  entorno_fase "Ruff para Python (opcional)"
-  printf '%s\n' \
-    'Ruff formatea Python al guardar. No viene en los repositorios de' \
-    'esta distribucion, asi que se instala un binario oficial verificado dentro' \
-    'de .tools/. No usa sudo ni modifica el sistema.'
-  entorno_preguntar '¿Instalar Ruff para formatear Python?' \
-    'Escribe s y Enter: binario verificado en .tools/, sin sudo.' \
-    'Enter o n para continuar sin el.'
-  IFS= read -r respuesta_ruff || respuesta_ruff=n
-  case "$respuesta_ruff" in
-    '' | s | S | si | Si | SI | sí | Sí | y | Y)
-      "$SCRIPT_DIR/instalar-ruff.sh" || printf '%s\n' 'AVISO: no se instalo ruff; el entorno funciona sin el.' ;;
-    *) printf '%s\n' 'Omitido: Python conserva errores y completado, sin formato automatico.' ;;
-  esac
+if [ "$solo_comprobar" -eq 0 ] && [ ! -x "$ruff_vendorizado" ] \
+  && ! command -v ruff >/dev/null 2>&1; then
+  entorno_fase "Ruff para Python"
+  "$SCRIPT_DIR/instalar-ruff.sh" \
+    || printf '%s\n' 'AVISO: no se instalo ruff; Python funciona sin formato automatico.'
 fi
 
 if [ -n "$faltan" ]; then

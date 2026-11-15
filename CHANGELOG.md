@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.2 — 2026-11-15
+
+- README: la instalación se separa en **Linux** y **Windows 11 con WSL2**, con
+  los pasos de WSL, el comando único y una sección propia de fuentes Nerd Font
+  (Windows Terminal, VS Code y Linux) enlazada desde donde se necesita.
+
+- Ruff deja de preguntarse: se instala con el resto del entorno, como Neovim o
+  Node. Al alumnado el nombre no le dice nada y la pregunta solo añadía ruido;
+  si la descarga falla, se avisa y Python sigue funcionando sin formato.
+
 ## 1.2.1 — 2026-11-15
 
 - Instalación de una línea: la terminal nueva que se abre al terminar ya tiene

@@ -98,9 +98,10 @@ locales, consérvelos o consulte al profesor antes de descartarlos.
 | Dockerfile, Compose | Sí | Sí | Dockerfile | — |
 
 ¹ **Ruff es opcional y no viene en los repositorios de Debian 13 ni Ubuntu
-26.04.** El entorno lo instala como binario oficial verificado dentro de
-`.tools/`, sin `sudo`, sin `pip` y sin tocar el sistema. Si falta, Python
-conserva errores, completado y ejecución; solo se pierde el formato al guardar:
+26.04.** El entorno lo instala automáticamente como binario oficial verificado dentro
+de `.tools/`, sin `sudo`, sin `pip` y sin tocar el sistema. Si por lo que sea
+falta, Python conserva errores, completado y ejecución; solo se pierde el
+formato al guardar, y se repara así:
 
 ```sh
 ./scripts/instalar-ruff.sh

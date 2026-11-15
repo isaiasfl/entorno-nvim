@@ -14,7 +14,12 @@ instalación, enlaces, bloques de comandos, atajos e incidencias.
 
 ## Alumnado: empiece aquí
 
-**La forma rápida, una sola línea** (Linux o terminal de WSL2):
+Elija su sistema. En los dos casos el comando se ejecuta en una terminal de
+**Linux**; en Windows, dentro de **WSL2**, nunca en PowerShell ni en `/mnt/c`.
+
+### Linux (Debian 13, Ubuntu 24.04 o posterior, Pop!_OS)
+
+Una sola línea:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
@@ -22,12 +27,24 @@ curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar
 
 Descarga el entorno en `~/entorno-nvim`, lo instala y, al terminar, abre una
 terminal nueva con `entorno-dev` listo. Si ya lo tenía, actualiza en lugar de
-duplicar. Los casos detallados, con las alternativas paso a paso, están justo
-debajo.
+duplicar.
 
-Elija **su caso** y copie los comandos en una terminal de Linux (en Windows,
-en la terminal de **WSL2/Ubuntu**, dentro de su carpeta personal `~`, nunca en
-`/mnt/c`).
+### Windows 11 con WSL2
+
+1. **Instale WSL2** en PowerShell **como administrador**:
+   ```powershell
+   wsl --install -d Ubuntu
+   ```
+   Reinicie si se lo pide. Al abrir Ubuntu le pedirá un usuario y una
+   contraseña **de Linux** (no son las de Windows).
+2. **Dentro de Ubuntu**, ejecute el mismo comando de una línea que en Linux:
+   ```sh
+   curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+   ```
+3. **Iconos (opcional):** si ve cuadros en lugar de iconos, falta una fuente
+   Nerd Font. En WSL se instala **en Windows**, no en Ubuntu: siga
+   [Fuentes e iconos](#fuentes-e-iconos-nerd-font) o escriba `:EntornoIconos 0`
+   dentro del editor para seguir en texto.
 
 **El mismo `scripts/instalar-alumno.sh` sirve para Intel/AMD (x86_64) y
 ARM64 (por ejemplo, Snapdragon con Windows y WSL2).** Detecta la arquitectura
@@ -35,19 +52,73 @@ y descarga Neovim y Node nativos, con versiones y SHA-256 fijados. No hay que
 elegir otro script ni pasar una opción ARM. Los paquetes del sistema se
 obtienen del gestor de Linux, que selecciona la arquitectura correspondiente.
 
-En Windows, primero debe tener **WSL2 con Ubuntu o Debian**; estos comandos
-se ejecutan en su terminal de Linux, no en PowerShell. ARM de 32 bits y Windows
-sin WSL no están admitidos por este instalador. El instalador general del
-profesor (`instalar.sh`, con PDF/LuaLS/Tree-sitter) conserva sus propios límites.
+En Windows, primero debe tener **WSL2 con Ubuntu o Debian**; ARM de 32 bits y
+Windows sin WSL no están admitidos. El instalador general del profesor
+(`instalar.sh`, con PDF/LuaLS/Tree-sitter) conserva sus propios límites.
 
 **Validación:** instalación y repetición reales del carril de alumnado en
-Linux x86_64; detección simulada y artefactos oficiales verificados para
-ARM64. La instalación completa en un portátil WSL2 ARM64 sigue pendiente;
-no se presenta como probada en ese hardware.
+Linux x86_64 (Debian 13 y Ubuntu 26.04, también en máquinas virtuales);
+detección simulada y artefactos oficiales verificados para ARM64. La
+instalación completa en un portátil WSL2 ARM64 sigue pendiente; no se
+presenta como probada en ese hardware.
 
-### Caso 1: primera vez (nunca lo ha instalado)
+## Fuentes e iconos (Nerd Font)
 
-Si prefiere verlo paso a paso:
+Los iconos del menú, del árbol de archivos y de la barra inferior son glifos
+de **Nerd Font**. Sin esa fuente, la terminal dibuja cuadros o huecos.
+
+Tiene dos salidas y las dos son correctas:
+
+- **Seguir sin iconos**, sin instalar nada: escriba `:EntornoIconos 0` dentro
+  del editor. El texto y todas las funciones siguen igual, y la elección se
+  guarda.
+- **Instalar la fuente** y mantener los iconos. Después, `:EntornoIconos 1`.
+
+### Windows 11 (Windows Terminal y VS Code)
+
+1. Descargue **JetBrainsMono Nerd Font** desde
+   <https://www.nerdfonts.com/font-downloads> y descomprima el `.zip`.
+2. Seleccione todos los archivos `.ttf`, botón derecho →
+   **Instalar para todos los usuarios**. En Windows 11 esa opción puede estar
+   en «Mostrar más opciones» (o pulse `Mayús+F10`).
+3. **Windows Terminal:** `Ctrl+,` → perfil de **Ubuntu** → **Apariencia** →
+   **Tipo de letra** → `JetBrainsMono Nerd Font` → **Guardar**.
+4. **VS Code:** en la configuración de usuario (no la del proyecto) añada:
+   ```json
+   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
+   ```
+5. Cierre **todas** las ventanas de la terminal y abra `entorno-dev` de nuevo:
+   la fuente se elige al abrir la ventana.
+
+Una fuente instalada dentro de Ubuntu no cambia nada: quien dibuja los
+caracteres es Windows Terminal.
+
+### Linux
+
+```sh
+mkdir -p ~/.local/share/fonts
+cp JetBrainsMono*.ttf ~/.local/share/fonts/
+fc-cache -f
+```
+
+Después elija `JetBrainsMono Nerd Font` en las preferencias de su terminal
+(GNOME Terminal, Konsole, Alacritty, Kitty, WezTerm...). Para comprobar que el
+sistema la ve:
+
+```sh
+fc-list | grep -i "nerd font"
+```
+
+### Comprobar cuál está activa
+
+Dentro del editor, `:EntornoIconos` muestra el estado y una línea de muestra:
+si se ve bien, la fuente sirve; si salen cuadros, no. El comando no instala ni
+modifica nada fuera del repositorio.
+
+### Caso 1: primera vez, paso a paso (alternativa a la línea única)
+
+Si prefiere ver los comandos uno a uno, o quiere comprobar qué hace el
+instalador:
 
 ```sh
 cd ~
@@ -137,14 +208,9 @@ Abre Neovim arriba y una terminal abajo. Dentro de Neovim, pulse `Espacio`
 y espere: aparece el menú con todas las acciones. Si la terminal dice que no encuentra
 `entorno-dev`, abra una terminal nueva o use `~/entorno-nvim/bin/entorno-dev .`
 
-### Si ve cuadros en lugar de iconos
-
-No está roto: falta una fuente Nerd Font en la terminal. Dentro del editor,
-`:EntornoIconos 0` pasa a texto y `:EntornoIconos 1` vuelve a los iconos; la
-elección se guarda y no instala nada.
-
-En Windows con WSL2 la fuente se instala **en Windows**, no en Ubuntu. Pasos por
-terminal en [Iconos de la terminal](docs/alumno.md#iconos-de-la-terminal).
+Si ve cuadros en lugar de iconos, no está roto: falta una Nerd Font. Resumen en
+[Fuentes e iconos](#fuentes-e-iconos-nerd-font), o `:EntornoIconos 0` para
+seguir en texto.
 
 ### Si algo falla
 
