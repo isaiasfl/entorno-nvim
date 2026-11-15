@@ -1,8 +1,11 @@
 # Identidad visual
 
-**IFL** se lee en japonés **イフル** (*i-fu-ru*), «Ifuru»: ese es el nombre de
-la mascota y el motivo de las letras del logotipo. Coincide además con la isla y
-el aeropuerto de Maldivas (código IFU), que fue la asociación que fijó el nombre.
+**IFL** se escribe en japonés **イフル** (*i-fu-ru*), «Ifuru»: ese es el nombre
+de la mascota y el motivo de las letras del logotipo.
+
+Aclaración deliberada: **Ifuru no es una palabra japonesa con significado**. El
+katakana no traduce, solo transcribe sonidos; イフル es la lectura de las letras
+IFL. El nombre no pretende significar nada en japonés.
 
 El README abre con **Ifuru** en [IMG/ifuru.png](../IMG/ifuru.png), la mascota
 del proyecto (origen: `logo_new3.png`), a 420 px y sin metadatos. El wordmark
