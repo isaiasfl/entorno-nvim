@@ -35,6 +35,7 @@ limitaciones en [IMG/icons/FUENTES.md](IMG/icons/FUENTES.md).*
 ## Índice
 
 - [Stack](#stack)
+- [Vista rápida](#vista-rápida)
 - [Alumnado: empiece aquí](#alumnado-empiece-aquí)
   - [Windows 11 con WSL2](#windows-11-con-wsl2)
   - [Casos habituales](#casos-habituales)
@@ -58,6 +59,25 @@ sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
 
 **[Fragmento HTML para Moodle DWEC](docs/moodle-dwec.html)**: entrada breve con
 instalación, enlaces, bloques de comandos, atajos e incidencias.
+
+## Vista rápida
+
+![Bienvenida de entorno-nvim: la mascota Ifuru, la versión y el menú de acciones](IMG/capturas/entorno-bienvenida.png)
+
+*La bienvenida: mascota, versión, perfil y accesos directos.*
+
+![El editor con el árbol a la izquierda y un archivo TypeScript abierto](IMG/capturas/entorno-editor.png)
+
+*El editor con el árbol, la barra de estado y la consola de tmux.*
+
+<details>
+<summary>Panel de agentes (perfil de profesor)</summary>
+
+![Panel de agentes con Codex, OpenCode, Claude, Pi y Shell](IMG/capturas/entorno-agentes.png)
+
+*El panel de agentes, con el rol activo y el atajo de cada uno.*
+
+</details>
 
 ## Alumnado: empiece aquí
 

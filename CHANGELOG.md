@@ -2,6 +2,10 @@
 
 ## 1.2.2 — 2026-11-15
 
+- README: sección **Vista rápida** con tres capturas propias del editor
+  (bienvenida, árbol con TypeScript y panel de agentes), optimizadas a PNG de
+  128 colores.
+
 - `instalar-rapido.sh` pasa a llamarse **`install.sh`**, más corto y estándar;
   el comando de una línea se muestra en dos líneas para que no se corte al
   copiarlo. El README se reordena: alumnado (instalar, casos, uso, problemas) y
