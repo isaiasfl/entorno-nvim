@@ -16,6 +16,10 @@
 - `vim.highlight` estaba deprecado en Neovim 0.12 y mostraba un aviso en cada
   yank; ahora usa `vim.hl.on_yank`, sin avisos en `:checkhealth`.
 
+- tmux: los avisos PREFIJO/COPIA/ZOOM vuelven a mostrarse como etiquetas. Las
+  comas de sus estilos partían la condición `#{?}` y dejaban texto suelto en la
+  barra inferior.
+
 - Instalador de una línea (`instalar-rapido.sh`): descarga o actualiza el
   repositorio y delega en el instalador de alumnado, leyendo las preguntas de
   `/dev/tty` para que funcione al ejecutarse como `curl | bash`.

@@ -590,3 +590,16 @@ duplicados en la misma línea.
 `vim.lsp.diagnostic._refresh()` no lo arreglaba y un `didChange` vacío manual sí
 publicaba, pero desincronizaba la versión del documento y rompía las
 actualizaciones posteriores: descartado.
+
+## Comas en estilos dentro de `#{?}` en tmux — 2026-11-15
+
+Detectado en la VM de Debian: la barra inferior mostraba texto suelto del tipo
+`,bg=colour3,bold] PREFIJO`. El separador de argumentos de `#{?condicion,a,b}`
+es la coma, y un estilo como `#[fg=colour0,bg=colour3,bold]` contiene comas, así
+que tmux cortaba la condición en `#[fg=colour0` y el resto se imprimía literal.
+
+Solución: dentro de una condición, las comas del estilo se escapan como `#,`
+(`#[fg=colour0#,bg=colour3#,bold]`), que tmux expande a coma al evaluar la
+condición sin partirla. Reproducido y verificado con `tmux display-message -p`:
+sin escapar, la condición devolvía solo `#[fg=colour0`; escapada, devuelve el
+estilo completo. Los estilos fuera de condiciones no cambian.
