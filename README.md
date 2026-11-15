@@ -291,9 +291,7 @@ modifica nada fuera del repositorio.
 
 ![Logotipo de entorno-nvim: las letras IFL](IMG/logo.png)
 
-*Las letras **IFL** se escriben en japonés **イフル** (i-fu-ru), «Ifuru»: el
-nombre de la mascota del proyecto, la cabeza con casco que abre este README.
-No es una palabra japonesa con significado: el katakana solo transcribe.*
+*Nuestra mascota **Ifuru**: las letras IFL, escritas en japonés.*
 
 `entorno-nvim` es una configuración de Neovim y tmux comprensible, versionada y
 reversible para programación, docencia y documentos Markdown. La versión actual
