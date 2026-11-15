@@ -27,8 +27,33 @@ if (exec 9</dev/tty) 2>/dev/null; then
   ENTRADA=/dev/tty
 fi
 
-command -v git >/dev/null 2>&1 || fallo 'Falta Git.' \
-  'Instalalo y repite:  sudo apt-get update && sudo apt-get install -y git'
+# Git es imprescindible para descargar el entorno. Si falta se ofrece
+# instalarlo, siempre con confirmacion: nunca se usa sudo a escondidas.
+if ! command -v git >/dev/null 2>&1; then
+  case "$(sed -n 's/^ID=//p' /etc/os-release 2>/dev/null | tr -d '"')" in
+    debian | ubuntu | pop) COMANDO='sudo apt-get update && sudo apt-get install -y git' ;;
+    arch | cachyos | omarchy) COMANDO='sudo pacman -S --needed git' ;;
+    *) COMANDO='' ;;
+  esac
+  printf '\n%s\n' '------------------------------------------------------------'
+  printf 'Falta Git, necesario para descargar el entorno\n'
+  if [ -n "$COMANDO" ]; then
+    printf 'Se ejecutara:  %s\n' "$COMANDO"
+    printf 'Escribe s y Enter para instalarlo, o Enter para cancelar.\n'
+  else
+    printf 'Instalalo con el gestor de tu sistema y repite este comando.\n'
+  fi
+  printf '%s\n' '------------------------------------------------------------'
+  printf '> '
+  RESPUESTA=
+  IFS= read -r RESPUESTA <"$ENTRADA" || RESPUESTA=
+  [ -n "$COMANDO" ] || exit 1
+  case "$RESPUESTA" in
+    s | S | si | Si | SI | sí | Sí | y | Y) sh -c "$COMANDO" || exit 1 ;;
+    *) fallo 'Git sigue sin estar instalado; no se ha modificado nada.' ;;
+  esac
+  command -v git >/dev/null 2>&1 || fallo 'Git no quedo disponible despues de instalarlo.'
+fi
 
 if [ -d "$DESTINO/.git" ]; then
   printf 'El entorno ya esta en %s: se actualiza.\n\n' "$DESTINO"
