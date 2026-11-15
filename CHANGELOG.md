@@ -27,6 +27,13 @@
 - Las preguntas de los instaladores van enmarcadas con líneas y en tres líneas
   de texto: qué se pregunta, qué escribir y qué ocurre si no se escribe nada.
 
+- La instalación de una línea se destaca al inicio de la sección de alumnado
+  del README, con el paso a paso como alternativa.
+
+- `CONTEXTO_INICIAL.md` se mueve a `docs/historia/contexto-inicial.md` con una
+  nota de documento histórico, y `AGENTS.md` queda marcado como documentación
+  interna de desarrollo. Ninguno lo lee el entorno ni hace falta para usarlo.
+
 - La bienvenida muestra la versión del entorno junto a «Neovim de Isaías»,
   leída de `VERSION`, para identificar la copia en uso.
 

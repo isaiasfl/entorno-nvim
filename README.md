@@ -14,6 +14,17 @@ instalación, enlaces, bloques de comandos, atajos e incidencias.
 
 ## Alumnado: empiece aquí
 
+**La forma rápida, una sola línea** (Linux o terminal de WSL2):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+```
+
+Descarga el entorno en `~/entorno-nvim`, lo instala y, al terminar, abre una
+terminal nueva con `entorno-dev` listo. Si ya lo tenía, actualiza en lugar de
+duplicar. Los casos detallados, con las alternativas paso a paso, están justo
+debajo.
+
 Elija **su caso** y copie los comandos en una terminal de Linux (en Windows,
 en la terminal de **WSL2/Ubuntu**, dentro de su carpeta personal `~`, nunca en
 `/mnt/c`).
@@ -36,14 +47,7 @@ no se presenta como probada en ese hardware.
 
 ### Caso 1: primera vez (nunca lo ha instalado)
 
-Una sola línea, en Linux o en la terminal de WSL2:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
-```
-
-Descarga el repositorio en `~/entorno-nvim` y lanza el instalador. Si ya lo
-tenía, actualiza en lugar de duplicarlo. El mismo resultado paso a paso:
+Si prefiere verlo paso a paso:
 
 ```sh
 cd ~

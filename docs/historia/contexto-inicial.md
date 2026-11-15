@@ -1,5 +1,9 @@
 # Contexto inicial para Codex
 
+> Documento histórico del arranque del proyecto: la petición original y el
+> estado de partida. Se conserva como memoria de decisiones; **no describe el
+> entorno actual** ni hace falta para instalarlo o usarlo.
+
 Quiero iniciar un proyecto nuevo para reconstruir desde cero mi entorno de Neovim.
 
 ## Situación actual

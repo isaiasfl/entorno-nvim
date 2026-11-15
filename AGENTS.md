@@ -1,5 +1,9 @@
 # AGENTS.md
 
+> Documento interno de trabajo para asistentes de IA que editen este
+> repositorio. No es necesario para instalar, usar ni actualizar el entorno, y
+> no contiene credenciales ni claves.
+
 ## Objetivo
 
 Construir desde cero una configuración de Neovim moderna, rápida, comprensible
@@ -150,9 +154,9 @@ del repositorio se prefiere pnpm:
 ```text
 .
 ├── AGENTS.md
-├── CONTEXTO_INICIAL.md
 ├── README.md
 ├── docs/
+│   ├── historia/contexto-inicial.md
 │   ├── decisiones.md
 │   ├── markdown-pdf.md
 │   └── restauracion.md
