@@ -2,6 +2,9 @@
 
 ## 1.2.2 — 2026-11-15
 
+- README: «Qué es» recupera el logotipo IFL y explica el nombre: **IFL** se lee
+  en japonés **イフル** (i-fu-ru), «Ifuru».
+
 - README: índice con enlaces, cabecera con la mascota Ifuru y captura oficial
   de Windows Terminal (CC BY 4.0) en el manual de fuentes, con su procedencia
   documentada en `IMG/nerdfont/FUENTES.md`.

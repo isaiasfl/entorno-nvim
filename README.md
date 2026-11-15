@@ -250,14 +250,19 @@ Copie el mensaje completo y envíelo al profesor. Problemas habituales en
 
 ## Qué es
 
-La evolucion docente portable ya dispone de perfiles y arranque minimo sin
-dependencias opcionales. Consulte [estado y uso actual](docs/entorno-docente.md).
-La V1 descrita mas abajo es la referencia historica completa en Debian;
-esta fase se prueba en Omarchy y aun no certifica WSL2.
+![Logotipo de entorno-nvim: las letras IFL](IMG/logo.png)
 
-`entorno-nvim` v1.2.0 es una configuración de Neovim y tmux comprensible,
-versionada y reversible para programación, docencia y documentos Markdown.
-La referencia probada es Debian 13 con Neovim 0.12.4.
+*Las letras **IFL** se leen en japonés **イフル** (i-fu-ru), «Ifuru»: el nombre
+de la mascota del proyecto, la cabeza con casco que abre este README.*
+
+`entorno-nvim` es una configuración de Neovim y tmux comprensible, versionada y
+reversible para programación, docencia y documentos Markdown. La versión actual
+figura en `VERSION` y en la portada del editor; la referencia probada es Debian
+13 con Neovim 0.12.4.
+
+La evolución docente portable ya dispone de perfiles y arranque mínimo sin
+dependencias opcionales. Consulte [estado y uso actual](docs/entorno-docente.md);
+la V1 descrita más abajo es la referencia histórica completa en Debian.
 
 ## Qué incluye
 
