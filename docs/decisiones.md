@@ -603,3 +603,23 @@ Solución: dentro de una condición, las comas del estilo se escapan como `#,`
 condición sin partirla. Reproducido y verificado con `tmux display-message -p`:
 sin escapar, la condición devolvía solo `#[fg=colour0`; escapada, devuelve el
 estilo completo. Los estilos fuera de condiciones no cambian.
+
+## Cómo se versiona el entorno — 2026-11-15
+
+`VERSION` en la raíz es la única fuente de verdad. Lo leen la bienvenida, el
+banner del instalador y `entorno_version_repo()` en los scripts; no hay ningún
+número escrito a mano en otro sitio, así que no pueden desincronizarse.
+
+Criterio, semántico y aplicado a lo que recibe el alumnado:
+
+- **PATCH** (1.2.0 → 1.2.1): fallos y ergonomía de algo ya publicado, sin
+  cambiar comandos. Ejemplo: la terminal nueva sin `entorno-dev`.
+- **MINOR** (1.1.0 → 1.2.0): funciones nuevas compatibles. Ejemplo: iconos
+  opcionales, Ruff, vista previa del explorador, instalador de una línea.
+- **MAJOR**: cambios que obligan a hacer algo distinto (renombrar o quitar
+  comandos, cambiar rutas de estado).
+
+Cada publicación añade su sección con el mismo número en `CHANGELOG.md`, y el
+alumnado la ve en la portada sin tener que mirar Git. `actualizar.sh` muestra
+además las novedades desde el commit anterior, así que versión y cambios
+coinciden.

@@ -293,7 +293,8 @@ entorno_resumen_instalacion profesor completa
 # Consentimiento separado: --yes no autoriza cambiar la shell.
 sh "$SCRIPT_DIR/configurar-path.sh"
 
-if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-dev" ]; then
+if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-dev" ] \
+  && [ "${ENTORNO_NVIM_BOOTSTRAP:-0}" != 1 ]; then
   entorno_marco 'Falta un paso: activa entorno-dev en esta terminal' \
     'Escribe:  exec $SHELL -l' \
     'O ahora mismo:  export PATH="$HOME/.local/bin:$PATH"'

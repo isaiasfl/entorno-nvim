@@ -8,3 +8,4 @@ strictStorePkgContentCheck: true
 strictDepBuilds: true
 allowBuilds:
   fsevents: false
+updateNotifier: false

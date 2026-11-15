@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1 — 2026-11-15
+
+- Instalación de una línea: la terminal nueva que se abre al terminar ya tiene
+  `entorno-dev`. Antes heredaba la tubería de `curl`, bash arrancaba no
+  interactivo, no leía `~/.bashrc` y el comando no aparecía.
+- El aviso «Update available» de pnpm desaparece: `updateNotifier: false` en el
+  `pnpm-workspace.yaml` de cada herramienta. La versión sigue fijada, así que el
+  aviso solo confundía.
+
 ## 1.2.0 — 2026-11-15
 
 - Ruff: Debian 13 y Ubuntu 26.04 no lo empaquetan, así que deja de pedirse al

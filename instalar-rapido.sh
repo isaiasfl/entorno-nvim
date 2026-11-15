@@ -74,6 +74,8 @@ fi
 [ -x "$TAREA" ] || fallo "la copia descargada no incluye $TAREA"
 
 # Se ejecuta como hijo, no con exec, para poder relevar la shell al final.
+# La marca evita que el instalador repita el aviso del PATH: aquí se resuelve.
+export ENTORNO_NVIM_BOOTSTRAP=1
 set +e
 "$TAREA" <"$ENTRADA"
 estado=$?
@@ -86,5 +88,8 @@ if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-de
   nueva=${SHELL:-/bin/bash}
   [ -x "$nueva" ] || nueva=/bin/bash
   printf '\nSe abre una terminal nueva para que entorno-dev este disponible.\n'
-  exec "$nueva" -l
+  # La entrada debe ser el terminal: heredando la tuberia de `curl`, bash
+  # arrancaria no interactivo y no leeria ~/.bashrc. El PATH se pasa ademas de
+  # forma explicita para no depender de los archivos de inicio del shell.
+  exec env PATH="$HOME/.local/bin:$PATH" "$nueva" -l <"$ENTRADA"
 fi

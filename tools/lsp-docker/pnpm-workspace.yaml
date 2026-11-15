@@ -7,3 +7,4 @@ verifyStoreIntegrity: true
 strictStorePkgContentCheck: true
 strictDepBuilds: true
 allowBuilds: {}
+updateNotifier: false

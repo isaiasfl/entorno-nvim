@@ -6,3 +6,4 @@ blockExoticSubdeps: true
 verifyStoreIntegrity: true
 strictStorePkgContentCheck: true
 strictDepBuilds: true
+updateNotifier: false

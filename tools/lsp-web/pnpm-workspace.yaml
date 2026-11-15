@@ -8,3 +8,4 @@ strictStorePkgContentCheck: true
 strictDepBuilds: true
 allowBuilds:
   core-js: false
+updateNotifier: false
