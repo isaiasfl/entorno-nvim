@@ -14,16 +14,21 @@ entorno_banner() {
     printf '\033[2J\033[H'
   fi
   printf '%s' "$entorno_color_ok"
-  cat <<'BANNER'
-██╗  ███████╗  ██╗
-██║  ██╔════╝  ██║
-██║  █████╗    ██║
-██║  ██╔══╝    ██║
-██║  ██║       ███████╗
-╚═╝  ╚═╝       ╚══════╝
-BANNER
+  # Misma cabeza que nvim/lua/config/dashboard.lua. Son bloques Unicode
+  # basicos: se ven igual sin Nerd Font ni soporte grafico.
+  cat <<'IFURU'
+      ▄▄████████▄▄
+    ▄██████████████▄
+ ▄▄ ██▀▀▀▀▀▀▀▀▀▀▀▀██ ▄▄
+ ██ █   █      █   █ ██
+ ██ █     ▀▄▄▀     █ ██
+ ▀▀ ██▄▄▄▄▄▄▄▄▄▄▄▄██ ▀▀
+    ▀██████████████▀
+
+           i f u r u
+IFURU
   printf '%s\n' "$entorno_color_reset"
-  printf 'ENTORNO-NVIM v%s | %s\n' "$(entorno_version_repo)" "$1"
+  printf 'by IFL · entorno-nvim v%s | %s\n' "$(entorno_version_repo)" "$1"
   printf '%s\n\n' 'Neovim · Node · LSP · tmux · búsqueda · Git'
 }
 entorno_confirmar_inicio() {

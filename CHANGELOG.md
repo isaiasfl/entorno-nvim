@@ -27,6 +27,9 @@
 - Las preguntas de los instaladores van enmarcadas con líneas y en tres líneas
   de texto: qué se pregunta, qué escribir y qué ocurre si no se escribe nada.
 
+- El instalador abre con la cabeza de Ifuru y la firma `by IFL ·
+  entorno-nvim`, igual que la bienvenida; antes mostraba las letras IFL.
+
 - La instalación de una línea se destaca al inicio de la sección de alumnado
   del README, con el paso a paso como alternativa.
 

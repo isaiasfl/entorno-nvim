@@ -26,8 +26,10 @@ local de su ordenador. El fondo blanco de la tarjeta garantiza contraste.
 
 ## Terminal
 
-El instalador conserva el IFL de texto: no depende de soporte gráfico ni de
-fuentes especiales. El logo gráfico no sustituye esa cabecera.
+El instalador muestra la misma cabeza de Ifuru en bloques Unicode que la
+bienvenida, con la versión del repositorio (`by IFL · entorno-nvim vX.Y.Z`) y
+la modalidad. No depende de Nerd Font ni de soporte gráfico; el logo PNG no
+sustituye esa cabecera.
 
 ## Barras y foco de panel — 09/11/2026
 
