@@ -1,7 +1,6 @@
 # Identidad visual
 
 **IFL** se escribe en japonés **イフル**, «Ifuru»: el nombre de la mascota.
-El katakana transcribe, no traduce; Ifuru no significa nada en japonés.
 
 El README abre con **Ifuru** en [IMG/ifuru.png](../IMG/ifuru.png), la mascota
 del proyecto (origen: `logo_new3.png`), a 420 px y sin metadatos. El wordmark
