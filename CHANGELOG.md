@@ -2,6 +2,10 @@
 
 ## 1.2.2 — 2026-11-15
 
+- README: nueva tabla **Stack** al principio con las versiones reales del
+  repositorio (Neovim, Node, pnpm, LSP, Ruff, Tree-sitter) y los sistemas
+  soportados.
+
 - README: «Qué es» recupera el logotipo IFL y explica el nombre: **IFL** se lee
   en japonés **イフル** (i-fu-ru), «Ifuru».
 

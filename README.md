@@ -6,8 +6,30 @@
 
 <p align="center"><em>Neovim de Isaías: desarrollo, docencia y Markdown/PDF.</em></p>
 
+## Stack
+
+| Capa | Qué usa |
+|---|---|
+| Editor | Neovim 0.12.4, configuración modular en Lua |
+| Plugins | lazy.nvim con todas las versiones fijadas en `lazy-lock.json` |
+| Terminal | tmux con paneles de editor, consola y agente |
+| Búsqueda | fzf-lua sobre ripgrep y fd |
+| LSP | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
+| Formato al guardar | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
+| Node | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
+| Parsers | Tree-sitter CLI 0.26.11 |
+| Git | lazygit, con delta opcional para los diffs |
+| Markdown/PDF | mdcat, Pandoc y Chromium (perfil de profesor) |
+| Sistemas | Debian 13, Ubuntu 24.04/26.04, WSL2 y CachyOS/Arch; macOS parcial |
+| Instalación | Shell POSIX, binarios oficiales verificados con SHA-256, sin `sudo` sin permiso |
+
+**Sin dependencias ocultas:** no hay Node global, ni paquetes de npm sueltos, ni
+plugins sin versión fija. Lo que no está instalado se detecta y se avisa, y el
+entorno sigue funcionando en texto.
+
 ## Índice
 
+- [Stack](#stack)
 - [Alumnado: empiece aquí](#alumnado-empiece-aquí)
   - [Linux](#linux) · [Windows 11 con WSL2](#windows-11-con-wsl2)
   - [Casos habituales](#caso-1-instalación-paso-a-paso)
