@@ -1,7 +1,27 @@
-![entorno-nvim — entorno de programación de Isaías](IMG/logo.png)
+<p align="center">
+  <img src="IMG/ifuru.png" alt="Ifuru, la mascota de entorno-nvim" width="190">
+</p>
 
+<h1 align="center">entorno-nvim</h1>
 
-*Neovim de Isaías: desarrollo, docencia y Markdown/PDF.*
+<p align="center"><em>Neovim de Isaías: desarrollo, docencia y Markdown/PDF.</em></p>
+
+## Índice
+
+- [Alumnado: empiece aquí](#alumnado-empiece-aquí)
+  - [Linux](#linux) · [Windows 11 con WSL2](#windows-11-con-wsl2)
+  - [Casos habituales](#caso-1-instalación-paso-a-paso)
+    · [Trabajar cada día](#trabajar-cada-día) · [Si algo falla](#si-algo-falla)
+- [Fuentes e iconos (Nerd Font)](#fuentes-e-iconos-nerd-font)
+- [Qué es](#qué-es) · [Qué incluye](#qué-incluye)
+- [Instalación completa y opciones](#empiece-aquí-elegir-la-instalación)
+- [Comprobar requisitos](#comprobar-requisitos)
+- [Usar entorno-dev desde cualquier carpeta](#usar-entorno-dev-desde-cualquier-carpeta)
+- [Restaurar](#restaurar) · [Actualización](#actualización) · [Desinstalación](#desinstalación)
+- [Neovim](#neovim) · [tmux](#tmux) · [Agentes](#agentes) · [Markdown/PDF](#markdownpdf) · [LSP](#lsp)
+- [Mappings principales](#mappings-principales)
+- [Portabilidad](#portabilidad) · [Seguridad](#seguridad)
+- [Licencia](#licencia)
 
 **[Guía completa de teclas y uso](docs/guia-completa-teclas.md)**: editor,
 explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
@@ -17,7 +37,7 @@ instalación, enlaces, bloques de comandos, atajos e incidencias.
 Elija su sistema. En los dos casos el comando se ejecuta en una terminal de
 **Linux**; en Windows, dentro de **WSL2**, nunca en PowerShell ni en `/mnt/c`.
 
-### Linux (Debian 13, Ubuntu 24.04 o posterior, Pop!_OS)
+### Linux
 
 Una sola línea:
 
@@ -74,7 +94,7 @@ Tiene dos salidas y las dos son correctas:
   guarda.
 - **Instalar la fuente** y mantener los iconos. Después, `:EntornoIconos 1`.
 
-### Windows 11 (Windows Terminal y VS Code)
+### Fuentes en Windows 11 (Windows Terminal y VS Code)
 
 1. Descargue **JetBrainsMono Nerd Font** desde
    <https://www.nerdfonts.com/font-downloads> y descomprima el `.zip`.
@@ -90,10 +110,16 @@ Tiene dos salidas y las dos son correctas:
 5. Cierre **todas** las ventanas de la terminal y abra `entorno-dev` de nuevo:
    la fuente se elige al abrir la ventana.
 
+![Windows Terminal: pestaña Apariencia con el campo Font face](IMG/nerdfont/windows-terminal-apariencia.png)
+
+*Windows Terminal → perfil → Apariencia → **Font face**. Captura de la
+documentación oficial de Microsoft (CC BY 4.0); procedencia en
+[IMG/nerdfont/FUENTES.md](IMG/nerdfont/FUENTES.md).*
+
 Una fuente instalada dentro de Ubuntu no cambia nada: quien dibuja los
 caracteres es Windows Terminal.
 
-### Linux
+### Fuentes en Linux
 
 ```sh
 mkdir -p ~/.local/share/fonts
@@ -115,7 +141,7 @@ Dentro del editor, `:EntornoIconos` muestra el estado y una línea de muestra:
 si se ve bien, la fuente sirve; si salen cuadros, no. El comando no instala ni
 modifica nada fuera del repositorio.
 
-### Caso 1: primera vez, paso a paso (alternativa a la línea única)
+### Caso 1: instalación paso a paso
 
 Si prefiere ver los comandos uno a uno, o quiere comprobar qué hace el
 instalador:

@@ -2,6 +2,10 @@
 
 ## 1.2.2 — 2026-11-15
 
+- README: índice con enlaces, cabecera con la mascota Ifuru y captura oficial
+  de Windows Terminal (CC BY 4.0) en el manual de fuentes, con su procedencia
+  documentada en `IMG/nerdfont/FUENTES.md`.
+
 - README: la instalación se separa en **Linux** y **Windows 11 con WSL2**, con
   los pasos de WSL, el comando único y una sección propia de fuentes Nerd Font
   (Windows Terminal, VS Code y Linux) enlazada desde donde se necesita.

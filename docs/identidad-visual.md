@@ -1,5 +1,9 @@
 # Identidad visual
 
+El README abre con **Ifuru** en [IMG/ifuru.png](../IMG/ifuru.png), la mascota
+del proyecto (origen: `logo_new3.png`), a 420 px y sin metadatos. El wordmark
+verde anterior sigue disponible para materiales docentes.
+
 El logo de entorno-nvim se conserva en [IMG/logo.png](../IMG/logo.png):
 PNG de 1800 × 447 píxeles con canal alfa real. Se utiliza en el README,
 las chuletas, la guía de alumnado, la referencia de teclas y el fragmento Moodle.
