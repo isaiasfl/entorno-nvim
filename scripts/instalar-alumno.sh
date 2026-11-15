@@ -454,3 +454,8 @@ if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-de
     'Escribe:  exec $SHELL -l' \
     'O ahora mismo:  export PATH="$HOME/.local/bin:$PATH"'
 fi
+
+# Recordatorio final: es el comando que resuelve las dudas de la siguiente clase.
+entorno_marco 'Para actualizar el entorno otro dia' \
+  "  cd $PROJECT_ROOT && ./scripts/actualizar.sh" \
+  'Descarga las novedades y reinstala con tu perfil.'

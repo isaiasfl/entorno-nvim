@@ -1,6 +1,6 @@
 # Changelog
 
-## Sin publicar
+## 1.2.0 — 2026-11-15
 
 - Ruff: Debian 13 y Ubuntu 26.04 no lo empaquetan, así que deja de pedirse al
   gestor del sistema. `scripts/instalar-ruff.sh` instala el binario oficial

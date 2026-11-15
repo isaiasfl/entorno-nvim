@@ -159,7 +159,7 @@ dependencias opcionales. Consulte [estado y uso actual](docs/entorno-docente.md)
 La V1 descrita mas abajo es la referencia historica completa en Debian;
 esta fase se prueba en Omarchy y aun no certifica WSL2.
 
-`entorno-nvim` v1.1.0 es una configuración de Neovim y tmux comprensible,
+`entorno-nvim` v1.2.0 es una configuración de Neovim y tmux comprensible,
 versionada y reversible para programación, docencia y documentos Markdown.
 La referencia probada es Debian 13 con Neovim 0.12.4.
 
