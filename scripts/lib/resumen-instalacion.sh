@@ -55,14 +55,33 @@ entorno_confirmar_inicio() {
     printf '%s\n' 'No hay entrada interactiva. Use --yes si desea iniciar sin pausa.' >&2
     return 1
   fi
-  printf '\n%s\n' '  Enter confirma el inicio; no autoriza sudo ni activa --sistema.'
-  printf '\n%s' 'Pulse Enter para comenzar, o Ctrl+C para cancelar: '
+  entorno_preguntar 'Pulsa Enter para empezar' \
+    'Ctrl+C cancela sin tocar nada. Enter no autoriza sudo.'
   IFS= read -r inicio_respuesta || return 1
   if [ -n "$inicio_respuesta" ]; then
     printf '%s\n' 'Cancelado: solo Enter confirma el inicio.'
     exit 0
   fi
 }
+# Marco destacado. El alumnado no lee parrafos: el marco separa la accion del
+# resto del registro. Uso: entorno_marco "Titulo" "linea" "linea"
+entorno_marco() {
+  entorno_marco_titulo=$1
+  shift
+  printf '\n%s\n' '------------------------------------------------------------'
+  printf '%s%s%s\n' "$entorno_color_aviso" "$entorno_marco_titulo" "$entorno_color_reset"
+  for entorno_marco_linea in "$@"; do
+    printf '  %s\n' "$entorno_marco_linea"
+  done
+  printf '%s\n' '------------------------------------------------------------'
+}
+
+# Igual que el marco, y ademas deja el cursor esperando la respuesta.
+entorno_preguntar() {
+  entorno_marco "$@"
+  printf '> '
+}
+
 entorno_fase() {
   entorno_fase_actual=$1
   printf '\n%s[EN CURSO] %s%s\n' "$entorno_color_aviso" "$entorno_fase_actual" "$entorno_color_reset"

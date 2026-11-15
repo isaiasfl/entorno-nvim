@@ -36,6 +36,15 @@ no se presenta como probada en ese hardware.
 
 ### Caso 1: primera vez (nunca lo ha instalado)
 
+Una sola línea, en Linux o en la terminal de WSL2:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+```
+
+Descarga el repositorio en `~/entorno-nvim` y lanza el instalador. Si ya lo
+tenía, actualiza en lugar de duplicarlo. El mismo resultado paso a paso:
+
 ```sh
 cd ~
 git clone https://github.com/isaiasfl/entorno-nvim.git

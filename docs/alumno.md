@@ -24,6 +24,16 @@ cd entorno-nvim
 ./scripts/instalar-alumno.sh
 ```
 
+Si prefiere una sola orden, hace lo mismo y actualiza si ya lo tenía:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/isaiasfl/entorno-nvim/main/instalar-rapido.sh | bash
+```
+
+Ese arranque solo descarga el repositorio y llama al instalador; todas las
+versiones siguen verificándose con SHA-256 y las preguntas se leen del
+terminal, no de la tubería.
+
 Instala lo mismo para DWEC y SI (web, Bash, Python y Docker). Para actualizar
 más adelante: `./scripts/actualizar.sh`. Si faltan programas del sistema,
 muestra el comando y pregunta antes de usar `sudo`.

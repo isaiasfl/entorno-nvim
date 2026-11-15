@@ -16,6 +16,13 @@
 - `vim.highlight` estaba deprecado en Neovim 0.12 y mostraba un aviso en cada
   yank; ahora usa `vim.hl.on_yank`, sin avisos en `:checkhealth`.
 
+- Instalador de una línea (`instalar-rapido.sh`): descarga o actualiza el
+  repositorio y delega en el instalador de alumnado, leyendo las preguntas de
+  `/dev/tty` para que funcione al ejecutarse como `curl | bash`.
+
+- Las preguntas de los instaladores van enmarcadas con líneas y en tres líneas
+  de texto: qué se pregunta, qué escribir y qué ocurre si no se escribe nada.
+
 - La bienvenida muestra la versión del entorno junto a «Neovim de Isaías»,
   leída de `VERSION`, para identificar la copia en uso.
 

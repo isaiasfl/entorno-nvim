@@ -114,7 +114,9 @@ if entorno_ruta_windows_wsl "$PROJECT_ROOT"; then
   printf '\n'
   entorno_explicar_ruta_windows "$PROJECT_ROOT"
   if [ "$solo_comprobar" -eq 0 ] && [ -t 0 ]; then
-    printf '%s' '¿Continuar aquí de todos modos? [s/N]: '
+    entorno_preguntar 'Esta carpeta anda lenta en WSL2' \
+      'Escribe s y Enter para continuar aqui de todos modos.' \
+      'Enter para cancelar (recomendado: clonar en ~).'
     IFS= read -r respuesta_ruta || respuesta_ruta=
     case "$respuesta_ruta" in
       s | S | si | Si | SI | sí | Sí) ;;
@@ -139,7 +141,9 @@ else
   printf '%s\n' '  No cambia tu Neovim ni tu tmux habituales.'
   if [ "$inicio_sin_pausa" -eq 0 ]; then
     [ -t 0 ] || error_uso 'no hay terminal para confirmar. Usa --yes para empezar sin pausa.'
-    printf '\n%s' 'Pulsa Enter para comenzar (Ctrl+C cancela): '
+    entorno_preguntar 'Pulsa Enter para empezar' \
+      'Ctrl+C cancela sin tocar nada.' \
+      'Enter no autoriza sudo: los paquetes se preguntan aparte.'
     IFS= read -r inicio_respuesta || exit 1
     if [ -n "$inicio_respuesta" ]; then
       printf '%s\n' 'Cancelado: solo Enter confirma el inicio.'
@@ -186,7 +190,9 @@ if [ -z "$faltan" ] && [ -n "$opcionales" ]; then
   esac
   printf 'Comando: %s\n' "$comando_opc"
   if [ "$sistema" != no ] && [ -t 0 ]; then
-    printf '%s' '¿Instalarlos ahora? Se te pedirá tu contraseña (Enter o s = sí; n = no): '
+    entorno_preguntar '¿Instalar los programas recomendados?' \
+      'Escribe s y Enter (pedira tu contrasena de Linux).' \
+      'Enter o n para continuar sin ellos.'
     IFS= read -r respuesta_opc || respuesta_opc=n
     case "$respuesta_opc" in
       '' | s | S | si | Si | SI | sí | Sí | y | Y)
@@ -212,7 +218,9 @@ if [ "$solo_comprobar" -eq 0 ] && [ "$inicio_sin_pausa" -eq 0 ] && [ -t 0 ] \
     'Ruff formatea Python al guardar. No viene en los repositorios de' \
     'esta distribucion, asi que se instala un binario oficial verificado dentro' \
     'de .tools/. No usa sudo ni modifica el sistema.'
-  printf '%s' '¿Instalarlo ahora? (Enter o s = sí; n = no): '
+  entorno_preguntar '¿Instalar Ruff para formatear Python?' \
+    'Escribe s y Enter: binario verificado en .tools/, sin sudo.' \
+    'Enter o n para continuar sin el.'
   IFS= read -r respuesta_ruff || respuesta_ruff=n
   case "$respuesta_ruff" in
     '' | s | S | si | Si | SI | sí | Sí | y | Y)
@@ -277,8 +285,9 @@ if [ -n "$faltan" ]; then
       ;;
   esac
 
-  printf '\n%s\n' '¿Instalarlos ahora? Se te pedirá tu contraseña de Linux (sudo).'
-  printf '%s' 'Enter o s = sí; n = no: '
+  entorno_preguntar '¿Instalar los programas que faltan?' \
+    'Escribe s y Enter: pedira tu contrasena de Linux (sudo).' \
+    'Enter o n para cancelar; sin ellos no se puede instalar.'
   respuesta=
   if [ -t 0 ]; then
     read -r respuesta || respuesta=n
@@ -408,14 +417,9 @@ printf '%s\n' "$perfil" > "$PERFIL_GUARDADO"
 entorno_resumen_instalacion "$perfil" alumnado
 
 if [ "$path_preparado" -eq 0 ]; then
-  cat <<'EOF'
-
-Tu shell actual todavia no incluye ~/.local/bin en PATH. Activalo ahora con:
-  export PATH="$HOME/.local/bin:$PATH"
-
-Despues podras ejecutar directamente `entorno-dev`. Las terminales nuevas de
-Ubuntu suelen incorporar ~/.local/bin automaticamente una vez que existe.
-EOF
+  entorno_marco 'Tu terminal aun no conoce entorno-dev' \
+    'Ocurre hasta que abras una terminal nueva.' \
+    'Al final de esta instalacion se ofrece activarlo.'
 fi
 
 # Informativo: no instala fuentes ni cambia nada. Ver docs/alumno.md#iconos.
@@ -442,3 +446,11 @@ fi
 
 # Consentimiento separado: --yes no autoriza cambiar la shell.
 sh "$SCRIPT_DIR/configurar-path.sh"
+
+# El script no puede cambiar el PATH de la terminal que lo lanzo: se indica la
+# orden exacta, que es lo unico que hace falta.
+if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-dev" ]; then
+  entorno_marco 'Falta un paso: activa entorno-dev en esta terminal' \
+    'Escribe:  exec $SHELL -l' \
+    'O ahora mismo:  export PATH="$HOME/.local/bin:$PATH"'
+fi

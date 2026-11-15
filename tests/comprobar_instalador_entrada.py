@@ -41,7 +41,7 @@ def ejecutar(script, args, pasos):
     return output
 
 
-output = ejecutar("instalar.sh", [], [(b"Pulse Enter", b"cancelar\n")])
+output = ejecutar("instalar.sh", [], [(b"> ", b"cancelar\n")])
 assert b"v" + version in output
 assert b"ANTES DE COMENZAR" in output
 assert b"ELIJA LA FORMA DE INSTALAR" in output
@@ -52,7 +52,7 @@ assert b"no autoriza sudo" in output
 print("OK: versión, plan y pausa; cancelación sin instalar: instalar.sh")
 
 # Sin opciones: perfil único, sin menú, plan y cancelación.
-output = ejecutar("instalar-alumno.sh", [], [(b"Pulsa Enter", b"cancelar\n")])
+output = ejecutar("instalar-alumno.sh", [], [(b"> ", b"cancelar\n")])
 assert b"v" + version in output
 assert b"Escribe 1 o 2" not in output
 assert b"Perfil: alumno" in output
@@ -61,7 +61,7 @@ assert b"se te preguntar\xc3\xa1 antes de instalarlo" in output
 print("OK: perfil único y cancelación sin instalar: instalar-alumno.sh")
 
 # Los perfiles antiguos se aceptan y no preguntan.
-output = ejecutar("instalar-alumno.sh", ["--perfil", "DWEC"], [(b"Pulsa Enter", b"cancelar\n")])
+output = ejecutar("instalar-alumno.sh", ["--perfil", "DWEC"], [(b"> ", b"cancelar\n")])
 assert b"Perfil: alumno" in output
 print("OK: --perfil dwec se acepta por compatibilidad: instalar-alumno.sh")
 

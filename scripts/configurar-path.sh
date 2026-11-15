@@ -1,6 +1,7 @@
 #!/bin/sh
 # Se ofrece al final de instalar.sh e instalar-alumno.sh. Nunca usa sudo.
 set -eu
+SCRIPT_DIR=$(CDPATH='' cd "$(dirname "$0")" && pwd)
 if [ ! -t 0 ]; then
   printf '%s\n' '[INFO] PATH sin modificar: no hay entrada interactiva.'
   exit 0
@@ -21,8 +22,10 @@ fi
 printf '\n%s\n' 'COMANDO ENTORNO-DEV DESDE CUALQUIER CARPETA'
 printf '¿Añadir ~/.local/bin al PATH de forma permanente? [s/N]:\n'
 printf '  Se añadirá a: %s\n' "$path_archivo"
-printf '%s\n' '  No sustituye nvim ni cambia paquetes del sistema.' '  Escriba s para aceptar; Enter conserva su configuración.'
-printf '> '
+. "$SCRIPT_DIR/lib/resumen-instalacion.sh"
+entorno_preguntar '¿Añadir entorno-dev al PATH?' \
+  'Escribe s y Enter para usarlo desde cualquier carpeta.' \
+  'Enter conserva tu configuración tal como está.'
 IFS= read -r path_respuesta || path_respuesta=
 case "$path_respuesta" in
   s|S|si|Si|SI|sí|Sí|y|Y|yes) ;;

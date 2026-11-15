@@ -164,7 +164,9 @@ paquetes_de() {
 ejecutar_comando_sistema() {
   comando=$1
   printf '\nSe va a ejecutar:\n  %s\n' "$comando"
-  printf '¿Continuar? [s/N]: '
+  entorno_preguntar '¿Instalar estos programas del sistema?' \
+    'Escribe s y Enter (pedira tu contrasena).' \
+    'Enter o n para cancelar.'
   respuesta=
   if [ -r /dev/tty ]; then
     read -r respuesta < /dev/tty || respuesta=
@@ -290,3 +292,9 @@ entorno_resumen_instalacion profesor completa
 
 # Consentimiento separado: --yes no autoriza cambiar la shell.
 sh "$SCRIPT_DIR/configurar-path.sh"
+
+if ! command -v entorno-dev >/dev/null 2>&1 && [ -x "$HOME/.local/bin/entorno-dev" ]; then
+  entorno_marco 'Falta un paso: activa entorno-dev en esta terminal' \
+    'Escribe:  exec $SHELL -l' \
+    'O ahora mismo:  export PATH="$HOME/.local/bin:$PATH"'
+fi
