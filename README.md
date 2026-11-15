@@ -70,14 +70,11 @@ instalación, enlaces, bloques de comandos, atajos e incidencias.
 
 *El editor con el árbol, la barra de estado y la consola de tmux.*
 
-<details>
-<summary>Panel de agentes (perfil de profesor)</summary>
+![Panel de agentes: Codex, OpenCode, Claude, Pi y Shell, desde el propio editor](IMG/capturas/entorno-agentes.png)
 
-![Panel de agentes con Codex, OpenCode, Claude, Pi y Shell](IMG/capturas/entorno-agentes.png)
-
-*El panel de agentes, con el rol activo y el atajo de cada uno.*
-
-</details>
+*Agentes CLI dentro del editor: Codex, OpenCode, Claude, Pi y una consola, cada
+uno en su panel. Es opcional: el perfil de alumnado no instala agentes ni pide
+credenciales.*
 
 ## Alumnado: empiece aquí
 
@@ -552,9 +549,13 @@ de trabajo tmux, Git, terminal, navegación y configuración. Más detalles en
 
 ## Agentes
 
-El panel derecho admite agentes CLI intercambiables. `<leader>ac` pega contexto
-solo tras validar el proceso de destino y nunca envía Enter. El entorno no
-instala agentes ni gestiona sus credenciales.
+El panel derecho admite agentes CLI intercambiables (`Codex`, `OpenCode`,
+`Claude`, `Pi` o una consola). `<leader>ac` pega contexto solo tras validar el
+proceso de destino y nunca envía Enter. El entorno **no instala agentes ni
+gestiona sus credenciales**: si no tienes ninguno, el panel simplemente no
+aparece.
+
+Véase en funcionamiento en [Vista rápida](#vista-rápida).
 
 ## Markdown/PDF
 
