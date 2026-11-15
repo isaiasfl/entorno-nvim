@@ -242,19 +242,55 @@ end
 -- Formato al guardar, como en VS Code. Espacio uf lo activa o desactiva.
 vim.g.entorno_formatear_al_guardar = true
 local format_group = vim.api.nvim_create_augroup("entorno_nvim_formato", { clear = true })
+
+-- Ruff formatea Python sin actuar como cliente LSP: se ejecuta como programa y
+-- devuelve el texto ya formateado. Evita duplicar diagnosticos con Pyright y la
+-- carrera entre dos clientes que consultan diagnosticos del mismo bufer.
+local function ruff_formatear(bufnr)
+  if vim.bo[bufnr].filetype ~= "python" or vim.fn.executable("ruff") ~= 1 then
+    return false
+  end
+
+  local lineas = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local resultado = vim
+    .system({
+      "ruff",
+      "format",
+      "--stdin-filename",
+      vim.api.nvim_buf_get_name(bufnr),
+      "-",
+    }, {
+      stdin = table.concat(lineas, "\n") .. "\n",
+      text = true,
+    })
+    :wait(2000)
+
+  if resultado.code ~= 0 or not resultado.stdout or resultado.stdout == "" then
+    return false
+  end
+
+  local formateadas = vim.split(resultado.stdout:gsub("\n$", ""), "\n", { plain = true })
+  if vim.deep_equal(formateadas, lineas) then
+    return true
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formateadas)
+  pcall(vim.api.nvim_win_set_cursor, 0, { math.min(cursor[1], #formateadas), cursor[2] })
+  return true
+end
+
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = format_group,
   callback = function(event)
     if not vim.g.entorno_formatear_al_guardar or vim.b[event.buf].entorno_sin_formato then
       return
     end
+    if ruff_formatear(event.buf) then return end
     local clients = vim.lsp.get_clients({ bufnr = event.buf, method = "textDocument/formatting" })
     if #clients == 0 then return end
-    -- Con Ruff presente, formatea Ruff y no Pyright; en HTML no Tailwind.
+    -- En HTML no formatea Tailwind: rompe clases y atributos.
     local skip = { tailwindcss = true }
-    for _, client in ipairs(clients) do
-      if client.name == "ruff" then skip.pyright = true end
-    end
     vim.lsp.buf.format({
       bufnr = event.buf,
       timeout_ms = 2000,
@@ -370,19 +406,32 @@ local function enable_python_server()
     return
   end
 
-  -- Ruff (paquete del sistema, opcional): estilo, errores comunes y formato.
+  -- Ruff (opcional): se usa solo como formateador, no como servidor LSP. Con
+  -- dos clientes consultando diagnosticos a la vez, Pyright dejaba de publicar
+  -- en algunos arranques y ademas se duplicaban los avisos. El formateo se
+  -- aplica desde el guardado con `ruff format` (ver mas abajo).
   if vim.fn.executable("ruff") == 1 then
-    M.enable("ruff", {
-      cmd = { "ruff", "server" },
-      filetypes = { "python" },
-      root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
-    })
+    local mayor, menor, parche = vim.fn.system({ "ruff", "--version" }):match("(%d+)%.(%d+)%.(%d+)")
+    local moderno = vim.v.shell_error == 0
+      and mayor
+      and (
+        tonumber(mayor) > 0
+        or (tonumber(mayor) == 0 and tonumber(menor) > 5)
+        or (tonumber(mayor) == 0 and tonumber(menor) == 5 and tonumber(parche) >= 3)
+      )
+    if not moderno then
+      profile.unavailable("ruff", "version antigua: ./scripts/instalar-ruff.sh (requiere 0.5.3 o posterior)")
+    end
   else
-    profile.unavailable("ruff", "opcional: instale el paquete ruff para estilo y formato de Python")
+    profile.unavailable("ruff", "opcional: ./scripts/instalar-ruff.sh (sin sudo) para formato de Python")
   end
 
   M.enable("pyright", {
     cmd = { executable, "--stdio" },
+    -- Modo push: sin pedir diagnosticos por consulta. Con diagnosticos "pull",
+    -- Pyright a veces no respondia al abrir el archivo y los errores no
+    -- aparecian hasta escribir algo. Asi publica al abrir y en cada cambio.
+    capabilities = { textDocument = { diagnostic = false } },
     settings = {
       python = {
         analysis = {

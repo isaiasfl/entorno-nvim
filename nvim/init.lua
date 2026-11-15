@@ -12,6 +12,7 @@ require("config.tabline").setup()
 require("config.keymaps")
 require("config.help").setup()
 require("config.autocmds")
+require("config.iconos").setup()
 require("config.lazy")
 if not require("config.lazy").available then
   require("config.navigation").setup()

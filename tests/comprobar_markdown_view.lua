@@ -11,7 +11,13 @@ vim.fn.executable = function(command)
   if command == "mdcat" then return 1 end
   return original.executable(command)
 end
-vim.system = function(command) commands[#commands + 1] = command end
+vim.system = function(command)
+  -- Solo interesa el lanzador del visor: la barra de estado tambien consulta
+  -- Git con vim.system y no debe contar como apertura de mdcat.
+  if command[2] and tostring(command[2]):find("markdown%-view%.sh$") then
+    commands[#commands + 1] = command
+  end
+end
 vim.env.TMUX, vim.env.TMUX_PANE = "test", "%42"
 view.open(file)
 assert(#commands == 1 and commands[1][5] == file, "La ruta debe ser un argumento sin interpolar")

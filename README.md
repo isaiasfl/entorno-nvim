@@ -124,6 +124,15 @@ Abre Neovim arriba y una terminal abajo. Dentro de Neovim, pulse `Espacio`
 y espere: aparece el menú con todas las acciones. Si la terminal dice que no encuentra
 `entorno-dev`, abra una terminal nueva o use `~/entorno-nvim/bin/entorno-dev .`
 
+### Si ve cuadros en lugar de iconos
+
+No está roto: falta una fuente Nerd Font en la terminal. Dentro del editor,
+`:EntornoIconos 0` pasa a texto y `:EntornoIconos 1` vuelve a los iconos; la
+elección se guarda y no instala nada.
+
+En Windows con WSL2 la fuente se instala **en Windows**, no en Ubuntu. Pasos por
+terminal en [Iconos de la terminal](docs/alumno.md#iconos-de-la-terminal).
+
 ### Si algo falla
 
 ```sh

@@ -13,6 +13,10 @@ El dashboard aparece únicamente al iniciar Neovim sin archivos ni entrada
 estándar y con una interfaz conectada. Por tanto, no sustituye un archivo pedido
 en la línea de comandos, no aparece en procesos headless y no altera tuberías.
 
+El subtítulo muestra la versión del entorno leída de `VERSION`, en gris, para
+saber de un vistazo qué copia se está usando en clase. Si el archivo falta, se
+omite sin errores.
+
 También puede abrirse en cualquier momento con:
 
 ```vim

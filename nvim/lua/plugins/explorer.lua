@@ -31,92 +31,10 @@ return {
         desc = "Enfocar el archivo actual en el arbol",
       },
     },
+    -- Las opciones viven en config/explorer.lua para que :EntornoIconos pueda
+    -- reaplicarlas en caliente sin reiniciar Neovim.
     opts = function()
-      local function on_attach(bufnr)
-        local api = require("nvim-tree.api")
-
-        api.config.mappings.default_on_attach(bufnr)
-
-        local function map(lhs, rhs, desc)
-          vim.keymap.set("n", lhs, rhs, {
-            buffer = bufnr,
-            desc = desc,
-            noremap = true,
-            nowait = true,
-            silent = true,
-          })
-        end
-
-        map("<C-h>", "<C-w>h", "Ventana izquierda")
-        map("<C-j>", "<C-w>j", "Ventana inferior")
-        map("<C-k>", "<C-w>k", "Ventana superior")
-        map("<C-l>", "<C-w>l", "Ventana derecha")
-      end
-
-      return {
-        on_attach = on_attach,
-        disable_netrw = true,
-        hijack_netrw = true,
-        sync_root_with_cwd = false,
-        respect_buf_cwd = false,
-        hijack_directories = {
-          enable = false,
-          auto_open = false,
-        },
-        update_focused_file = {
-          enable = false,
-          update_root = {
-            enable = false,
-          },
-        },
-        git = {
-          enable = false,
-        },
-        diagnostics = {
-          enable = false,
-        },
-        modified = {
-          enable = false,
-        },
-        renderer = {
-          decorators = {},
-          icons = {
-            web_devicons = {
-              file = {
-                enable = true,
-                color = true,
-              },
-              folder = {
-                enable = false,
-                color = false,
-              },
-            },
-            show = {
-              file = true,
-              folder = true,
-              folder_arrow = true,
-              git = false,
-              modified = false,
-              hidden = false,
-              diagnostics = false,
-              bookmarks = false,
-            },
-          },
-        },
-        view = {
-          signcolumn = "no",
-        },
-        filters = {
-          enable = false,
-        },
-        ui = {
-          confirm = {
-            remove = true,
-            trash = true,
-            default_yes = false,
-          },
-        },
-      }
+      return require("config.explorer").opts()
     end,
   },
 }

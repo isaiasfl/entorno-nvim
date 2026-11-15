@@ -509,3 +509,84 @@ solo con la confirmación de sistema habitual, y alumnado solo si está disponib
 No se fija el paquete del sistema; su versión real se registra en el cierre.
 
 Fuente: https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_DiffRenderers.md
+
+## Iconos sin dependencias: interruptor único — 2026-11-15
+
+Problema: buena parte del alumnado usa WSL2 y ve cuadros en lugar de iconos.
+Una Nerd Font instalada dentro de la distribución no cambia nada, porque quien
+dibuja los glifos es Windows Terminal o la terminal de VS Code, con fuentes de
+Windows. No existe forma fiable de detectar la fuente del terminal: ni Windows
+Terminal ni VS Code la exponen, y `fc-list` solo ve el sistema Linux.
+
+Decisión: no se adivina ni se cambia el comportamiento de nadie. `config/iconos.lua`
+es la única fuente de verdad, con prioridad `ENTORNO_ICONOS` (sesión) >
+`.xdg/iconos` (persistente) > activados, que es lo que ya había. `:EntornoIconos`
+alterna, guarda y reaplica sin reiniciar: la barra y la bienvenida se redibujan y
+el árbol se reconstruye con `nvim-tree.setup()`, que el plugin documenta como
+reaplicable; después se reabre si estaba visible, porque `setup()` vacía la vista.
+Sin Nerd Font el árbol pasa a flechas ASCII `>` y `v` y deja de pedir devicons.
+
+Alternativa descartada: ASCII automático en WSL. Habría quitado los iconos a quien
+ya tenía la fuente instalada, es decir, roto algo para arreglar otra cosa. También
+se descartó preguntar en el instalador: rompe `--yes` y las instalaciones no
+interactivas.
+
+La fuente no se distribuye ni se instala sola: no hay descargas nuevas, ni cambios
+fuera del repositorio, ni privilegios. `docs/alumno.md` explica las tres rutas
+(Windows Terminal, VS Code, Linux) y el instalador imprime un aviso informativo
+solo cuando no detecta Nerd Font en Linux, o siempre en WSL2. Prueba
+`tests/comprobar_iconos.lua` cubre prioridad, persistencia y ausencia de glifos
+privados en árbol, barra y bienvenida.
+
+## Ruff sin gestor de paquetes — 2026-11-15
+
+Problema: la columna «Con ruff» del formato de Python era incumplible en las dos
+distribuciones obligatorias. Debian 13 y Ubuntu 26.04 no incluyen `ruff`
+(`apt-cache policy ruff` sin candidato, verificado en contenedores limpios), y
+`pip install ruff` choca con PEP 668 (entorno gestionado externamente): el alumno
+acababa en venv, `--break-system-packages` o `pipx` instalado a mano.
+
+Decisión: se trata como el resto de herramientas fijadas del proyecto. Nuevo
+`scripts/instalar-ruff.sh` descarga `ruff-x86_64-unknown-linux-gnu.tar.gz` o
+`ruff-aarch64-unknown-linux-gnu.tar.gz` de la release 0.17.5, verifica SHA-256,
+comprueba que el archivo contiene un único ejecutable, valida `ruff --version` y
+lo deja en `.tools/ruff-0.17.5/bin/`. Sin `sudo`, sin `pip`, sin red en cada
+arranque. `arrancar.sh` antepone esa ruta al PATH y `config/lsp.lua` solo activa
+`ruff server` con 0.5.3 o posterior; si detecta una versión anterior, avisa y no
+arranca un servidor que fallaría.
+
+Alternativas descartadas: `pipx` (otra dependencia y otra descarga, no está en
+Debian por defecto), `pip --break-system-packages` (rompe el sistema del alumno)
+y añadir el paquete de terceros de turno. En macOS no se distribuye artefacto y
+se remite a `brew`/`pipx`: el entorno funciona sin ruff.
+
+Nadie cambia de comportamiento sin pedirlo: el instalador de alumnado ofrece el
+binario una vez, de forma interactiva, y en instalación desatendida (`--yes`) lo
+omite. Prueba real: instalación y detección por el cliente LSP `ruff` en un
+búfer Python, con `:EntornoInfo` mostrándolo disponible.
+
+## Ruff como formateador y Pyright en modo push — 2026-11-15
+
+Dos hallazgos al probar ruff dentro del editor, medidos con arranques repetidos
+sobre el fixture de Python:
+
+1. Con ruff activo como servidor LSP, Pyright dejaba de publicar diagnósticos en
+   uno de cada tres arranques. No era culpa de ruff: ocurría igual sin él.
+   Neovim 0.12 consulta diagnósticos (`textDocument/diagnostic`) al adjuntar el
+   cliente y Pyright, todavía analizando el proyecto, no respondía; después solo
+   se refrescaban al modificar el búfer. Consecuencia real: abrir un archivo
+   Python sin errores visibles hasta escribir algo.
+2. Dos clientes consultando diagnósticos duplicaban avisos (F821 de Ruff y
+   «undefined variable» de Pyright en la misma línea).
+
+Decisión: `ruff` no se configura como cliente LSP. El formato al guardar ejecuta
+`ruff format --stdin-filename <archivo> -` con el contenido del búfer y aplica
+la salida (2 s de límite; si falla, formato LSP habitual). Pyright se configura
+con `capabilities = { textDocument = { diagnostic = false } }`, de modo que use
+diagnósticos push: publica al abrir y en cada cambio. Verificado con tres
+arranques consecutivos del test de Python y con un cambio posterior, sin
+duplicados en la misma línea.
+
+`vim.lsp.diagnostic._refresh()` no lo arreglaba y un `didChange` vacío manual sí
+publicaba, pero desincronizaba la versión del documento y rompía las
+actualizaciones posteriores: descartado.

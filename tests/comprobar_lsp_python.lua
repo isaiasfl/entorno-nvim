@@ -37,6 +37,8 @@ for _, method in ipairs({
 end
 
 local clients = vim.lsp.get_clients({ bufnr = bufnr })
+-- Ruff formatea fuera de LSP a proposito: dos clientes con diagnosticos se
+-- pisaban y duplicaban avisos. Solo Pyright debe atender Python.
 assert(#clients == 1 and clients[1].name == "pyright", "otro servidor LSP interfiere en el buffer Python")
 
 local use = position_params(bufnr, 3, 16)

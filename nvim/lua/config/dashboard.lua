@@ -152,13 +152,38 @@ local function render(buffer, window)
     end
     add_blank()
   end
-  add_line("Neovim de Isaías", nil, "IFLSubtitle")
+  local function version_entorno()
+    local archivo = vim.fs.joinpath(require("config.paths").repository(), "VERSION")
+    local ok, lineas = pcall(vim.fn.readfile, archivo)
+    if not ok or not lineas[1] then
+      return nil
+    end
+    local valor = vim.trim(lineas[1])
+    return valor ~= "" and valor or nil
+  end
+
+  local subtitulo = "Neovim de Isaías"
+  local version = version_entorno()
+  if version then
+    subtitulo = subtitulo .. "  ·  v" .. version
+  end
+  add_line(subtitulo, nil, "IFLSubtitle")
+  if version then
+    -- La version queda mas discreta que el nombre, sin romper la alineacion.
+    local padding = left_padding(vim.fn.strdisplaywidth(subtitulo), width)
+    table.insert(highlights, {
+      line = #lines - 1,
+      group = "IFLSecondary",
+      start = #padding + #"Neovim de Isaías",
+      finish = -1,
+    })
+  end
   add_blank()
   if spacious then add_blank() end
 
   local first_action_line = #lines
   for index, action in ipairs(actions) do
-    local icon = vim.env.ENTORNO_ICONOS == "0" and "·" or action.icon
+    local icon = require("config.iconos").elegir(action.icon, "·")
     local label = icon .. "  " .. action.label
     local key = "[" .. action.key .. "]"
     local gap = string.rep(" ", math.max(2, menu_width - vim.fn.strdisplaywidth(label) - #key))
@@ -301,6 +326,11 @@ local function rerender_dashboards()
       render(buffer, window)
     end
   end
+end
+
+--- Redibuja los dashboards visibles; lo usa :EntornoIconos al cambiar de modo.
+function M.refresh()
+  rerender_dashboards()
 end
 
 function M.setup()

@@ -168,7 +168,7 @@ paquete_disponible() {
 }
 opcionales=
 if [ "$solo_comprobar" -eq 0 ]; then
-  for opcional in shfmt ruff git-delta; do
+  for opcional in shfmt git-delta; do
     ejecutable=$opcional
     [ "$opcional" != git-delta ] || ejecutable=delta
     command -v "$ejecutable" >/dev/null 2>&1 && continue
@@ -199,6 +199,26 @@ if [ -z "$faltan" ] && [ -n "$opcionales" ]; then
 fi
 if [ -n "$faltan" ] && [ -n "$opcionales" ]; then
   faltan="$faltan $opcionales"
+fi
+
+# Ruff no esta empaquetado en Debian 13 ni en Ubuntu 26.04: se ofrece el binario
+# oficial verificado dentro de .tools/, sin pip, pipx ni sudo. Opcional y sin
+# bloquear nunca la instalacion.
+ruff_vendorizado="$ENTORNO_TOOLS_ROOT/ruff-$ENTORNO_RUFF_VERSION/bin/ruff"
+if [ "$solo_comprobar" -eq 0 ] && [ "$inicio_sin_pausa" -eq 0 ] && [ -t 0 ] \
+  && [ ! -x "$ruff_vendorizado" ] && ! command -v ruff >/dev/null 2>&1; then
+  entorno_fase "Ruff para Python (opcional)"
+  printf '%s\n' \
+    'Ruff formatea Python al guardar. No viene en los repositorios de' \
+    'esta distribucion, asi que se instala un binario oficial verificado dentro' \
+    'de .tools/. No usa sudo ni modifica el sistema.'
+  printf '%s' '¿Instalarlo ahora? (Enter o s = sí; n = no): '
+  IFS= read -r respuesta_ruff || respuesta_ruff=n
+  case "$respuesta_ruff" in
+    '' | s | S | si | Si | SI | sí | Sí | y | Y)
+      "$SCRIPT_DIR/instalar-ruff.sh" || printf '%s\n' 'AVISO: no se instalo ruff; el entorno funciona sin el.' ;;
+    *) printf '%s\n' 'Omitido: Python conserva errores y completado, sin formato automatico.' ;;
+  esac
 fi
 
 if [ -n "$faltan" ]; then
@@ -396,6 +416,28 @@ Tu shell actual todavia no incluye ~/.local/bin en PATH. Activalo ahora con:
 Despues podras ejecutar directamente `entorno-dev`. Las terminales nuevas de
 Ubuntu suelen incorporar ~/.local/bin automaticamente una vez que existe.
 EOF
+fi
+
+# Informativo: no instala fuentes ni cambia nada. Ver docs/alumno.md#iconos.
+nerd_font=0
+if [ "$ENTORNO_IS_WSL" != 1 ] && command -v fc-list >/dev/null 2>&1 \
+  && fc-list 2>/dev/null | grep -qi 'nerd font'; then
+  nerd_font=1
+fi
+if [ "$nerd_font" -eq 0 ]; then
+  printf '\n%s\n' 'ICONOS DE LA TERMINAL'
+  cat <<'EOF'
+  Si el editor muestra cuadros o huecos en lugar de iconos, su terminal no
+  tiene una fuente Nerd Font. No es un error: todo funciona igual en texto.
+    - Pasar a texto:   escriba :EntornoIconos 0 dentro del editor.
+    - Volver a iconos: escriba :EntornoIconos 1
+EOF
+  if [ "$ENTORNO_IS_WSL" = 1 ]; then
+    printf '%s\n' '  En WSL la fuente se instala en Windows, no en Ubuntu.' \
+      '  Pasos concretos: docs/alumno.md, seccion "Iconos de la terminal".'
+  else
+    printf '%s\n' '  Instalar la fuente: docs/alumno.md, seccion "Iconos de la terminal".'
+  fi
 fi
 
 # Consentimiento separado: --yes no autoriza cambiar la shell.

@@ -1,6 +1,5 @@
 local M = {}
 local branches = {}
-local icons = vim.env.ENTORNO_ICONOS ~= "0"
 
 local function branch()
   local name = vim.api.nvim_buf_get_name(0)
@@ -44,6 +43,7 @@ local function colors()
 end
 
 function M.render()
+  local icons = require("config.iconos").activos()
   local win = tonumber(vim.g.statusline_winid) or vim.api.nvim_get_current_win()
   local active = win == vim.api.nvim_get_current_win()
   local width = vim.o.laststatus == 3 and vim.o.columns or vim.api.nvim_win_get_width(win)

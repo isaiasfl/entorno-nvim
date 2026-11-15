@@ -2,6 +2,30 @@
 
 ## Sin publicar
 
+- Ruff: Debian 13 y Ubuntu 26.04 no lo empaquetan, así que deja de pedirse al
+  gestor del sistema. `scripts/instalar-ruff.sh` instala el binario oficial
+  0.17.5 con SHA-256 en `.tools/`, sin `sudo`, `pip` ni cambios en el sistema;
+  el instalador de alumnado lo ofrece una vez y el arranque lo añade al PATH.
+  El LSP exige 0.5.3 o posterior: una versión antigua avisa en `:EntornoInfo` en
+  lugar de arrancar un servidor roto. Documentado `ruff_lsp` como obsoleto.
+
+- Python: Ruff formatea al guardar como programa (`ruff format`), no como
+  servidor LSP, para no duplicar avisos con Pyright. Pyright pasa a diagnósticos
+  push: antes, al abrir un archivo, a veces no mostraba nada hasta escribir.
+
+- `vim.highlight` estaba deprecado en Neovim 0.12 y mostraba un aviso en cada
+  yank; ahora usa `vim.hl.on_yank`, sin avisos en `:checkhealth`.
+
+- La bienvenida muestra la versión del entorno junto a «Neovim de Isaías»,
+  leída de `VERSION`, para identificar la copia en uso.
+
+- Iconos: `:EntornoIconos` activa, desactiva y guarda la elección en
+  `.xdg/iconos`, y la aplica sin reiniciar el editor. El árbol de archivos, la
+  barra inferior y la bienvenida comparten ahora el mismo interruptor, de modo
+  que sin Nerd Font no quedan cuadros ni huecos. El instalador de alumnado avisa
+  dónde se instala la fuente en Windows/WSL2 y en Linux; nadie cambia de modo
+  por su cuenta y el defecto sigue siendo el de antes.
+
 - Bienvenida: la cabeza de Ifuru en bloques Unicode sustituye a las letras IFL;
   el logo se muestra desde 28 filas.
 

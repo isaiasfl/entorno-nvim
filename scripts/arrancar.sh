@@ -57,6 +57,13 @@ if [ -x "$TREE_SITTER_BIN" ]; then
   PATH="$TREE_SITTER_DIR:$PATH"
 fi
 
+# Ruff vendorizado: se prefiere sobre un ruff del sistema por ser el verificado.
+RUFF_BIN=${RUFF_BIN:-"$ENTORNO_TOOLS_ROOT/ruff-$ENTORNO_RUFF_VERSION/bin/ruff"}
+if [ -x "$RUFF_BIN" ]; then
+  RUFF_DIR=$(dirname "$RUFF_BIN")
+  PATH="$RUFF_DIR:$PATH"
+fi
+
 # Los servidores LSP web y Pyright son lanzadores que invocan `node` por PATH.
 # Anteponer el Node vendorizado evita depender del Node del sistema del alumno.
 entorno_preferir_node_vendor

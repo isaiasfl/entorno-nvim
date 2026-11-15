@@ -84,8 +84,20 @@ locales, consérvelos o consulte al profesor antes de descartarlos.
 | JavaScript, TypeScript, React | Sí (TS en español) | Sí | Sí | JS y TS |
 | Tailwind | Si el proyecto lo usa | — | — | — |
 | Bash | Sí, con ShellCheck | Sí | Con shfmt | Sí |
-| Python | Sí | Sí | Con ruff | Sí |
+| Python | Sí | Sí | Con ruff¹ | Sí |
 | Dockerfile, Compose | Sí | Sí | Dockerfile | — |
+
+¹ **Ruff es opcional y no viene en los repositorios de Debian 13 ni Ubuntu
+26.04.** El entorno lo instala como binario oficial verificado dentro de
+`.tools/`, sin `sudo`, sin `pip` y sin tocar el sistema. Si falta, Python
+conserva errores, completado y ejecución; solo se pierde el formato al guardar:
+
+```sh
+./scripts/instalar-ruff.sh
+```
+
+El servidor antiguo `ruff-lsp` está obsoleto: este entorno usa `ruff server`,
+integrado en el propio binario desde la versión 0.5.3.
 
 **Pulsa `Espacio` y espera: el menú muestra todo.**
 
@@ -253,6 +265,78 @@ Para abrir un archivo concreto sin tmux:
 La lista completa está en [guia-completa-teclas.md](guia-completa-teclas.md).
 
 ## 5. Solución de problemas
+
+### Iconos de la terminal
+### Aparece `ruff_lsp is deprecated`
+
+Es un aviso del servidor antiguo de Ruff, no de este entorno. `ruff-lsp` fue
+sustituido por el servidor nativo (`ruff server`), incluido en el binario de
+Ruff desde la 0.5.3. Este entorno ya usa el nativo.
+
+Si aparece, cierre el editor y ejecute:
+
+```sh
+./scripts/instalar-ruff.sh
+```
+
+Deja `ruff` verificado en `.tools/` y el aviso desaparece. Si tenía `ruff-lsp`
+instalado con `pip`, puede desinstalarlo: ya no se usa.
+
+
+Si en el menú, en el árbol de archivos o en la barra inferior ves cuadros,
+huecos o signos raros en lugar de iconos, **no está roto**: falta una fuente
+Nerd Font en la terminal. El texto y todas las funciones siguen igual.
+
+Dos salidas:
+
+1. Seguir sin iconos, sin instalar nada: escribe `:EntornoIconos 0` dentro del
+   editor. La elección se guarda en `.xdg/iconos`. Para una sola sesión también
+   vale `ENTORNO_ICONOS=0 entorno-dev .`
+2. Instalar la fuente y conservar los iconos. Después, `:EntornoIconos 1` para
+   volver a activarlos.
+
+| Terminal | Dónde se instala la fuente |
+|---|---|
+| Windows Terminal con WSL2 | En **Windows**, no dentro de Ubuntu |
+| Terminal integrada de VS Code | En **Windows**, con un ajuste de VS Code |
+| GNOME Terminal, Konsole, Alacritty, Kitty | En la distribución de Linux |
+
+#### Windows con WSL2 (Windows Terminal)
+
+1. Descarga `JetBrainsMono Nerd Font` desde
+   <https://www.nerdfonts.com/font-downloads> y descomprime el `.zip`.
+2. Selecciona los archivos `.ttf`, botón derecho e **Instalar para todos los
+   usuarios** (o «Instalar» si no eres administrador).
+3. En Windows Terminal, `Ctrl+,` → perfil de Ubuntu → **Apariencia** →
+   **Tipo de letra** → `JetBrainsMono Nerd Font`.
+4. Cierra la terminal por completo y abre de nuevo `entorno-dev`.
+
+Una fuente instalada dentro de Ubuntu no cambia nada: quien dibuja los
+caracteres es Windows Terminal.
+
+#### VS Code con WSL2
+
+Añade en la configuración de usuario, no en la del proyecto:
+
+```json
+"terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
+```
+
+#### Linux
+
+```sh
+mkdir -p ~/.local/share/fonts
+cp JetBrainsMono*.ttf ~/.local/share/fonts/
+fc-cache -f
+```
+
+Después elige la fuente en las preferencias de tu terminal.
+
+#### Comprobar qué ocurre
+
+Dentro del editor, `:EntornoIconos` sin argumentos muestra el estado y una
+línea de muestra. Si la muestra se ve bien, la fuente sirve; si salen cuadros,
+no. El comando no instala ni modifica nada fuera del repositorio.
 
 **El instalador dice que falta Node o Corepack.**
 Ejecuta `./scripts/instalar-node.sh`. Descarga Node 24 LTS verificado dentro de

@@ -118,12 +118,21 @@ nvim-tree tampoco se abre automáticamente al iniciar ni al abrir un directorio.
 | --- | --- |
 | `j` / `k` | Bajar / subir por los elementos |
 | `Enter` | Abrir un archivo o expandir/contraer un directorio |
+| `p` | Abrir o cerrar la vista previa del archivo seleccionado |
 | `Ctrl+h/j/k/l` | Cambiar a la ventana situada en esa dirección |
 | `a` | Crear un archivo; termina el nombre en `/` para crear un directorio |
 | `r` | Renombrar el elemento seleccionado |
 | `d` | Borrar el elemento seleccionado, previa confirmación |
 | `g?` | Mostrar u ocultar la ayuda con todos los mapas efectivos |
 | `q` | Cerrar el árbol |
+
+La vista previa muestra hasta 500 líneas de texto. Para imágenes AVIF, GIF,
+JPEG, PNG, SVG y WebP necesita `chafa` en el PATH; si falta, avisa sin alterar
+el explorador. Las imágenes se representan mediante caracteres de color para
+funcionar también dentro de Neovim y tmux, por lo que su detalle es limitado.
+Pulse `p` para cerrar la vista antes de seleccionar otro archivo. Se omiten
+archivos mayores de 10 MB. No se instala Chafa automáticamente; las órdenes de
+instalación por plataforma figuran en la sección de búsqueda anterior.
 
 Para pasar del árbol al archivo normalmente se usa `Ctrl+l`, porque el árbol
 está a la izquierda. `Enter` abre el elemento en una ventana de edición y deja
