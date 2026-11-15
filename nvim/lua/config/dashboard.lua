@@ -3,14 +3,23 @@ local M = {}
 local namespace = vim.api.nvim_create_namespace("ifl_dashboard")
 local window_options = {}
 
+-- Cabeza de Ifuru: casco, auriculares a los lados y visor con ojos y sonrisa.
 local logo = {
-  "███╗   ███████████╗   ███╗          ",
-  "███║   ███╔═══════╝   ███║          ",
-  "███║   ████████╗      ███║          ",
-  "███║   ███╔════╝      ███║          ",
-  "███║   ███║           ███████████╗  ",
-  "╚══╝   ╚══╝           ╚══════════╝  ",
+  "     ▄▄████████▄▄     ",
+  "   ▄██████████████▄   ",
+  "▄▄ ██▀▀▀▀▀▀▀▀▀▀▀▀██ ▄▄",
+  "██ █   █      █   █ ██",
+  "██ █   ▀  ▄▄  ▀   █ ██",
+  "▀▀ ██▄▄▄▄▄▄▄▄▄▄▄▄██ ▀▀",
+  "   ▀██████████████▀   ",
+  "",
+  "      i f u r u       ",
 }
+
+-- Tramos en naranja por fila, en columnas {inicio, fin}: auriculares y cara.
+local headphones = { { 0, 2 }, { 20, 22 } }
+local face = { { 0, 2 }, { 4, 18 }, { 20, 22 } }
+local logo_accents = { [3] = headphones, [4] = face, [5] = face, [6] = headphones }
 
 local actions = {
   { key = "f", label = "Buscar archivos", icon = "" },
@@ -118,10 +127,28 @@ local function render(buffer, window)
 
   local menu_width = math.min(44, math.max(26, width - 4))
   local spacious = height >= 38
-  local show_logo = height >= 26 and width >= logo_width + 4
+  local show_logo = height >= 28 and width >= logo_width + 4
   if show_logo then
-    for _, line in ipairs(logo) do
-      add_line(line, logo_width, "IFLLogo")
+    for index, line in ipairs(logo) do
+      add_line(line, logo_width)
+      local padding = #lines[#lines] - #line
+      local column = 0
+      local function paint(group, finish)
+        if finish > column then
+          table.insert(highlights, {
+            line = #lines - 1,
+            group = group,
+            start = padding + vim.fn.byteidx(line, column),
+            finish = padding + vim.fn.byteidx(line, finish),
+          })
+        end
+        column = finish
+      end
+      for _, span in ipairs(logo_accents[index] or {}) do
+        paint("IFLLogo", span[1])
+        paint("IFLLogoAccent", span[2])
+      end
+      paint("IFLLogo", vim.fn.strchars(line))
     end
     add_blank()
   end
@@ -258,7 +285,8 @@ local function should_open_at_startup()
 end
 
 local function define_highlights()
-  vim.api.nvim_set_hl(0, "IFLLogo", { fg = "#8fc4c5", bold = true })
+  vim.api.nvim_set_hl(0, "IFLLogo", { fg = "#e9e0cf", bold = true })
+  vim.api.nvim_set_hl(0, "IFLLogoAccent", { fg = "#f39a1f", bold = true })
   vim.api.nvim_set_hl(0, "IFLSubtitle", { fg = "#b6c58b" })
   vim.api.nvim_set_hl(0, "IFLKey", { fg = "#dfca8e", bold = true })
   vim.api.nvim_set_hl(0, "IFLIcon", { fg = "#8fc4c5" })

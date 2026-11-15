@@ -38,7 +38,8 @@ assert(vim.wo.statusline == " ", "el dashboard debe dejar limpia la línea de es
 
 local text = table.concat(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), "\n")
 for _, expected in ipairs({
-  "███╗   ███████████╗   ███╗",
+  "▄▄████████▄▄",
+  "i f u r u",
   "Neovim de Isaías",
   "Buscar archivos",
   "Explorador",
@@ -120,6 +121,16 @@ for _, size in ipairs(sizes) do
     assert(vim.fn.strdisplaywidth(line) <= window_width, "una línea excede el ancho " .. window_width)
   end
 end
+
+-- Con espacio de sobra se ve la cabeza de Ifuru con sus tramos en naranja.
+local logo_lines = table.concat(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), "\n")
+assert(logo_lines:find("i f u r u", 1, true), "falta el logo de Ifuru a 140x40")
+local accents = 0
+local logo_namespace = vim.api.nvim_get_namespaces().ifl_dashboard
+for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buffer, logo_namespace, 0, -1, { details = true })) do
+  if mark[4].hl_group == "IFLLogoAccent" then accents = accents + 1 end
+end
+assert(accents == 10, "el logo debe tener 10 tramos naranjas y tiene " .. accents)
 
 vim.cmd("vertical resize 46")
 vim.api.nvim_exec_autocmds("WinResized", {})

@@ -45,9 +45,10 @@ solo cuando se pulsa su acción.
 
 ## Diseño y mantenimiento
 
-El IFL ancho usa bloques Unicode, con acento azul suave. Menú con iconos a
+El logo es la cabeza de Ifuru en bloques Unicode, con casco crema, auriculares
+y cara en naranja y el nombre «ifuru» debajo. Menú con iconos a
 la izquierda y teclas alineadas a la derecha, acentos salvia/amarillo y mayor
-separación vertical desde 38 filas. Con menos de 26 filas se oculta el logo
+separación vertical desde 38 filas. Con menos de 28 filas se oculta el logo
 para conservar todas las acciones. Los iconos requieren Nerd Font; con
 `ENTORNO_ICONOS=0` se sustituyen por un punto sencillo.
 

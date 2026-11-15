@@ -2,6 +2,9 @@
 
 ## Sin publicar
 
+- Bienvenida: la cabeza de Ifuru en bloques Unicode sustituye a las letras IFL;
+  el logo se muestra desde 28 filas.
+
 - git-delta como mejora opcional de lazygit: integración local para Neovim/tmux,
   aviso de requisito y oferta en instaladores sin bloquear si falta.
 
