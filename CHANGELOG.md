@@ -1,5 +1,12 @@
 # Changelog
 
+## Sin publicar
+
+- `instalar-alumno.sh` instala también el **tree-sitter CLI** fijado (lo usa
+  nvim-treesitter para compilar parsers y lo exige la comprobación del núcleo) y
+  `--comprobar` avisa si falta. Detectado al preinstalar el entorno en las
+  máquinas virtuales del alumnado.
+
 ## 1.2.2 — 2026-11-15
 
 - README: sección **Vista rápida** con tres capturas propias del editor

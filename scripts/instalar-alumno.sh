@@ -330,6 +330,9 @@ version_instalada=$("$NVIM_LOCAL" --version | sed -n '1s/^NVIM v//p')
 if [ "$solo_comprobar" -eq 0 ]; then
   entorno_fase "Node"
   "$SCRIPT_DIR/instalar-node.sh"
+  # Lo usa nvim-treesitter para compilar parsers y lo exige la comprobacion del nucleo.
+  entorno_fase "Tree-sitter"
+  "$SCRIPT_DIR/instalar-tree-sitter.sh"
   entorno_fase "Servidores web (HTML, CSS, JS, TS, React, Tailwind)"
   ENTORNO_SIN_FIXTURES=1 "$SCRIPT_DIR/instalar-lsp-web.sh"
   entorno_fase "Servidores de Bash y Python"
@@ -355,6 +358,8 @@ EOF
   NODE_LOCAL=$(entorno_node_dir)/bin/node
   [ -x "$NODE_LOCAL" ] && [ "$("$NODE_LOCAL" --version)" = "v$ENTORNO_NODE_VERSION" ] \
     || { printf '%s\n' "FALTA: Node local verificado." >&2; exit 1; }
+  [ -x "$ENTORNO_TOOLS_ROOT/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter" ] \
+    || { printf '%s\n' "FALTA: tree-sitter CLI; ejecuta ./scripts/instalar-alumno.sh" >&2; exit 1; }
   WEB_LSP_BIN="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
   for ejecutable in html-validate typescript-language-server vscode-html-language-server \
     vscode-css-language-server vscode-json-language-server tailwindcss-language-server
