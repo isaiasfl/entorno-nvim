@@ -57,6 +57,9 @@ explorador, pestañas, tmux, consola, IA, PDF, autocompletado y LazyGit.
 **[Chuleta para alumnado](chuleta_comandos.md)**: instalación,
 sesiones tmux, edición básica en Neovim, diagnósticos y ejecución de Bash.
 
+**[Pi y Jarvis para alumnado](docs/pi-jarvis-alumnado.md)**: guía de piloto para
+instalar Pi, configurar Tutor y Coder y proteger la clave personal.
+
 **[Fragmento HTML para Moodle DWEC](docs/moodle-dwec.html)**: entrada breve con
 instalación, enlaces, bloques de comandos, atajos e incidencias.
 
