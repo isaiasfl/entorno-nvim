@@ -122,6 +122,14 @@ else
     "scripts/agente.sh --name identidad --process proceso comando"
 fi
 
+# Si el panel agente esta oculto en otra ventana, mostrarlo junto al editor
+# sin robar el foco del panel actual.
+origin_window=$(tmux_cmd display-message -p -t "$TMUX_PANE" '#{window_id}' 2>/dev/null || true)
+agent_window=$(tmux_cmd display-message -p -t "$agent_pane" '#{window_id}' 2>/dev/null || true)
+if [ -n "$origin_window" ] && [ -n "$agent_window" ] && [ "$origin_window" != "$agent_window" ]; then
+  tmux_cmd join-pane -d -h -l 30% -s "$agent_pane" -t "$TMUX_PANE" || true
+fi
+
 buffer_name="entorno-agent-context-$$"
 tmux_cmd load-buffer -b "$buffer_name" "$context_file" ||
   fail "no se pudo cargar el contexto; se conserva en $context_file"
@@ -131,5 +139,16 @@ if ! tmux_cmd paste-buffer -p -d -b "$buffer_name" -t "$agent_pane"; then
   fail "no se pudo pegar el contexto; se conserva en $context_file"
 fi
 
+if [ "${ENTORNO_AGENT_AUTO_SUBMIT:-1}" != "0" ]; then
+  # Breve pausa para que el TUI del agente cierre el bracketed paste antes de Enter.
+  sleep 0.1
+  tmux_cmd send-keys -t "$agent_pane" Enter ||
+    fail "contexto pegado pero no se pudo enviar Enter; se conserva en $context_file"
+fi
+
 rm -f "$context_file"
-printf '%s\n' "Contexto pegado en $agent_pane para $agent_identity; revisalo y pulsa Enter para enviarlo."
+if [ "${ENTORNO_AGENT_AUTO_SUBMIT:-1}" != "0" ]; then
+  printf '%s\n' "Contexto enviado a $agent_identity en $agent_pane."
+else
+  printf '%s\n' "Contexto pegado en $agent_pane para $agent_identity; revisalo y pulsa Enter para enviarlo."
+fi

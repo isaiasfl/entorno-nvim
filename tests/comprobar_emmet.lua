@@ -32,8 +32,11 @@ end
 assert(expand("html", "script[type=module src=/src/main.ts]") == '<script type="module" src="/src/main.ts"></script>')
 assert(expand("html", "!"):find('<html lang="es">', 1, true), "Debe conservar HTML5 propio")
 assert(expand("html", "main"):find("<main>contenido</main>", 1, true), "Debe conservar snippet main")
-for _, ft in ipairs({ "javascript", "typescript" }) do
+for _, ft in ipairs({ "javascript", "typescript", "typescriptreact", "javascriptreact" }) do
   assert(expand(ft, "clg"):find("console.log(", 1, true), "Debe conservar clg en " .. ft)
+end
+for _, ft in ipairs({ "typescriptreact", "javascriptreact" }) do
+  assert(expand(ft, "rafce"):find("export default", 1, true), "Debe expandir rafce con Tree-sitter en " .. ft)
 end
 local margin = expand("css", "m10")
 assert(margin:match("margin:%s*10px;"), margin)

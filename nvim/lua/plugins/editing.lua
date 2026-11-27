@@ -47,6 +47,7 @@ return {
           clue.gen_clues.square_brackets(),
           clue.gen_clues.windows(),
           clue.gen_clues.z(),
+          { mode = "n", keys = "<Leader>a", desc = "+Agente IA" },
           { mode = "n", keys = "<Leader>b", desc = "+Archivos abiertos" },
           { mode = "n", keys = "<Leader>f", desc = "+Buscar" },
           { mode = "n", keys = "<Leader>t", desc = "+Texto y edición" },

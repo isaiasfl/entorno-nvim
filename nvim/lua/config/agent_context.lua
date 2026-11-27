@@ -186,6 +186,37 @@ local function transport_path()
   return vim.fs.joinpath(root, "scripts", "enviar-contexto-agente.sh")
 end
 
+local function toggle_script_path()
+  local root = require("config.paths").repository()
+  return vim.fs.joinpath(root, "scripts", "tmux-toggle-agente.sh")
+end
+
+function M.toggle_pane()
+  if not require("config.profile").has("ai") then
+    notify_error("IA desactivada en este perfil; habilitela expresamente con --ia")
+    return
+  end
+  if not vim.env.TMUX or vim.env.TMUX == "" then
+    notify_error("Neovim no esta dentro de una sesion tmux")
+    return
+  end
+
+  local script = toggle_script_path()
+  if not script or vim.fn.executable(script) ~= 1 then
+    notify_error("no se encontro scripts/tmux-toggle-agente.sh")
+    return
+  end
+
+  vim.system({ script }, { text = true }, function(result)
+    if result.code ~= 0 then
+      vim.schedule(function()
+        local message = vim.trim(result.stderr or "")
+        notify_error(message ~= "" and message or "no se pudo alternar el panel IA")
+      end)
+    end
+  end)
+end
+
 function M.send(options)
   if not require("config.profile").has("ai") then
     notify_error("IA desactivada en este perfil; habilitela expresamente con --ia")

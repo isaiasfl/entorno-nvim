@@ -29,12 +29,26 @@ function M.setup()
     snippets = {
       snippets.gen_loader.from_lang({
         lang_patterns = {
-          -- sh y bash comparten plantillas; Compose tiene las suyas.
+          -- sh y bash comparten plantillas; Compose y React TSX/JSX usan sus JSON.
           sh = { "**/bash.json" },
           bash = { "**/bash.json" },
+          tsx = { "**/typescriptreact.json" },
+          jsx = { "**/javascriptreact.json" },
           ["yaml.docker-compose"] = { "**/docker-compose.json" },
         },
       }),
+      -- En .jsx Tree-sitter devuelve lang="javascript" en lugar de javascriptreact.
+      function(context)
+        local ft = vim.bo[context.buf_id].filetype
+        if ft == "javascriptreact" and context.lang ~= "javascriptreact" and context.lang ~= "jsx" then
+          return snippets.gen_loader.from_lang()({ buf_id = context.buf_id, lang = "javascriptreact" })
+        end
+        if ft == "yaml.docker-compose" and context.lang ~= "yaml.docker-compose" then
+          return snippets.gen_loader.from_lang({
+            lang_patterns = { ["yaml.docker-compose"] = { "**/docker-compose.json" } },
+          })({ buf_id = context.buf_id, lang = "yaml.docker-compose" })
+        end
+      end,
     },
     expand = {
       insert = function(snippet)

@@ -44,6 +44,10 @@ if require("config.profile").has("pdf") then
 end
 
 if require("config.profile").has("ai") then
+  map("n", "<leader>aa", function()
+    require("config.agent_context").toggle_pane()
+  end, { desc = "Mostrar u ocultar panel IA" })
+
   map({ "n", "x" }, "<leader>ac", function()
     local mode = vim.fn.mode()
     require("config.agent_context").send({
