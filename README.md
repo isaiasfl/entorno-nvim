@@ -582,6 +582,29 @@ Si el código tiene un error de sintaxis o Prettier no está instalado, se forma
 con el servidor LSP como antes (TS/TSX con sus puntos y coma). `Espacio uf` permite
 activar/desactivar el formato al guardar; `Espacio lf` lo ejecuta manualmente.
 
+### Probar APIs REST con archivos `.http`
+
+Puede crear un archivo `api.http` (o `.rest`) en su proyecto con varias
+peticiones separadas por `###`. Sitúe el cursor en el bloque deseado y pulse
+`Espacio r`: ejecuta solo esa petición con `curl` en la terminal inferior,
+muestra el código HTTP y el tiempo, y formatea el JSON de respuesta. Admite
+variables locales (`@baseUrl = ...`) y de entorno (`{{$env.API_TOKEN}}`) para
+no guardar claves en el archivo.
+
+```http
+@baseUrl = http://localhost:3000
+
+### Listar películas
+GET {{baseUrl}}/api/movies
+Authorization: Bearer {{$env.API_TOKEN}}
+
+### Crear película
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{ "title": "Matrix", "rating": 9 }
+```
+
 ### Diffs de lazygit con delta
 
 Si está instalado `git-delta` (ejecutable `delta`), `Espacio gg` y `Ctrl-a g` lo usan
