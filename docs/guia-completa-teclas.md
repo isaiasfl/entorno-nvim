@@ -549,13 +549,14 @@ barrera de seguridad para comandos.
 | Acción | Teclas |
 | --- | --- |
 | Ir al panel IA | `Ctrl+a` → `a` |
+| Mostrar u ocultar panel IA | `Espacio a a` (Neovim) o `Ctrl+a` → `A` (tmux) |
 | Abrir selector emergente | `Ctrl+a` → `i` |
 | Elegir en selector | Escribir para filtrar, flechas y Enter |
 | Cancelar selector | Esc; menú textual: seguir indicación de vacío/Salir |
 | Volver al editor | `Ctrl+a` → `n` |
 | Petición sobre posición/archivo | Normal: `Espacio a c` |
 | Petición con fragmento | Seleccionar con v/V/Ctrl+v y `Espacio a c` |
-| Enviar la petición pegada | Revisar en el agente y pulsar Enter manualmente |
+| Envío y foco | Muestra el panel si estaba oculto, pulsa Enter y mantiene el foco en el editor |
 
 El catálogo ofrece Codex, OpenCode, Claude, Pi y Shell. `[OK]` significa que
 se encuentra el ejecutable, **no** que haya autenticación, saldo, red o
@@ -564,10 +565,9 @@ configuración válida. El selector no instala ni autentica clientes.
 Flujo recomendado:
 
 1. Elegir un agente y esperar a que arranque.
-2. Volver al editor; seleccionar solo el fragmento necesario si procede.
-3. Pulsar Espacio a c y escribir la petición.
-4. Revisar el contenido pegado en el agente.
-5. Pulsar Enter para enviarlo; revisar después el diff y las pruebas.
+2. Volver al editor (puede ocultar el panel IA con `Espacio a a` si quiere más espacio); seleccionar solo el fragmento necesario si procede.
+3. Pulsar `Espacio a c`, escribir la petición y pulsar Enter: el contexto se envía al agente automáticamente mientras el foco permanece en Neovim.
+4. Revisar la respuesta al lado y comprobar después el diff y las pruebas.
 
 En modo normal se envían metadatos y petición, no el archivo completo. En
 visual se añade la selección. El transporte no pulsa Enter y rechaza shells

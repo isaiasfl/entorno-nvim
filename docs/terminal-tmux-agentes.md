@@ -167,6 +167,7 @@ navegación sigue funcionando aunque el layout cambie:
 | --- | --- |
 | `Ctrl-a n` | Ir al panel Neovim/editor |
 | `Ctrl-a a` | Ir al panel del agente IA |
+| `Ctrl-a A` | Mostrar u ocultar el panel del agente IA sin cerrarlo (desde Neovim: `<leader>aa`) |
 | `Ctrl-a i` | Abrir el selector IA en un popup |
 | `Ctrl-a t` | Ir al panel terminal |
 | `Ctrl-a h/j/k/l` | Cambiar de panel |
@@ -344,8 +345,10 @@ el archivo completo.
 
 El payload se codifica como JSON en una sola línea, se escribe con modo `0600`
 en el directorio runtime `agent-context` de modo `0700`, se carga en un buffer
-interno de tmux y se pega mediante bracketed paste. No usa el portapapeles y
-nunca envía Enter: el usuario debe revisar el texto y enviarlo manualmente.
+interno de tmux y se pega mediante bracketed paste. No usa el portapapeles. Si
+el panel agente estaba oculto con `<leader>aa` o `Ctrl-a A`, lo vuelve a mostrar
+antes de pegar, envía `Enter` automáticamente y mantiene el foco en el editor
+(si se desea solo pegar sin enviar, se puede fijar `ENTORNO_AGENT_AUTO_SUBMIT=0`).
 
 El límite predeterminado es 32768 bytes. Lua calcula un único valor efectivo y
 lo entrega al transporte, de modo que ambas capas respetan el mismo override:
@@ -371,8 +374,8 @@ el contexto y no seleccionar secretos.
 
 1. Ejecutar `scripts/proyecto.sh` y escoger el repositorio.
 2. Elegir Codex, OpenCode o Pi en el selector del panel derecho.
-3. Trabajar en Neovim y usar `<leader>ac` en modo normal o visual.
-4. Revisar el contexto pegado en el agente y pulsar Enter manualmente.
+3. Trabajar en Neovim (ocultando o mostrando el panel IA con `<leader>aa` o `Ctrl-a A`) y usar `<leader>ac` en modo normal o visual.
+4. El contexto se envía y ejecuta automáticamente en el agente mientras el foco sigue en el editor.
 5. Usar el panel inferior para pruebas y servidores.
 6. Separarse con `Ctrl-a d`; `proyecto.sh` recupera después la misma sesión.
 

@@ -553,10 +553,12 @@ de trabajo tmux, Git, terminal, navegación y configuración. Más detalles en
 ## Agentes
 
 El panel derecho admite agentes CLI intercambiables (`Codex`, `OpenCode`,
-`Claude`, `Pi` o una consola). `<leader>ac` pega contexto solo tras validar el
-proceso de destino y nunca envía Enter. El entorno **no instala agentes ni
-gestiona sus credenciales**: si no tienes ninguno, el panel simplemente no
-aparece.
+`Claude`, `Pi` o una consola). `<leader>aa` (en Neovim) y `Ctrl-a A` (en tmux)
+muestran u ocultan el panel IA sin cerrar el agente ni perder la conversación.
+`<leader>ac` valida el proceso de destino, envía el contexto con `Enter` y
+mantiene el foco en el editor (si el panel estaba oculto, lo muestra
+automáticamente). El entorno **no instala agentes ni gestiona sus credenciales**:
+si no tienes ninguno, el panel simplemente no aparece.
 
 Véase en funcionamiento en [Vista rápida](#vista-rápida).
 
@@ -599,7 +601,8 @@ Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 | `<leader>gg` | Lazygit |
 | `<leader>mr` / `<leader>md` | Leer Markdown con mdcat / elegir documentación |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y visualizar |
-| `<leader>ac` | Pegar contexto revisable en el agente |
+| `<leader>aa` / `Ctrl-a A` | Mostrar u ocultar el panel IA sin cerrar el agente |
+| `<leader>ac` | Enviar contexto al agente (ejecuta con Enter y mantiene el foco en el editor) |
 | `<leader>ut` | Elegir entre 10 temas visuales |
 | `gd`, `grr`, `grn`, `K` | Definición, referencias, rename y hover LSP |
 | `Ctrl-h/j/k/l` | Navegar splits de Neovim |

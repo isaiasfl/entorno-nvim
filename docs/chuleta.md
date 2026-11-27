@@ -33,6 +33,7 @@ anterior o la pantalla principal. `:IFL` permite volver al inicio directamente.
 | Ir al editor | `Ctrl-a n` |
 | Abrir selector IA | `Ctrl-a i` |
 | Volver al panel agente | `Ctrl-a a` |
+| Mostrar u ocultar panel agente | `Ctrl-a A` o `Espacio aa` |
 | Ayuda contextual | `Ctrl-a ?` |
 | Ventana anterior | `Ctrl-a p` |
 | Maximizar/restaurar panel | `Ctrl-a z` |
@@ -179,11 +180,10 @@ párrafo.
 Solo disponibles con `--ia`; no se habilitan por elegir el perfil profesor.
 
 1. Arrancar el cliente en el panel marcado como agente.
-2. Usar `<leader>ac` en normal o visual.
-3. Revisar el texto pegado.
-4. Pulsar Enter manualmente.
+2. Mostrar u ocultar el panel IA sin cerrarlo con `<leader>aa` (o `Ctrl-a A`).
+3. Usar `<leader>ac` en normal o visual y escribir la petición.
 
-El transporte rechaza shells y procesos desconocidos; no envía Enter.
+El transporte rechaza shells y procesos desconocidos, envía el contexto con Enter y mantiene el foco en el editor.
 
 ## GIT
 
