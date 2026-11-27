@@ -34,6 +34,7 @@ else
   profile=profesor
 fi
 ai=${ENTORNO_IA:-}
+agent=${ENTORNO_AGENTE:-}
 while [ "$#" -gt 0 ]; do
   case "$1" in
   -h | --help)
@@ -47,7 +48,7 @@ si no lo hay, el perfil profesor con tmux y tres paneles.
   --tmux                            Sesion tmux (predeterminado)
   --sin-tmux                        Solo el editor
   --sin-ia                          Deshabilita IA y su panel
-  --ia                              Habilita la integracion IA explicitamente
+  --ia[=AGENTE]                     Habilita IA (opcional: codex, opencode, claude, pi o shell)
   --elegir                          Selector de proyectos en tmux
 
 Para abrir archivos concretos: scripts/arrancar.sh archivo [opciones Neovim]
@@ -58,8 +59,16 @@ EOF
     profile=$2; shift 2 ;;
   --tmux) mode=tmux; shift ;;
   --sin-tmux) mode=editor; shift ;;
-  --sin-ia) ai=0; shift ;;
+  --sin-ia) ai=0; agent=; shift ;;
   --ia) ai=1; shift ;;
+  --ia=*)
+    ai=1
+    agent=${1#--ia=}
+    case "$agent" in
+      codex | opencode | claude | pi | shell) ;;
+      *) printf 'Error: agente IA desconocido: %s (usa codex, opencode, claude, pi o shell).\n' "$agent" >&2; exit 2 ;;
+    esac
+    shift ;;
   --elegir)
     choose=1; mode=tmux; shift ;;
   --) shift; break ;;
@@ -75,7 +84,7 @@ esac
 if [ -z "$ai" ]; then
   if [ "$profile" = profesor ]; then ai=1; else ai=0; fi
 fi
-export ENTORNO_PERFIL="$profile" ENTORNO_IA="$ai"
+export ENTORNO_PERFIL="$profile" ENTORNO_IA="$ai" ENTORNO_AGENTE="$agent"
 if [ "$choose" = 1 ]; then
   [ "$#" -eq 0 ] || { printf '%s\n' 'Error: --elegir no admite una carpeta.' >&2; exit 2; }
   exec "$project_launcher"

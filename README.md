@@ -527,7 +527,9 @@ entorno-dev
 
 Sin opciones usa el perfil instalado: alumnado (editor y terminal) o
 profesor (PDF y tmux con tres paneles).
-`--sin-tmux` abre solo Neovim; `--sin-ia` omite el agente.
+`--sin-tmux` abre solo Neovim; `--sin-ia` omite el agente; `--ia=pi` (o `codex`,
+`claude`, `opencode`, `shell`) arranca ese agente directamente sin pasar por el
+selector.
 La [guia docente](docs/entorno-docente.md)
 describe los perfiles y la [chuleta diaria](docs/chuleta.md) los atajos.
 El lanzador acepta otra ruta con `entorno-dev /ruta` y abre el selector con

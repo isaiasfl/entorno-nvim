@@ -204,11 +204,15 @@ run_shell() {
   queue_in_pane "$command_line"
 }
 
+start_agent=
 if [ "$#" -eq 1 ] && [ "$1" = --choose-only ]; then
   choose_only
   exit $?
+elif [ "$#" -eq 2 ] && [ "$1" = --start ]; then
+  start_agent=$2
+elif [ "$#" -ne 0 ]; then
+  fail "uso: scripts/selector-agente.sh [--choose-only | --start agente]"
 fi
-[ "$#" -eq 0 ] || fail "uso: scripts/selector-agente.sh [--choose-only]"
 
 [ -n "${TMUX:-}" ] || fail "el selector debe ejecutarse dentro de tmux"
 [ -n "${TMUX_PANE:-}" ] || fail "no se pudo identificar el panel tmux actual"
@@ -220,6 +224,18 @@ handoff=0
 trap 'cleanup' 0 HUP TERM
 trap ':' INT
 clear_agent_state
+
+if [ -n "$start_agent" ]; then
+  case "$start_agent" in
+    codex) if ensure_available codex Codex; then run_agent codex; fi ;;
+    opencode) if ensure_available opencode OpenCode; then run_agent opencode; fi ;;
+    claude) if ensure_available claude Claude; then run_agent claude; fi ;;
+    pi) if ensure_available pi Pi; then run_agent pi; fi ;;
+    shell) run_shell ;;
+    *) printf '%s\n' "Opcion no valida: $start_agent" >&2 ;;
+  esac
+fi
+
 tmux_cmd set-option -p -t "$TMUX_PANE" @entorno_selector_state ready
 
 while :; do

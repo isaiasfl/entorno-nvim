@@ -234,7 +234,18 @@ start_agent_selector() {
 
   quoted=$(printf '%s' "$selector" | sed "s/'/'\\\\''/g")
   quoted_socket=$(printf '%s' "$TMUX_SOCKET" | sed "s/'/'\\\\''/g")
-  tmux_cmd send-keys -l -t "$pane" "export ENTORNO_TMUX_SOCKET='$quoted_socket'; '$quoted'"
+  selector_args=
+  if [ -n "${ENTORNO_AGENTE:-}" ]; then
+    case "$ENTORNO_AGENTE" in
+      codex | opencode | claude | pi | shell)
+        selector_args=" --start '$ENTORNO_AGENTE'"
+        ;;
+      *)
+        fail "agente IA desconocido en ENTORNO_AGENTE: $ENTORNO_AGENTE"
+        ;;
+    esac
+  fi
+  tmux_cmd send-keys -l -t "$pane" "export ENTORNO_TMUX_SOCKET='$quoted_socket'; '$quoted'$selector_args"
   tmux_cmd send-keys -t "$pane" Enter
 }
 
