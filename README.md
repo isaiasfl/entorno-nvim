@@ -643,8 +643,8 @@ MIT © 2026 Isaías Fernández Lozano
 ### Formato al guardar con Prettier
 
 JS, TS, JSX, TSX, HTML, CSS y JSON se formatean al guardar con Prettier, como en
-VS Code: sangría, comillas, puntos y coma y saltos de línea. Se usa el Prettier
-del proyecto si está en `node_modules` y, si no, el fijado en `tools/lsp-web`.
+VS Code: sangría, comillas, puntos y coma y saltos de línea. Se usa siempre el
+Prettier fijado en `tools/lsp-web`, igual que el resto de herramientas del entorno.
 Un `.prettierrc` del proyecto cambia el estilo (por ejemplo `"singleQuote": true`).
 Si el código tiene un error de sintaxis o Prettier no está instalado, se formatea
 con el servidor LSP como antes (TS/TSX con sus puntos y coma). Espacio uf permite

@@ -636,8 +636,10 @@ para JS, TS, JSX, TSX, HTML, CSS y JSON y lee `.prettierrc`, `.editorconfig` y
 Dependencia directa: `prettier` 3.9.10 en `tools/lsp-web`, versión exacta y
 lockfile pnpm, sin dependencias propias ni scripts de instalación. Lo instala
 `instalar-lsp-web.sh` (y por tanto `actualizar.sh`) con el mismo
-`minimumReleaseAge`. Si el proyecto trae su propio Prettier en `node_modules`,
-se usa ese para coincidir con su versión.
+`minimumReleaseAge`. Se utiliza siempre este binario fijado del entorno (en
+lugar de `node_modules/.bin/prettier` del proyecto) para mantener la misma
+política de seguridad y versión única en toda el aula, respetando `.prettierrc`,
+`.editorconfig` y `.prettierignore`.
 
 Alternativa sencilla: seguir solo con el formato LSP (decisión del 2026-11-06).
 Se conserva como respaldo: si Prettier falta, tarda más de 3 s o encuentra un

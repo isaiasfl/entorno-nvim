@@ -1,8 +1,8 @@
 -- Prettier para JS/TS/JSX/TSX/HTML/CSS/JSON: el mismo formato que VS Code.
--- Usa el Prettier del proyecto si lo tiene (node_modules/.bin) y, si no, el
--- fijado en tools/lsp-web. La configuración del proyecto (.prettierrc,
--- .editorconfig, .prettierignore) manda. Si Prettier no puede (falta o hay un
--- error de sintaxis), se devuelve false y se formatea con el LSP como antes.
+-- Usa siempre el Prettier fijado en tools/lsp-web (como el resto de
+-- herramientas del entorno), respetando la configuración del proyecto
+-- (.prettierrc, .editorconfig, .prettierignore). Si Prettier no puede (falta o
+-- hay un error de sintaxis), devuelve false y se formatea con el LSP.
 local M = {}
 
 M.filetypes = {
@@ -17,9 +17,7 @@ M.filetypes = {
   jsonc = true,
 }
 
-local function executable(path)
-  local project = vim.fs.find("node_modules/.bin/prettier", { path = vim.fs.dirname(path), upward = true })[1]
-  if project and vim.fn.executable(project) == 1 then return project end
+local function executable()
   local bundled = vim.fs.joinpath(require("config.paths").web_lsp_bin(), "prettier")
   -- Sin él (copia sin actualizar) se formatea con el LSP, como antes de añadir
   -- Prettier; scripts/actualizar.sh lo instala.
@@ -32,7 +30,7 @@ function M.format(bufnr)
   if not M.filetypes[vim.bo[bufnr].filetype] then return false end
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path == "" then return false end
-  local bin = executable(path)
+  local bin = executable()
   if not bin then return false end
 
   local input = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n") .. "\n"

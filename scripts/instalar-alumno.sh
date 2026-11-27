@@ -361,7 +361,7 @@ EOF
   [ -x "$ENTORNO_TOOLS_ROOT/tree-sitter-cli-$ENTORNO_TREE_SITTER_VERSION/bin/tree-sitter" ] \
     || { printf '%s\n' "FALTA: tree-sitter CLI; ejecuta ./scripts/instalar-alumno.sh" >&2; exit 1; }
   WEB_LSP_BIN="$PROJECT_ROOT/tools/lsp-web/node_modules/.bin"
-  for ejecutable in html-validate typescript-language-server vscode-html-language-server \
+  for ejecutable in html-validate prettier typescript-language-server vscode-html-language-server \
     vscode-css-language-server vscode-json-language-server tailwindcss-language-server
   do
     [ -x "$WEB_LSP_BIN/$ejecutable" ] || {
