@@ -1,0 +1,56 @@
+{
+  "GET": {
+    "prefix": "get",
+    "body": [
+      "### ${1:Listar recurso}",
+      "GET ${2:http://localhost:3000/api/recurso}",
+      "Accept: application/json",
+      "$0"
+    ],
+    "description": "Petición HTTP GET"
+  },
+  "POST JSON": {
+    "prefix": "post",
+    "body": [
+      "### ${1:Crear recurso}",
+      "POST ${2:http://localhost:3000/api/recurso}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:campo}\": \"${4:valor}\"",
+      "}",
+      "$0"
+    ],
+    "description": "Petición HTTP POST con cuerpo JSON"
+  },
+  "PUT JSON": {
+    "prefix": "put",
+    "body": [
+      "### ${1:Actualizar recurso}",
+      "PUT ${2:http://localhost:3000/api/recurso/1}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:campo}\": \"${4:valor}\"",
+      "}",
+      "$0"
+    ],
+    "description": "Petición HTTP PUT con cuerpo JSON"
+  },
+  "DELETE": {
+    "prefix": "del",
+    "body": [
+      "### ${1:Eliminar recurso}",
+      "DELETE ${2:http://localhost:3000/api/recurso/1}",
+      "$0"
+    ],
+    "description": "Petición HTTP DELETE"
+  },
+  "Bearer Auth": {
+    "prefix": "auth",
+    "body": [
+      "Authorization: Bearer {{${1:token}}}$0"
+    ],
+    "description": "Cabecera Authorization Bearer"
+  }
+}

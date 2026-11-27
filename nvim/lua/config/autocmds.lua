@@ -1,5 +1,10 @@
 -- Docker Compose tiene su propio servidor y snippets, como en VS Code.
+-- Archivos .http/.rest para probar APIs REST con Espacio r.
 vim.filetype.add({
+  extension = {
+    http = "http",
+    rest = "http",
+  },
   pattern = {
     ["compose%.ya?ml"] = "yaml.docker-compose",
     ["compose%.[%w_-]+%.ya?ml"] = "yaml.docker-compose",

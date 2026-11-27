@@ -564,6 +564,9 @@ externo. Cabecera y pie usan `module`, `centre` y `teacher` del YAML. Véase
 HTML incluye validación local de atributos, ids duplicados y cierres incorrectos,
 también antes de guardar. Los errores aparecen subrayados; `gl` muestra el
 detalle y `[d` / `]d` permiten recorrerlos. Se instala con las herramientas web.
+En proyectos JS/TS/React que incluyan `eslint.config.*` y ESLint instalado (como
+Vite + React), los avisos de React/hooks/ESLint aparecen también de forma nativa
+en `gl` y `[d` / `]d`.
 
 LuaLS 3.19.0, los servidores web fijados, Pyright 1.1.411 y Bash Language
 Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
@@ -597,7 +600,7 @@ la distribución Linux. No es necesario para ejecutar Neovim.
 | Mapa | Acción |
 | --- | --- |
 | `<leader>?` / F1 en modo normal | Ayuda rápida; dentro, c abre la chuleta ampliada y w la web |
-| `Espacio r` | Ejecutar este archivo (Bash, Python, JS, TS) en la terminal de abajo |
+| `Espacio r` | Ejecutar este archivo (Bash, Python, JS, TS o petición `.http`) en la terminal de abajo |
 | `Espacio s` | Insertar plantilla: lista con buscador |
 | `Espacio l` | Código: definición, documentación, usos, renombrar, arreglos, formatear |
 | `Espacio t` | Texto: duplicar, borrar, copiar, mover, comentar línea… (con su tecla nativa) |

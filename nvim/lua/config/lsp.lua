@@ -526,7 +526,10 @@ function M.setup()
 
   if profile.has("web") then
     enable_web_servers()
-    if profile.has("diagnostics") then require("config.html_validation").setup() end
+    if profile.has("diagnostics") then
+      require("config.html_validation").setup()
+      require("config.eslint").setup()
+    end
   end
   if profile.has("lua") then enable_lua_server() end
   if profile.has("python") then enable_python_server() end

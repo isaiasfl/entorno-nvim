@@ -31,6 +31,32 @@ function M.run()
     vim.notify("Guarda primero el archivo con un nombre (:w nombre)", vim.log.levels.WARN)
     return
   end
+  if ft == "http" then
+    if vim.fn.executable("python3") ~= 1 or vim.fn.executable("curl") ~= 1 then
+      vim.notify("Probar archivos .http requiere python3 y curl", vim.log.levels.WARN)
+      return
+    end
+    if vim.bo.modified then vim.cmd("silent write") end
+    local script = vim.fs.joinpath(require("config.paths").repository(), "scripts", "ejecutar-http.py")
+    local line = vim.api.nvim_win_get_cursor(0)[1]
+    local command = table.concat({
+      "python3",
+      vim.fn.shellescape(script),
+      vim.fn.shellescape(file),
+      tostring(line),
+    }, " ")
+    local pane = terminal_pane()
+    if pane then
+      vim.system({ "tmux", "send-keys", "-t", pane, "-l", "clear; " .. command }):wait()
+      vim.system({ "tmux", "send-keys", "-t", pane, "Enter" }):wait()
+      vim.notify("Petición HTTP enviada a la terminal de abajo")
+    else
+      vim.cmd("botright 14split")
+      vim.cmd.terminal(command)
+    end
+    return
+  end
+
   if not runner then
     local hint = ({
       html = "abre el HTML en el navegador o usa npm run dev en un proyecto Vite",

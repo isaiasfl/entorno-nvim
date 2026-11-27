@@ -10,7 +10,7 @@ vim.cmd('AyudaEntorno')
 assert(vim.api.nvim_win_get_config(0).relative == 'editor')
 vim.cmd('close')
 require('config.snippets').setup()
-for _, ft in ipairs({'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'}) do
+for _, ft in ipairs({'html', 'http', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'}) do
  local data = vim.json.decode(table.concat(vim.fn.readfile(root .. '/nvim/snippets/' .. ft .. '.json'), '\n'))
  for _, item in pairs(data) do
   assert(item.prefix and item.body and item.description)

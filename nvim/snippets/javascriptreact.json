@@ -227,5 +227,81 @@
       "import ${1:nombre} from \"${2:modulo}\"$0"
     ],
     "description": "Importar módulo"
+  },
+  "rroute": {
+    "prefix": "rroute",
+    "body": [
+      "<Route path=\"${1:/ruta}\" element={<${2:Componente} />} />$0"
+    ],
+    "description": "Ruta de React Router"
+  },
+  "rlink": {
+    "prefix": "rlink",
+    "body": [
+      "<Link to=\"${1:/ruta}\">${2:Enlace}</Link>$0"
+    ],
+    "description": "Enlace de React Router"
+  },
+  "unav": {
+    "prefix": [
+      "unav",
+      "useNavigate"
+    ],
+    "body": [
+      "const navigate = useNavigate();$0"
+    ],
+    "description": "Hook useNavigate de React Router"
+  },
+  "upar": {
+    "prefix": [
+      "upar",
+      "useParams"
+    ],
+    "body": [
+      "const { ${1:id} } = useParams();$0"
+    ],
+    "description": "Hook useParams de React Router"
+  },
+  "fetch": {
+    "prefix": [
+      "fetch",
+      "fget"
+    ],
+    "body": [
+      "const ${1:cargarDatos} = async () => {",
+      "  try {",
+      "    const respuesta = await fetch(\"${2:url}\");",
+      "    if (!respuesta.ok) throw new Error(`HTTP \\${respuesta.status}`);",
+      "    const datos = await respuesta.json();",
+      "    $0",
+      "  } catch (error) {",
+      "    console.error(error);",
+      "  }",
+      "};"
+    ],
+    "description": "Petición fetch GET con async/await y control de errores"
+  },
+  "post": {
+    "prefix": [
+      "post",
+      "fpost"
+    ],
+    "body": [
+      "const ${1:enviarDatos} = async (${2:cuerpo}) => {",
+      "  try {",
+      "    const respuesta = await fetch(\"${3:url}\", {",
+      "      method: \"POST\",",
+      "      headers: { \"Content-Type\": \"application/json\" },",
+      "      body: JSON.stringify(${2:cuerpo}),",
+      "    });",
+      "    if (!respuesta.ok) throw new Error(`HTTP \\${respuesta.status}`);",
+      "    const datos = await respuesta.json();",
+      "    $0",
+      "  } catch (error) {",
+      "    console.error(error);",
+      "  }",
+      "};"
+    ],
+    "description": "Petición fetch POST con JSON y control de errores"
   }
 }
