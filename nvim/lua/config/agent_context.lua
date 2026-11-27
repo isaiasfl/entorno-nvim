@@ -134,8 +134,17 @@ local function capture_context(visual)
     return nil, "se ha bloqueado el envio de un archivo potencialmente sensible"
   end
 
-  local project = vim.fs.root(buffer, { ".git" }) or vim.fs.dirname(path)
-  local relative = vim.fs.relpath(project, path) or path
+  -- Preferir el directorio de trabajo actual (donde vive la sesion del agente)
+  -- si el archivo esta dentro de el; evita duplicar subcarpetas en monorepos.
+  local cwd = vim.fn.getcwd()
+  local project
+  local relative = cwd ~= "" and vim.fs.relpath(cwd, path) or nil
+  if relative then
+    project = cwd
+  else
+    project = vim.fs.root(buffer, { ".git" }) or vim.fs.dirname(path)
+    relative = vim.fs.relpath(project, path) or path
+  end
   local context = {
     project = project,
     file = relative,
