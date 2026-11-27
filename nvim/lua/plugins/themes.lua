@@ -38,4 +38,11 @@ return {
       end,
     },
   },
+  { "ellisonleao/gruvbox.nvim", lazy = true, opts = {} },
+  { "rose-pine/neovim", name = "rose-pine", lazy = true, opts = {} },
+  { "neanias/everforest-nvim", main = "everforest", lazy = true, opts = { background = "hard" } },
+  { "EdenEast/nightfox.nvim", lazy = true, opts = {} },
+  { "projekt0n/github-nvim-theme", main = "github-theme", lazy = true, opts = {} },
+  { "navarasu/onedark.nvim", lazy = true, opts = {} },
+  { "Mofiqul/vscode.nvim", lazy = true, opts = { style = "dark" } },
 }

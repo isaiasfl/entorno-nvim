@@ -133,7 +133,7 @@ Estas teclas sueltas solo tienen este significado en el inicio IFL:
 | `Espacio f b` | Normal | Elegir buffer |
 | `Espacio g g` | Normal | Abrir LazyGit |
 | `Espacio u l` | Normal | Alternar caracteres invisibles |
-| `Espacio u t` | Normal | Elegir Catppuccin, Tokyo Night o Kanagawa |
+| `Espacio u t` | Normal | Elegir entre 10 temas visuales |
 | `Espacio` y esperar | Normal/visual | Ver las teclas disponibles y sus descripciones |
 | `gl` | Normal | Diagnósticos de la línea actual |
 | `Espacio l d` | Normal | Diagnósticos de todo el archivo |

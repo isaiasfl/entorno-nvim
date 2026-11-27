@@ -18,9 +18,17 @@ local themes = {
     plugin = "kanagawa.nvim",
     colorscheme = "kanagawa-wave",
   },
+
+  gruvbox = { label = "Gruvbox Dark", plugin = "gruvbox.nvim", colorscheme = "gruvbox" },
+  rosepine = { label = "Rosé Pine", plugin = "rose-pine", colorscheme = "rose-pine" },
+  everforest = { label = "Everforest Dark", plugin = "everforest-nvim", colorscheme = "everforest" },
+  nightfox = { label = "Nightfox", plugin = "nightfox.nvim", colorscheme = "nightfox" },
+  github = { label = "GitHub Dark", plugin = "github-nvim-theme", colorscheme = "github_dark" },
+  onedark = { label = "One Dark", plugin = "onedark.nvim", colorscheme = "onedark" },
+  vscode = { label = "VS Code Dark", plugin = "vscode.nvim", colorscheme = "vscode" },
 }
 
-local order = { "catppuccin", "tokyo", "kanagawa" }
+local order = { "catppuccin", "tokyo", "kanagawa", "gruvbox", "rosepine", "everforest", "nightfox", "github", "onedark", "vscode" }
 
 function M.state_path()
   local override = vim.env.ENTORNO_NVIM_THEME_STATE
@@ -70,6 +78,12 @@ function M.apply(id, options)
 
   require("lazy").load({ plugins = { theme.plugin } })
   vim.cmd.colorscheme(theme.colorscheme)
+  -- Los temas sin integracion propia heredan colores legibles del editor.
+  for group, fallback in pairs({ FzfLuaNormal = "NormalFloat", FzfLuaBorder = "FloatBorder" }) do
+    if next(vim.api.nvim_get_hl(0, { name = group, link = false })) == nil then
+      vim.api.nvim_set_hl(0, group, { link = fallback })
+    end
+  end
   M.current = id
 
   if options.persist then

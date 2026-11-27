@@ -600,7 +600,7 @@ Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 | `<leader>mr` / `<leader>md` | Leer Markdown con mdcat / elegir documentación |
 | `<leader>mp` / `<leader>mv` | Generar PDF / generar y visualizar |
 | `<leader>ac` | Pegar contexto revisable en el agente |
-| `<leader>ut` | Elegir Catppuccin, Tokyo Night o Kanagawa |
+| `<leader>ut` | Elegir entre 10 temas visuales |
 | `gd`, `grr`, `grn`, `K` | Definición, referencias, rename y hover LSP |
 | `Ctrl-h/j/k/l` | Navegar splits de Neovim |
 | `Ctrl-a h/j/k/l` | Navegar paneles tmux |

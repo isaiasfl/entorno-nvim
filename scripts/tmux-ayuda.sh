@@ -130,15 +130,15 @@ action_rows() {
         'CONTROL' \
         'PREFIX i        Abrir selector de agentes' \
         'PREFIX a        Ir al agente activo' \
+        'PREFIX A        Mostrar u ocultar panel IA' \
+        'SPACE aa        Mostrar u ocultar panel IA (Neovim)' \
         'PREFIX n        Volver al editor' \
         'ENVIAR CONTEXTO' \
-        'SPACE ac        Preparar contexto desde Neovim' \
+        'SPACE ac        Enviar contexto y ejecutar en IA' \
         'Normal          Archivo, linea y posicion' \
         'Visual          Seleccion y metadatos' \
-        'revisar         Comprobar el texto pegado' \
-        'Enter           Enviar manualmente' \
+        'Foco            Se mantiene en el editor' \
         'SEGURIDAD' \
-        'No envia Enter automaticamente' \
         'Solo admite paneles y procesos autorizados'
       ;;
     WORKSPACE)
@@ -216,7 +216,7 @@ action_rows() {
       printf '%s\n' \
         'APARIENCIA DEL EDITOR' \
         'SPACE ut        Elegir tema visual' \
-        '                Catppuccin / Tokyo Night / Kanagawa' \
+        '                10 temas para programar' \
         'SPACE ul        Mostrar caracteres invisibles' \
         'clipboard       Integrado con el portapapeles del sistema' \
         'DIAGNOSTICO' \

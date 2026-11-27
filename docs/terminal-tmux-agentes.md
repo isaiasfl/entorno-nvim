@@ -207,8 +207,7 @@ falta.
 La ventana `git` se reconoce mediante `@entorno_window_role=git`; editor, agente
 y terminal se reconocen mediante `@entorno_role`. Editor incluye movimientos y
 modos básicos de Vim, duplicación y desplazamiento de líneas o selecciones.
-Configuración documenta `Espacio u t`, el selector de
-Catppuccin, Tokyo Night y Kanagawa. Inteligencia artificial muestra la
+Configuración documenta `Espacio u t`, el selector de diez temas visuales. Inteligencia artificial muestra la
 disponibilidad real de Codex, OpenCode, Claude, Pi y Shell y explica el recorrido
 seguro de contexto desde Neovim.
 

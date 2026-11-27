@@ -11,6 +11,7 @@ La configuración incorpora únicamente:
 - `catppuccin/nvim`, Catppuccin Mocha y sus integraciones visuales;
 - `folke/tokyonight.nvim`, variante Tokyo Night `night`;
 - `rebelot/kanagawa.nvim`, variante Kanagawa `wave`;
+- siete temas adicionales: Gruvbox, Rosé Pine, Everforest, Nightfox, GitHub, One Dark y VS Code;
 - `mini.pairs`, cierre automático mínimo de pares al escribir;
 - `nvim-ts-autotag`, autocierre y autorrenombrado de etiquetas HTML/JSX/TSX;
 - `nvim-lspconfig`, catálogo de configuraciones para el cliente LSP nativo.
@@ -35,6 +36,9 @@ depuración. Tree-sitter y LSP se documentan por separado en
 | catppuccin/nvim | Directa | Catppuccin Mocha con grupos TS/LSP e integraciones de plugins |
 | folke/tokyonight.nvim | Directa | Tokyo Night, variante `night` |
 | rebelot/kanagawa.nvim | Directa | Kanagawa, variante `wave` |
+| ellisonleao/gruvbox.nvim, rose-pine/neovim, neanias/everforest-nvim | Directas | Paletas Gruvbox, Rosé Pine y Everforest |
+| EdenEast/nightfox.nvim, projekt0n/github-nvim-theme | Directas | Paletas Nightfox y GitHub |
+| navarasu/onedark.nvim, Mofiqul/vscode.nvim | Directas | Paletas One Dark y VS Code |
 | mini.nvim | Directa | Proporciona únicamente el módulo `mini.pairs` |
 | nvim-ts-autotag | Directa | Gestiona pares de etiquetas mediante Tree-sitter |
 | nvim-lspconfig | Directa | Aporta configuraciones de servidores LSP |
@@ -45,15 +49,15 @@ cargarse, nvim-tree conserva su glifo genérico y sigue funcionando. Ninguno de
 estos plugins ejecuta un proceso de construcción; Git solo descarga sus
 repositorios.
 
-Los tres themes son dependencias directas y quedan fijados en `lazy-lock.json`.
-El Catppuccin incluido en Neovim 0.12 era la alternativa sin dependencia, pero
-no ofrece las integraciones específicas de `catppuccin/nvim`; tampoco cubre
-Tokyo Night ni Kanagawa. Se mantienen los plugins pequeños oficiales en lugar
-de introducir una distribución visual o un framework de interfaz.
+Los diez temas son dependencias directas, cargadas bajo demanda y fijadas por
+commit en `lazy-lock.json`. Se conservan los tres existentes y se añaden siete
+familias distintas para ofrecer paletas cálidas, frías y conocidas. La alternativa
+sin dependencias limitaría la variedad y las integraciones de sintaxis y plugins.
 
-`<leader>ut` usa `vim.ui.select()`, cuyo backend ya es fzf-lua, para aplicar y
-guardar uno de los IDs `catppuccin`, `tokyo` o `kanagawa`. La elección reside en
-`$XDG_STATE_HOME/entorno-nvim/theme`, nunca en un archivo versionado.
+`<leader>ut` usa `vim.ui.select()` con fzf-lua. La elección reside en
+`$XDG_STATE_HOME/entorno-nvim/theme`, nunca en un archivo versionado. Catppuccin
+Mocha sigue siendo el valor por defecto y las elecciones anteriores siguen siendo
+válidas. Consulte [temas visuales](temas-visuales.md) para comparar las opciones.
 
 ## Atajos
 

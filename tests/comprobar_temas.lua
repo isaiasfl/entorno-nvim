@@ -106,12 +106,12 @@ end
 theme_mapping.callback()
 vim.ui.select = original_select
 
-assert(type(selected_items) == "table" and #selected_items == 3, "leader+ut no llama vim.ui.select con tres temas")
+assert(type(selected_items) == "table" and #selected_items == 10, "leader+ut no llama vim.ui.select con diez temas")
 local labels = {}
 for _, item in ipairs(selected_items) do
   labels[#labels + 1] = selected_options.format_item(item)
 end
-assert(vim.deep_equal(labels, { "Catppuccin Mocha", "Tokyo Night", "Kanagawa Wave" }), "nombres del selector incorrectos")
+assert(vim.deep_equal(labels, { "Catppuccin Mocha", "Tokyo Night", "Kanagawa Wave", "Gruvbox Dark", "Rosé Pine", "Everforest Dark", "Nightfox", "GitHub Dark", "One Dark", "VS Code Dark" }), "nombres del selector incorrectos")
 assert(theme.current == "tokyo", "el selector no aplico Tokyo Night")
 assert(vim.g.colors_name == "tokyonight-night", "el selector no uso la variante night")
 assert(vim.fn.readfile(state_file)[1] == "tokyo", "el selector no persistio el ID tokyo")
@@ -144,11 +144,14 @@ local expected_schemes = {
   -- kanagawa-wave es el alias de entrada; el plugin registra el nombre
   -- canonico del colorscheme aplicado como "kanagawa".
   kanagawa = "kanagawa",
+  gruvbox = "gruvbox", rosepine = "rose-pine", everforest = "everforest",
+  nightfox = "nightfox", github = "github_dark", onedark = "onedark", vscode = "vscode",
 }
 for _, id in ipairs(theme.order) do
   assert(theme.apply(id) == id, "no se pudo aplicar " .. id)
   assert(vim.g.colors_name == expected_schemes[id], "colorscheme incorrecto para " .. id)
-  assert_semantic_variety(id)
+  local ok, err = pcall(assert_semantic_variety, id)
+  assert(ok, id .. ": " .. tostring(err))
 end
 
 assert(theme.apply("invalido") == "catppuccin", "apply no protege frente a IDs desconocidos")

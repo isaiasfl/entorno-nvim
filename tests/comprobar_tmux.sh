@@ -255,7 +255,7 @@ BOTTOM_PANES=$(tmux_test list-panes -t "=$SESSION:1" -F '#{pane_top} #{pane_widt
   awk -v width="$WINDOW_WIDTH" '$1 > 0 && $2 == width { count++ } END { print count + 0 }')
 [ "$BOTTOM_PANES" -eq 1 ] || fail "el panel inferior no ocupa todo el ancho"
 
-for binding in h i j k l H J K L C-a P r c d g n a t p s w z '?' '[' '|' '-'; do
+for binding in h i j k l H J K L C-a P r c d g n a A t p s w z '?' '[' '|' '-'; do
   tmux_binding "$binding" >/dev/null 2>&1 || fail "falta el binding tmux $binding"
 done
 
@@ -317,8 +317,8 @@ printf '%s\n' "$HELP_EDITOR" | grep -q '^CMD-SHIFT.*macOS' ||
   fail "la ayuda Editor omite el movimiento de lineas en macOS"
 "$HELP_SCRIPT" --actions CONFIG | grep -q '^SPACE ut.*tema visual' ||
   fail "Configuracion omite el selector de temas"
-"$HELP_SCRIPT" --actions CONFIG | grep -q 'Catppuccin / Tokyo Night / Kanagawa' ||
-  fail "Configuracion no muestra los tres temas"
+"$HELP_SCRIPT" --actions CONFIG | grep -q '10 temas para programar' ||
+  fail "Configuracion no muestra los diez temas"
 "$HELP_SCRIPT" --actions CONFIG | grep -q '^clipboard.*portapapeles' ||
   fail "Configuracion omite la integracion del portapapeles"
 "$HELP_SCRIPT" --actions WORKSPACE | grep -q '^PREFIX i / g.*Selector IA' ||
@@ -878,18 +878,37 @@ wait_for_process tee "$AGENT_PANE"
 [ "$(tmux_test show-option -p -v -t "$AGENT_PANE" @entorno_agent_process)" = "tee" ] ||
   fail "el lanzador no declaro el proceso tee"
 
+# Toggle del panel IA (ocultar sin cerrar proceso y volver a mostrar).
+TOGGLE_SCRIPT="$PROJECT_ROOT/scripts/tmux-toggle-agente.sh"
+[ -x "$TOGGLE_SCRIPT" ] || fail "falta el script ejecutable tmux-toggle-agente.sh"
+TMUX=test TMUX_PANE="$EDITOR_PANE" ENTORNO_TMUX_SOCKET="$SOCKET" "$TOGGLE_SCRIPT" "$EDITOR_PANE" >/dev/null
+[ "$(tmux_test list-panes -t "=$SESSION:1" | wc -l)" -eq 2 ] || fail "toggle no oculto el panel IA de la ventana code"
+[ "$(tmux_test display-message -p -t "$AGENT_PANE" '#{pane_current_command}')" = tee ] ||
+  fail "ocultar el panel IA interrumpio el proceso del agente"
+
 SENTINEL_SUBSHELL="$WORK_DIR/no-ejecutar-subshell"
 SENTINEL_BACKTICK="$WORK_DIR/no-ejecutar-backtick"
 payload="UNICODE_á🚀 \$(touch '$SENTINEL_SUBSHELL') \`touch '$SENTINEL_BACKTICK'\` \"comillas\" linea1\\nlinea2"
 make_context 20 "$payload"
 CONTEXT_MODE=$(stat -c '%a' "$CONTEXT" 2>/dev/null || stat -f '%Lp' "$CONTEXT")
 [ "$CONTEXT_MODE" = "600" ] || fail "el contexto no tiene modo 0600"
+tmux_test select-pane -t "$EDITOR_PANE"
 transport "$CONTEXT" >/dev/null
 [ ! -e "$CONTEXT" ] || fail "el contexto temporal no se elimino"
 [ ! -e "$SENTINEL_SUBSHELL" ] || fail "se ejecuto una sustitucion de comando"
 [ ! -e "$SENTINEL_BACKTICK" ] || fail "se ejecutaron backticks"
+[ "$(tmux_test list-panes -t "=$SESSION:1" | wc -l)" -eq 3 ] ||
+  fail "enviar contexto con panel IA oculto no lo volvio a mostrar"
+[ "$(tmux_test display-message -p -t "=$SESSION:1" '#{pane_id}')" = "$EDITOR_PANE" ] ||
+  fail "enviar contexto robo el foco al editor"
 tmux_test capture-pane -p -J -t "$AGENT_PANE" | grep -q 'UNICODE_á' || fail "el payload Unicode no llego intacto"
-[ ! -s "$RECEIVED" ] || fail "el transporte envio Enter automaticamente"
+attempts=0
+while [ ! -s "$RECEIVED" ] && [ "$attempts" -lt 10 ]; do
+  attempts=$((attempts + 1))
+  sleep 0.2
+done
+[ -s "$RECEIVED" ] || fail "el transporte no envio Enter automaticamente"
+grep -Fq 'UNICODE_á' "$RECEIVED" || fail "el contenido enviado con Enter no llego completo al agente"
 if tmux_test list-buffers -F '#{buffer_name}' 2>/dev/null | grep -q '^entorno-agent-context-'; then
   fail "quedo un buffer auxiliar de tmux"
 fi
