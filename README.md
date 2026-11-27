@@ -17,7 +17,7 @@
 | <img src="IMG/icons/tmux.svg" width="20" height="20" alt=""> | **Terminal** | tmux con paneles de editor, consola y agente |
 | 🔍 | **Búsqueda** | fzf-lua sobre ripgrep y fd |
 | <img src="IMG/icons/python.svg" width="20" height="20" alt=""><img src="IMG/icons/typescript.svg" width="20" height="20" alt=""><img src="IMG/icons/html5.svg" width="20" height="20" alt=""> | **LSP** | lua-language-server 3.19.0, Pyright 1.1.411, TypeScript, HTML, CSS, JSON, Tailwind, Bash y Docker |
-| <img src="IMG/icons/rust.svg" width="20" height="20" alt=""><img src="IMG/icons/gnubash.svg" width="20" height="20" alt=""> | **Formato al guardar** | shfmt, Ruff 0.17.5 y el propio servidor de lenguaje |
+| <img src="IMG/icons/rust.svg" width="20" height="20" alt=""><img src="IMG/icons/gnubash.svg" width="20" height="20" alt=""> | **Formato al guardar** | Prettier 3.9.10, Ruff 0.17.5, shfmt y los servidores LSP |
 | <img src="IMG/icons/nodedotjs.svg" width="20" height="20" alt=""> | **Node** | 24.21.0 con pnpm 11.18.0, solo para los servidores LSP |
 | 🌳 | **Parsers** | Tree-sitter CLI 0.26.11 |
 | <img src="IMG/icons/git.svg" width="20" height="20" alt=""> | **Git** | lazygit, con delta opcional para los diffs |
@@ -325,7 +325,7 @@ la V1 descrita más abajo es la referencia histórica completa en Debian.
 ## Qué incluye
 
 - Neovim modular en Lua, dashboard IFL, búsqueda, explorador y Git.
-- LSP nativo para Lua, web y Python; completado nativo de Neovim 0.12.
+- LSP nativo para Lua, web (HTML, CSS, JS, TS, React, Tailwind), Python, Bash y Docker; completado nativo de Neovim 0.12 y formato al guardar con Prettier, Ruff y `shfmt`.
 - Tree-sitter con ocho parsers externos fijados.
 - sesiones tmux por proyecto en el socket dedicado `entorno-nvim`;
 - Markdown → HTML/CSS → Chromium → PDF A4 (Pandoc opcional, sólo para PDF).
@@ -414,27 +414,16 @@ y [la instalación completa](docs/instalacion.md).
 
 ### Actualizar una instalación existente
 
-Guarde su trabajo, entre en la carpeta de `entorno-nvim` y ejecute:
+Para el alumnado, basta con `./scripts/actualizar.sh` (ver
+[Caso 2](#caso-2-ya-lo-tenía-instalado-y-tiene-scriptsactualizarsh)). Para el
+entorno completo del profesor:
 
 ```sh
-./scripts/actualizar.sh
+./scripts/actualizar.sh --completo
 ```
 
-Corrige archivos alterados por finales de línea de Windows, restaura
-`nvim/lazy-lock.json` si cambió sin querer, ofrece cerrar las sesiones tmux
-antiguas, hace `git pull --ff-only` y repite la instalación. Para el entorno completo del profesor: `./scripts/actualizar.sh --completo`.
-
-**Primera vez en copias anteriores a `actualizar.sh`** (desde la carpeta del
-repositorio; conserve cualquier cambio local si Git impide avanzar):
-
-```sh
-git pull --ff-only
-sh scripts/actualizar.sh
-```
-
-`--ff-only` solo avanza la copia hasta la versión publicada: si hubiera
-cambios o commits locales que exigieran mezclar, se detiene sin tocar nada en
-lugar de crear un commit de mezcla o un conflicto.
+Usa `git pull --ff-only`, repara finales de línea de Windows, ofrece cerrar
+sesiones abiertas y reinstala solo los componentes que hayan cambiado.
 
 ## Comprobar requisitos
 
@@ -580,6 +569,29 @@ LuaLS 3.19.0, los servidores web fijados, Pyright 1.1.411 y Bash Language
 Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 [LSP y completado](docs/lsp.md).
 
+### Formato al guardar con Prettier
+
+JS, TS, JSX, TSX, HTML, CSS y JSON se formatean al guardar con Prettier, como en
+VS Code: sangría, comillas, puntos y coma y saltos de línea. Se usa siempre el
+Prettier fijado en `tools/lsp-web`, igual que el resto de herramientas del entorno.
+Un `.prettierrc` del proyecto cambia el estilo (por ejemplo `"singleQuote": true`).
+Si el código tiene un error de sintaxis o Prettier no está instalado, se formatea
+con el servidor LSP como antes (TS/TSX con sus puntos y coma). `Espacio uf` permite
+activar/desactivar el formato al guardar; `Espacio lf` lo ejecuta manualmente.
+
+### Diffs de lazygit con delta
+
+Si está instalado `git-delta` (ejecutable `delta`), `Espacio gg` y `Ctrl-a g` lo usan
+para mostrar los cambios con resaltado y números de línea. No sustituye lazygit
+ni modifica Git global. La tecla `|` alterna con el diff nativo en lazygit reciente.
+El comprobador lo clasifica como recomendado opcional: si falta, Git sigue
+funcionando. Los instaladores lo ofrecen cuando procede, siempre con la
+confirmación habitual para cambios del sistema.
+
+Paquetes habituales: `git-delta` en Arch/CachyOS (`pacman`), Debian/Ubuntu cuando
+figure en sus repositorios (`apt`) y macOS (`brew`). En WSL2 se instala dentro de
+la distribución Linux. No es necesario para ejecutar Neovim.
+
 ## Mappings principales
 
 | Mapa | Acción |
@@ -613,9 +625,11 @@ Server 5.6.0 se instalan de forma aislada, sin Mason ni npm global. Véase
 
 ## Portabilidad
 
-Probado: Debian 13 x86_64. Objetivo no probado: Arch/CachyOS x86_64 y macOS
-moderno. Los scripts evitan incompatibilidades BSD evidentes, pero no se afirma
-validación real fuera de Debian. Consulta [instalación V1](docs/instalacion.md).
+Validado en **Debian 13** y **Ubuntu 24.04/26.04 x86_64** (también en máquinas
+virtuales y **WSL2**), y usado a diario en **Arch/CachyOS/Omarchy**. En Linux
+**ARM64** (incluido WSL2 sobre Snapdragon) los artefactos oficiales están fijados
+con SHA-256 y probados de forma simulada; **macOS** tiene soporte parcial.
+Consulta [instalación V1](docs/instalacion.md).
 
 ## Seguridad
 
@@ -639,26 +653,3 @@ historico de restauracion. El proyecto nunca borra backups automaticamente.
 ## Licencia
 
 MIT © 2026 Isaías Fernández Lozano
-
-### Formato al guardar con Prettier
-
-JS, TS, JSX, TSX, HTML, CSS y JSON se formatean al guardar con Prettier, como en
-VS Code: sangría, comillas, puntos y coma y saltos de línea. Se usa siempre el
-Prettier fijado en `tools/lsp-web`, igual que el resto de herramientas del entorno.
-Un `.prettierrc` del proyecto cambia el estilo (por ejemplo `"singleQuote": true`).
-Si el código tiene un error de sintaxis o Prettier no está instalado, se formatea
-con el servidor LSP como antes (TS/TSX con sus puntos y coma). Espacio uf permite
-activar/desactivar el formato al guardar; Espacio lf lo ejecuta manualmente.
-
-### Diffs de lazygit con delta
-
-Si está instalado git-delta (ejecutable delta), Espacio gg y Ctrl-a g lo usan
-para mostrar los cambios con resaltado y números de línea. No sustituye lazygit
-ni modifica Git global. La tecla | alterna con el diff nativo en lazygit reciente.
-El comprobador lo clasifica como recomendado opcional: si falta, Git sigue
-funcionando. Los instaladores lo ofrecen cuando procede, siempre con la
-confirmación habitual para cambios del sistema.
-
-Paquetes habituales: git-delta en Arch/CachyOS (pacman), Debian/Ubuntu cuando
-figure en sus repositorios (apt) y macOS (brew). En WSL2 se instala dentro de
-la distribución Linux. No es necesario para ejecutar Neovim.
