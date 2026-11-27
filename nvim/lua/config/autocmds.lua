@@ -123,6 +123,18 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("close_with_q"),
+  pattern = { "qf", "help", "man", "checkhealth", "lspinfo" },
+  callback = function(event)
+    vim.keymap.set("n", "q", "<cmd>close<cr>", {
+      buffer = event.buf,
+      silent = true,
+      desc = "Cerrar ventana",
+    })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
   group = augroup("python_indent"),
   pattern = "python",
   callback = function()

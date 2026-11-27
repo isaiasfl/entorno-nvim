@@ -263,6 +263,10 @@ end, {
   desc = "Mostrar diagnostico",
 })
 
+map("n", "<leader>lb", "<C-o>", { desc = "Volver atrás tras saltar (Ctrl+o)" })
+map("n", "<leader>li", "<C-i>", { desc = "Avanzar al salto siguiente (Ctrl+i)" })
+map("n", "<leader>lq", "<cmd>cclose<cr>", { desc = "Cerrar lista de referencias (:cclose)" })
+
 map("n", "gl", function()
   vim.diagnostic.open_float({ scope = "line" })
 end, {
