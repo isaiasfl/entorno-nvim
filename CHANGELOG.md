@@ -2,6 +2,16 @@
 
 ## Sin publicar
 
+- Chuleta ampliada (`F1` → `c`): la copia descargada se renueva cada 7 días y,
+  sin Internet, se abre la anterior. Se sustituye el antiguo aviso de revisión
+  por su origen (PR #1, @dromerCode).
+
+- Prettier 3.9.10 al guardar en JS, TS, JSX, TSX, HTML, CSS y JSON, el mismo
+  formato que VS Code. Fijado en `tools/lsp-web` (lo instala `actualizar.sh`);
+  respeta `.prettierrc`, `.editorconfig` y `.prettierignore`. Si falla o falta,
+  formatea el LSP como antes. `Espacio uf` lo sigue desactivando y `Espacio lf`
+  lo ejecuta a mano (PR #1, @dromerCode).
+
 - `instalar-alumno.sh` instala también el **tree-sitter CLI** fijado (lo usa
   nvim-treesitter para compilar parsers y lo exige la comprobación del núcleo) y
   `--comprobar` avisa si falta. Detectado al preinstalar el entorno en las

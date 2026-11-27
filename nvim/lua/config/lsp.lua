@@ -227,6 +227,7 @@ function M.attach(bufnr)
   map(bufnr, "gd", vim.lsp.buf.definition, "LSP: Ir a la definicion")
   map(bufnr, "gD", vim.lsp.buf.declaration, "LSP: Ir a la declaracion")
   map(bufnr, "<leader>lf", function()
+    if require("config.prettier").format(bufnr) then return end
     vim.lsp.buf.format({ bufnr = bufnr })
   end, "Formatear archivo")
   -- Las mismas acciones de gd, K, grn... visibles en el menú de Espacio l.
@@ -240,6 +241,8 @@ function M.attach(bufnr)
 end
 
 -- Formato al guardar, como en VS Code. Espacio uf lo activa o desactiva.
+-- JS/TS/HTML/CSS/JSON pasan primero por Prettier (config/prettier.lua); si no
+-- puede, formatea el LSP.
 vim.g.entorno_formatear_al_guardar = true
 local format_group = vim.api.nvim_create_augroup("entorno_nvim_formato", { clear = true })
 
@@ -287,6 +290,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
       return
     end
     if ruff_formatear(event.buf) then return end
+    if require("config.prettier").format(event.buf) then return end
     local clients = vim.lsp.get_clients({ bufnr = event.buf, method = "textDocument/formatting" })
     if #clients == 0 then return end
     -- En HTML no formatea Tailwind: rompe clases y atributos.
